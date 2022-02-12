@@ -114,9 +114,10 @@ url = "/tags/"
 weight = 25
 
 
-[[menu.main]]
-identifier = "search"
-name = "search"
-url = "/search"
-weight = 30
+# This can wait to have more stuff to search
+#[[menu.main]]
+#identifier = "search"
+#name = "search"
+#url = "/search"
+#weight = 30
 
