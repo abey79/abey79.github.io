@@ -2,15 +2,25 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>bylr.info</title>
-    <link>https://abey79.github.io/</link>
+    <link>https://bylr.info/</link>
     <description>Recent content on bylr.info</description>
     <image>
-      <url>https://abey79.github.io/android-chrome-512x512.png</url>
-      <link>https://abey79.github.io/android-chrome-512x512.png</link>
+      <url>https://bylr.info/android-chrome-512x512.png</url>
+      <link>https://bylr.info/android-chrome-512x512.png</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright><atom:link href="https://abey79.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright><atom:link href="https://bylr.info/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>https://bylr.info/about/</link>
+      <pubDate>Thu, 10 Feb 2022 20:21:40 +0100</pubDate>
+      
+      <guid>https://bylr.info/about/</guid>
+      <description>My name is Antoine Beyeler. I am a multi-disciplinary engineer and entrepreneur with a PhD in flying robotics and a passion for software, aviation, photography, generative art, and plotters. I live in Lausanne, Switzerland 🇨🇭.
+With a few friends, I co-founded senseFly in 2009, which soon became the leader of fixed-wing mapping drones for surveyors, farmers, humanitarians and many others. Until my departure in 2018, I lead as CTO a team of up to 45 engineers and developed multiple generations of end-to-end mapping drone systems.</description>
+    </item>
+    
     
     
   </channel>
