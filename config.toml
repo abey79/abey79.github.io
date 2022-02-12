@@ -1,15 +1,16 @@
-baseURL = 'https://abey79.github.io/'
+baseURL = 'https://bylr.info/'
 defaultContentLanguage = "en"
 languageCode = 'en'
 title = 'bylr.info'
 theme = "PaperMod"
 copyright = "&copy; 2022 Antoine Beyeler –"
 
-nableRobotsTXT = true
+enableRobotsTXT = true
 buildDrafts = false
 buildFuture = false
 buildExpired = false
-googleAnalytics = "UA-123-45"
+googleAnalytics = "G-D1H30VS7VK"
+enableEmoji = true
 
 [minify]
 disableXML = true
@@ -51,8 +52,8 @@ text = "bylr.info"
 # iconHeight = 35
 
 [params.homeInfoParams]
-title = "Antoine Beyeler"
-content = "Entrepreneur, Developer, Tinkerer"
+title = "**Antoine Beyeler**"
+content = "Project notes and miscellanea."
 
 
 [[params.socialIcons]]
@@ -97,21 +98,29 @@ threshold = 0.4
 minMatchCharLength = 0
 keys = [ "title", "permalink", "summary", "content" ]
 
+[permalinks]
+articles = "articles/:year/:month/:day/:slug/"
 
 [outputs]
 home = ["HTML", "RSS", "JSON"]
 
 [[menu.main]]
+identifier = "about"
+name = "about"
+url = "/about/"
+weight = 10
+
+[[menu.main]]
 identifier = "archives"
 name = "archives"
 url = "/archives"
-weight = 10
+weight = 20
 
 [[menu.main]]
 identifier = "tags"
 name = "tags"
 url = "/tags/"
-weight = 25
+weight = 30
 
 
 # This can wait to have more stuff to search

@@ -1,0 +1,12 @@
+main {
+  --main-width: 760px;
+}
+
+.logo a {
+    font-size: 20px;
+    font-weight: normal;
+}
+
+.home-info .entry-header h1 {
+  font-weight: normal;
+}
