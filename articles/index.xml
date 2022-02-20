@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Tags on bylr.info</title>
-    <link>https://bylr.info/tags/</link>
-    <description>Recent content in Tags on bylr.info</description>
+    <title>Articles on bylr.info</title>
+    <link>https://bylr.info/articles/</link>
+    <description>Recent content in Articles on bylr.info</description>
     <image>
       <url>https://bylr.info/android-chrome-512x512.png</url>
       <link>https://bylr.info/android-chrome-512x512.png</link>
@@ -11,14 +11,14 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Sun, 20 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 20 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/articles/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>untagged</title>
-      <link>https://bylr.info/tags/untagged/</link>
+      <title>First post</title>
+      <link>https://bylr.info/articles/2022/02/20/first-post/</link>
       <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://bylr.info/tags/untagged/</guid>
-      <description></description>
+      <guid>https://bylr.info/articles/2022/02/20/first-post/</guid>
+      <description>&lt;p&gt;Hello again, world.&lt;/p&gt;</description>
     </item>
     
   </channel>
