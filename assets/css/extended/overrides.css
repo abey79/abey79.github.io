@@ -2,11 +2,34 @@ main {
   --main-width: 760px;
 }
 
+/* top left text not so big */
 .logo a {
     font-size: 20px;
     font-weight: normal;
 }
 
+/* big home text not bold by default */
 .home-info .entry-header h1 {
   font-weight: normal;
+}
+
+/* figure */
+.post-content figure {
+    border: 3px var(--content) solid;
+    border-radius: 11px;
+    padding: 6px;
+}
+
+.post-content figure img {
+    margin: 0;
+}
+
+.post-content figure figcaption {
+    margin: 0;
+    padding: 0;
+}
+
+.post-content figure figcaption p {
+    margin: 0;
+    padding: 0;
 }
