@@ -10,7 +10,7 @@ Hello again, world.
 
 <!--more--> 
 
-Lately, I've been meaning to document some of my personal projects and endeavours, and realised that I lacked an appropriate outlet. I figured this would be great occasion to test [Hugo](https://gohugo.io) and [GitHub Pages](https://pages.github.com), so here we are!
+Lately, I've been meaning to document some of my personal projects and endeavours, and realised that I lacked a suitable outlet. I figured this would be a great occasion to test [Hugo](https://gohugo.io) and [GitHub Pages](https://pages.github.com), so here we are!
 
 This is what might ramble about in the future: 
 
