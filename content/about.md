@@ -4,6 +4,7 @@ date: 2022-02-10T20:21:40+01:00
 draft: false
 toc: false
 hidemeta: true
+comments: false
 ---
 
 My name is **Antoine Beyeler**. I am a multi-disciplinary engineer and entrepreneur with a PhD in flying robotics and interests in software, aviation, photography, generative art, plotters, and home automation. I live in Lausanne, Switzerland :flag_ch:.
