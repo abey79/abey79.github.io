@@ -2,16 +2,22 @@ main {
   --main-width: 760px;
 }
 
+/* fix scroll bar background */
+::-webkit-scrollbar{ background: var(--theme); }
+
+
 /* top left text not so big */
 .logo a {
     font-size: 20px;
     font-weight: normal;
 }
 
+
 /* big home text not bold by default */
 .home-info .entry-header h1 {
   font-weight: normal;
 }
+
 
 /* figure */
 .post-content figure {
@@ -32,4 +38,20 @@ main {
 .post-content figure figcaption p {
     margin: 0;
     padding: 0;
+}
+
+
+/* code block: light background */
+:root {
+    --hljs-bg: var(--code-bg);
+}
+
+.post-content pre code {
+    color: var(--content);
+}
+
+
+/* extract */
+blockquote.extract {
+    font-size: 14px;
 }

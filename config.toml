@@ -26,7 +26,7 @@ images = ["/android-chrome-512x512.png" ]
 DateFormat = "January 2, 2006"
 defaultTheme = "auto"
 disableThemeToggle = true
-ShowReadingTime = true
+ShowReadingTime = false
 ShowShareButtons = false
 ShowPostNavLinks = false
 ShowBreadCrumbs = false
@@ -45,6 +45,7 @@ favicon16x16 = "/favicon-16x16.png"
 favicon32x32 = "/favicon-32x32.png"
 apple_touch_icon = "/apple-touch-icon.png"
 #safari_pinned_tab = "/safari-pinned-tab.svg"
+disableHLJS = false
 
 [params.label]
 text = "bylr.info"
@@ -72,9 +73,9 @@ url = "https://www.youtube.com/channel/UCAuzCV4jmbqNXT-rT6U1ogw"
 name = "linkedin"
 url = "https://www.linkedin.com/in/abeyeler/"
 
-[[params.socialIcons]]
-name = "stackoverflow"
-url = "https://stackoverflow.com/users/229511/abey"
+# [[params.socialIcons]]
+# name = "stackoverflow"
+# url = "https://stackoverflow.com/users/229511/abey"
 
 [params.analytics.google]
 SiteVerificationTag = "XYZabc"
@@ -85,7 +86,7 @@ hiddenInList = false
 hiddenInSingle = false
 
 [params.editPost]
-URL = "https://github.com/abey79/abey79.github.io/content"
+URL = "https://github.com/abey79/abey79.github.io/blob/main/content"
 Text = "Suggest Changes"
 appendFilePath = true
 
