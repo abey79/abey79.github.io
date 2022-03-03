@@ -11,7 +11,18 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Sun, 20 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 03 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Annotated Release Notes: vpype 1.9</title>
+      <link>https://bylr.info/articles/2022/03/03/annotated-release-notes-vpype-1.9/</link>
+      <pubDate>Thu, 03 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/articles/2022/03/03/annotated-release-notes-vpype-1.9/</guid>
+      <description>vpype 1.9 is finally out! 🎉
+I recently stumbled upon a post by Simon Willison where he promotes the idea of annotated release notes. As it turns out, this release is, by any metric I can think of, the biggest and most transformative so far. The associated change log is consequently rather unwieldy and calls, you guessed it 💡, for the present annotated release notes.
+(Note: although the original release notes are extensively quoted in this article, I reshuffled and shortened the original material.</description>
+    </item>
+    
     <item>
       <title>First post</title>
       <link>https://bylr.info/articles/2022/02/20/first-post/</link>

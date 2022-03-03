@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Articles on bylr.info</title>
-    <link>https://bylr.info/articles/</link>
-    <description>Recent content in Articles on bylr.info</description>
+    <title>vpype on bylr.info</title>
+    <link>https://bylr.info/tags/vpype/</link>
+    <description>Recent content in vpype on bylr.info</description>
     <image>
       <url>https://bylr.info/android-chrome-512x512.png</url>
       <link>https://bylr.info/android-chrome-512x512.png</link>
@@ -11,7 +11,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Thu, 03 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/articles/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 03 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/vpype/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Annotated Release Notes: vpype 1.9</title>
       <link>https://bylr.info/articles/2022/03/03/annotated-release-notes-vpype-1.9/</link>
@@ -21,15 +21,6 @@
       <description>vpype 1.9 is finally out! 🎉
 I recently stumbled upon a post by Simon Willison where he promotes the idea of annotated release notes. As it turns out, this release is, by any metric I can think of, the biggest and most transformative so far. The associated change log is consequently rather unwieldy and calls, you guessed it 💡, for the present annotated release notes.
 (Note: although the original release notes are extensively quoted in this article, I reshuffled and shortened the original material.</description>
-    </item>
-    
-    <item>
-      <title>First post</title>
-      <link>https://bylr.info/articles/2022/02/20/first-post/</link>
-      <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://bylr.info/articles/2022/02/20/first-post/</guid>
-      <description>&lt;p&gt;Hello again, world.&lt;/p&gt;</description>
     </item>
     
   </channel>

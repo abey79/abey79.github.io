@@ -1,0 +1,505 @@
+<!doctype html><html lang=en dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>Annotated Release Notes: vpype 1.9 | bylr.info</title>
+<meta name=keywords content="vpype">
+<meta name=description content="vpype 1.9 is finally out! 🎉
+I recently stumbled upon a post by Simon Willison where he promotes the idea of annotated release notes. As it turns out, this release is, by any metric I can think of, the biggest and most transformative so far. The associated change log is consequently rather unwieldy and calls, you guessed it 💡, for the present annotated release notes.
+(Note: although the original release notes are extensively quoted in this article, I reshuffled and shortened the original material.">
+<meta name=author content>
+<link rel=canonical href=https://bylr.info/articles/2022/03/03/annotated-release-notes-vpype-1.9/>
+<meta name=google-site-verification content="XYZabc">
+<link crossorigin=anonymous href=/assets/css/stylesheet.min.f6364f0298529c96c7e2c46c052c3c43abac92be3dc56a2b271e1b75a45d9aa7.css integrity="sha256-9jZPAphSnJbH4sRsBSw8Q6uskr49xWorJx4bdaRdmqc=" rel="preload stylesheet" as=style>
+<script defer crossorigin=anonymous src=/assets/js/highlight.min.7680afc38aa6b15ddf158a4f3780b7b1f7dde7e91d26f073e6229bb7a0793c92.js integrity="sha256-doCvw4qmsV3fFYpPN4C3sffd5+kdJvBz5iKbt6B5PJI=" onload=hljs.initHighlightingOnLoad()></script>
+<link rel=icon href=https://bylr.info/favicon.ico>
+<link rel=icon type=image/png sizes=16x16 href=https://bylr.info/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://bylr.info/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://bylr.info/apple-touch-icon.png>
+<link rel=mask-icon href=https://bylr.info/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<meta name=generator content="Hugo 0.91.2">
+<noscript>
+<style>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
+</noscript>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D1H30VS7VK"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-D1H30VS7VK',{anonymize_ip:!1})}</script>
+<meta property="og:title" content="Annotated Release Notes: vpype 1.9">
+<meta property="og:description" content="vpype 1.9 is finally out! 🎉
+I recently stumbled upon a post by Simon Willison where he promotes the idea of annotated release notes. As it turns out, this release is, by any metric I can think of, the biggest and most transformative so far. The associated change log is consequently rather unwieldy and calls, you guessed it 💡, for the present annotated release notes.
+(Note: although the original release notes are extensively quoted in this article, I reshuffled and shortened the original material.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://bylr.info/articles/2022/03/03/annotated-release-notes-vpype-1.9/">
+<meta property="og:image" content="https://bylr.info/vpype_19/word_cloud.png"><meta property="article:section" content="articles">
+<meta property="article:published_time" content="2022-03-03T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-03-03T00:00:00+00:00"><meta property="og:site_name" content="Antoine Beyeler">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://bylr.info/vpype_19/word_cloud.png">
+<meta name=twitter:title content="Annotated Release Notes: vpype 1.9">
+<meta name=twitter:description content="vpype 1.9 is finally out! 🎉
+I recently stumbled upon a post by Simon Willison where he promotes the idea of annotated release notes. As it turns out, this release is, by any metric I can think of, the biggest and most transformative so far. The associated change log is consequently rather unwieldy and calls, you guessed it 💡, for the present annotated release notes.
+(Note: although the original release notes are extensively quoted in this article, I reshuffled and shortened the original material.">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Articles","item":"https://bylr.info/articles/"},{"@type":"ListItem","position":2,"name":"Annotated Release Notes: vpype 1.9","item":"https://bylr.info/articles/2022/03/03/annotated-release-notes-vpype-1.9/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Annotated Release Notes: vpype 1.9","name":"Annotated Release Notes: vpype 1.9","description":"vpype 1.9 is finally out! 🎉\nI recently stumbled upon a post by Simon Willison where he promotes the idea of annotated release notes. As it turns out, this release is, by any metric I can think of, the biggest and most transformative so far. The associated change log is consequently rather unwieldy and calls, you guessed it 💡, for the present annotated release notes.\n(Note: although the original release notes are extensively quoted in this article, I reshuffled and shortened the original material.","keywords":["vpype"],"articleBody":"vpype 1.9 is finally out! 🎉\nI recently stumbled upon a post by Simon Willison where he promotes the idea of annotated release notes. As it turns out, this release is, by any metric I can think of, the biggest and most transformative so far. The associated change log is consequently rather unwieldy and calls, you guessed it 💡, for the present annotated release notes.\n(Note: although the original release notes are extensively quoted in this article, I reshuffled and shortened the original material. Make sure to check the base material for an authoritative list of change.)\nProperties Basics   Added support for global and per-layer properties (#359)\nThis feature introduces metadata to the pipeline in the form of properties which may either be attached to specific layers (layer property) or all of them (global property). Properties are identified by a name and may be of arbitrary type (e.g. integer, floating point, color, etc.). A number of system properties with a specific name (prefixed with vp_) and type are introduced to support some of the new features.\n   Metadata is data which says something about other data, and vpype lacked such a thing. Until now, what was passed from one command to the next consisted exclusively of paths sorted into layers, without any context such as what the color of these paths might be. One command could “know” about something (e.g. read knows, from the SVG, the color of a layer), but it could not “tell” the next command(s) about it.\nThis is no more, thanks to properties. They offer a generic mechanism to attach data to pipeline and layers. They are the backbone of several features introduced today, and lay the ground for future features within vpype or in plug-ins.\nLayer color, pen width, and name  Layer color, pen width, and name are now customizable (#359, #376, #389)  The read commands now sets layer color, pen width, and name based on the input SVG if possible. The new color, penwdith, and name commands can be used to modify layer color, pen width, and name. The new pens command can apply a predefined or custom scheme on multiple layers at once. Two common schemes are built-in: rgb and cmyk. Custom schemes can be defined in the configuration file. The show and write commands now take into account these layer properties.     Supporting arbitrary layer colors, pen widths, and names, has long been amongst the most requested features. Well, thanks to properties, here they are. It happens automagically when using read, and the new commands can further customise these values:\n$ vpype \\  rect --layer 1 0 0 5cm 5cm \\  color --layer 1 purple \\  penwidth --layer 1 0.5mm \\  circle --layer 2 4cm 4cm 2cm \\  color --layer 2 orange \\  penwidth --layer 2 5mm \\  show The new, high-level color, penwidth, and name commands are simple wrappers which change the value of specific system properties (i.e. vp_color, vp_pen_width, resp. vp_name):\n$ vpype random name \"hello\" color purple penwidth 0.1mm proplist --layer 1 listing 3 properties for layer 1 vp_color: (color) #800080 vp_name: (str) hello vp_pen_width: (float) 0.37795275590551186 System properties differ from “regular” properties only in the sense that they have special meaning to vpype. By convention, their name is prefixed with vp_.\nSpecial mention for the new pens command, which is short for here is the set of pens I intend to use for this plot. It sets in bulk layer colors, pen widths and/or names all at once, based on a built-in or custom configuration. For example, this produces a CMYK SVG using the flow imager plug-in:\n$ vpype \\  flow_img --layer 1 [...] input_cyan.jpg \\  flow_img --layer 2 [...] input_magenta.jpg \\  flow_img --layer 3 [...] input_yellow.jpg \\  flow_img --layer 4 [...] input_black.jpg \\  pens cmyk \\  write output.svg    Introduced new commands for low-level inspection and modification of properties (#359)\n propget: gets the value of a given global or layer property proplist: lists all global and/or layer properties and their value propset: sets the value of a given global or layer property propdel: deletes a given global or layer property propclear: removes all global and/or layer properties     These are low-level commands to interact with properties. Although they have limited use in real-world workflows, they come in handy when learning about properties or crafting complex pipelines.\n  Updated layer operation commands to handle properties (#359)\n When a single source layer is specified and --prob is not used, the lcopy and lmove commands now copy the source layer’s properties to the destination layer (possibly overwriting existing properties). When --prob is not used, the lswap command now swaps the layer properties as well. These behaviors can be disabled with the --no-prop option.     With properties, some of the layer manipulation commands became somewhat ambiguous. For example, what happens with properties when using lmove all 1 (merges all layers into layer one) or move --prob 0.5 1 2 (picks geometries from layer 1 with a 50% probability and moves them to layer 2)?\nI opted for a strategy where layer properties are affected only for unambiguous cases. This is basically when a single layer is moved/copied and when probabilistic behaviour is not used at all. In all other cases, the layer properties are left unchanged.\nFrom SVG attributes to properties   Added the --attr option to the read command to (optionally) sort geometries by attributes (e.g. stroke color, stroke width, etc.) instead of by SVG layer (#378, #389)\n  The read and write commands now preserve a sub-set of SVG attributes (experimental) (#359, #389)\nThe read command identifies SVG attributes (e.g. stroke-dasharray) which are common in all geometries within each layer. These attributes are saved as layer properties with their name prefixed with svg_ (e.g. svg_stroke-dasharray). The write command can optionally restore these attributes in the output SVG using the --restore-attribs option.\n   As noted, the read command now tries to extract SVG attributes and store them as layer properties. There are two motivations for that. First, it enables the write command to optionally restore these attributes in the output file, in order to achieve a higher degree of fidelity. (This feature is experimental and opt-in for the time being.) Second, it enables future features or plug-ins to do neat things such as generating hatch fills when fill is set to a color, or cutting paths in bits to emulate stroke-dasharray if defined.\nNow, since properties are only available at the layer level (or globally), read discards SVG attributes that are not shared amongst every paths within a given layer. Let’s take an example:\n xmlns=\"http://www.w3.org/2000/svg\" width=\"650\" height=\"650\"  cx=\"150\" cy=\"150\" r=\"100\" stroke=\"red\" stroke-width=\"0.5mm\" fill=\"green\" /  x=\"400\" y=\"200\" width=\"200\" height=\"400\" stroke=\"blue\" stroke-width=\"0.5mm\" fill=\"green\" /  d=\"M250,600 l-200,0 l0,-200 z\" stroke=\"blue\" stroke-width=\"0.1mm\" fill=\"green\" /  This SVG only contains top-level elements, which vpype loads in layer 1 by default. The fill property is common to all paths and thus stored as a layer property, but the stroke and stroke-width attributes are heterogeneous and thus discarded. As a result, the show command uses the default color and pen width.\n$ vpype read example.svg proplist --layer 1 show listing 1 properties for layer 1 svg_fill: (str) green To address this issue, the read command has now the option to create layers based on SVG attributes instead of structure:\n$ vpype read --attr stroke --attr stroke-width example.svg proplist --layer all show listing 5 properties for layer 1 svg_fill: (str) green svg_stroke: (str) red svg_stroke-width: (str) 0.5mm vp_color: (color) #ff0000 vp_pen_width: (float) 1.8897648 listing 5 properties for layer 2 svg_fill: (str) green svg_stroke: (str) blue svg_stroke-width: (str) 0.5mm vp_color: (color) #0000ff vp_pen_width: (float) 1.8897648 listing 5 properties for layer 3 svg_fill: (str) green svg_stroke: (str) blue svg_stroke-width: (str) 0.1mm vp_color: (color) #0000ff vp_pen_width: (float) 0.37795296000000006 In this case, read creates one layer per unique combination of stroke and stroke-width attribute, resulting in a total of three layers, each assigned with the correct properties, and correctly displayed by show.\nSource files  The read command now records the source SVG paths in the vp_source and vp_sources system properties (see the documentation) (#397, #406, #408)   The idea of the vp_source and vp_sources properties is to keep track of the files from which the content of the pipeline originates from. The vp_source property is a single path, which is overwritten by the last command importing from a file. The vp_sources property is a set of all source files encountered so far. Both properties are pathlib.Path instances.\nThis is, for example, what happens when using read twice:\n$ vpype read machine_typography_01_3.svg read machine_typography_02_3.svg proplist -g listing 5 global properties svg_fill: (str) black svg_stroke: (str) none vp_page_size: (tuple) (396.850608, 559.3703808000001) vp_source: (PosixPath) /private/tmp/MT/machine_typography_02_3.svg vp_sources: (set) {PosixPath('/private/tmp/MT/machine_typography_01_3.svg'), PosixPath('/private/tmp/MT/machine_typography_02_3.svg')} Here, vp_source points to the file read by the last read command, but vp_sources contains all two source files.\nCurrently, read is the only command which sets these variables, but the idea is that any command involved with reading a file (SVG or otherwise) should set these properties, including plug-ins such as hatched, flow imager, or vpype-embroidery.\nOne of the most common use case is to name the output file after the input file:\n$ vpype flow_img [...] my_image.png write \"{vp_name.stem}_converted.svg\" Note the use of a property substitution pattern, which brings us to the next topic.\nProperty substitution   Added property substitution to CLI user input (#395)\nThe input provided to most commands' arguments and options may now contain substitution patterns which will be replaced by the corresponding property value. Property substitution patterns are marked with curly braces (e.g. {property_name}) and support the same formatting capabilities as the Python’s format() function.\n   This is where things start becoming “meta”! 🤯\nAs shown in the previous example, the value of a property may now be used anywhere as input using property substitution patterns.\nHere is another example where the full path of the input file is drawn and displayed:\n$ vpype read example.svg text -p 0.5cm 0.5cm \"{vp_source}\" show Again, vp_source is a pathlib.Path instance, so {vp_source.name} (file name) or {vp_source.stem} (file name without extension) could be used instead.\nMultiple substitution patterns can be combined and mixed with regular text. For example, this creates an output file in the same directory as, and named after, the input file:\n$ vpype read example.svg linesort \\  write \"{vp_source.parent}/{vp_source.stem}_optimised.svg\" Of course, when using vpype interactively, it’s easier to simply spell out the output file name. Instead, this kind of mechanism makes it considerably easier to write generic, reusable shell scripts.\nNote that, since property substitution internally relies on Python’s str.format() function, the number formatting mini-language is available as well (e.g. {vp_pen_width:.02f}). See the documentation for some examples.\nNow, taking a step back, this feature is neat indeed, but its usefulness turns out to be limited in many non-trivial, real-world scenarios. I had hoped it would unlock several workflows I had in mind, but it just did not - or not elegantly enough. So much so that I even considered dropping the feature altogether.\nThis was a bit frustrating, to say the least. And ultimately lead to what is the next big chapter of this release.\nExpressions   Added expression substitution to CLI user input (#397)\nThe input provided to most command’s arguments and options may now contain expression patterns which are evaluated before the command is executed. Expression patterns are marked with the percent symbol % (e.g. %3+4%) and support a large subset of the Python language. A lot of examples were added in the cookbook.\n   This is possibly the most transformative feature brought to vpype since its inception: anything between pairs of % characters is now evaluated as (a sub-set of) Python code, and the result is substituted in the input before it reaches the actual command. The documentation has been updated with a whole new section about expressions (which I’m not going to repeat here), and the cookbook has plenty of examples making use of them. Do check them out for a taste of what expressions are capable of!\nThis feature blurs the lines between a mere CLI tool and a programming language. This begs the question of why not using a programming language in the first place, a point raised by fellow Python dev and flow imager author Jonas Serych. vpype even offers a proper API for that!\nHere are my thoughts about this:\n Users of vpype are often not Python developers – or developers at all. Expressions build on existing vpype knowledge and bring, at least through examples and recipes that can be copy/pasted/customized, tiny bits of programs which are readily useful, without the need to learn much of the Python syntax and ecosystem. For many real-world cases (see the examples linked in the release notes), the resulting one-liners are more compact than the equivalent in proper code - even Python, even with vpype API. (Arbitrarily complex pipelines can of course be conceivably crafted as counter-examples, but this is besides the point.)   Added the eval command as placeholder for executing expressions (#397)   Though expressions can be used in any command’s input, some “space” dedicated to them in the pipeline can be useful. Typical cases include variable initialization or querying the user for some parameter with the input() function. Several examples shown or linked below make use of this.\nBlock processors   Improved block processors (#395, #397)\n Simplified and improved the infrastructure underlying block processors for better extensibility. The begin marker is now optional and implied whenever a block processor command is encountered. Note: the end marker must always be used to mark the end of a block. Commands inside the block now have access to the current layer structure and its metadata.     Block processors hardly got any love since the first release of vpype and, as far as I can tell, weren’t used much - if at all - due to their limitations. Properties and expressions completely reverse this situation and block processors are now where the magic happens. The changes above lay the ground work for this.\n  Improved the grid block processor (#397)\n The page size is now updated according to the grid size. The command now sets expression variables for use in the nested pipeline. Cells are now first iterated along rows instead of columns.    The repeat block processor now sets expression variables for use in the nested pipeline (#397)\n  Added forfile block processor to iterate over a list of file (#397)\n  Added forlayer block processor to iterate over the existing layers (#397)\n  The read command now will ignore a missing file if --no-fail parameter is used (#397)\n  Changed the initial default target layer to 1 (#395)\nPreviously, the first generator command of the pipeline would default to create a new layer if the --layer option was not provided. This could lead to unexpected behaviour in several situation. The target layer is now layer 1. For subsequent generators, the existing behaviour of using the previous generator target layer as default remains.\n   That’s two new block processor commands, and another two finally coming to life, plus a few changes to make them work better with real-world workflows.\nOne of the key changes is that block processors now set temporary expression variables (prefixed with _) that can be used in the nested pipeline. They are listed in each command’s help text:\n$ vpype grid --help Usage: vpype grid [OPTIONS] NX NY  Creates a NX by NY grid of geometry  [...]  The following variables are set by `grid` and available for expressions:  _nx: number of columns (NX) _ny: number of rows (NY) _n: total number of cells (NX*NY) _x: current column (0 to NX-1) _y: current row (0 to NY-1) _i: current cell (0 to _n-1) [...] Another novelty is the introduction of two new block processor commands:\n The forfile command accepts a pathname pattern (e.g. *.svg) and executes the nested pipeline for each of the paths it expends into. It makes things like batch processing files, merging multiple SVGs into a multilayer file, or laying out multiple files on a grid a breeze. The forlayer command executes the nested pipeline for each of the exising layers, which is useful, e.g., to export one file per layer.  Checks the related documentation for more details.\nThis example, taken from the grid layout recipe, demonstrates best what vpype 1.9 is about:\n$ vpype \\  eval \"files=glob('*.svg')\" \\  eval \"cols=6; rows=ceil(len(files)/cols)\" \\  eval \"names={};n=100\" \\  grid -o 10cm 15cm \"%cols%\" \"%rows%\" \\  read --no-fail \"%files[_i] if _i \\  layout -m 0.5cm 10x15cm \\  forlayer \\  eval \"%if _name not in names: names[_name] = n; n = n+1%\" \\  lmove %_lid% \"%names[_name]%\" \\  end \\  end \\  write combined.svg It creates a grid layout from multiple SVG files, combining layers using their name (e.g. all “yellow” layers in input files are merged in a single “yellow” layer in the output file). Check the recipe for a detailed explanation.\nThis pipeline has it all:\n extensive use of expressions, two nested blocks, using their expression variables (prefixed with _), use of properties (via the _name variable set by forlayer, which contains the current layer’s vp_name property).  Here is how it looks when run on my Machine Typography #ptpx project:\nOther changes Note: This is the last version of vpype to support Python 3.7.\n It’s the year of the walrus for vpype! 🦭\n Added pagerotate command, to rotate the page layout (including geometries) by 90 degrees (#404)   This command is useful for plotters without native support for both portrait and landscape orientations. Your plotter support only, say, landscape orientation and you want to plot a portrait-oriented file? This pipeline does the trick:\n$ vpype read portrait_input.svg pagerotate wrote landscape_output.svg   Added --keep option to the ldelete command (to delete all layers but those specified) (#383)   There was formerly no way to delete all layers but one. The new --keep option fills this gap.\n Pinned poetry-core to 1.0.8 to enable editable installs (#410)   Poetry finally supports editable installs thanks to PEP 660 🎉\nThis change is relevant when developing jointly on vpype and another project that depends on it (e.g. vsketch, or some plug-in). In such cases, vpype can now be installed in editable mode from a local checkout. Modifications made to it will immediately be available to the dependent project:\n$ cd my-plugin $ source venv/bin/activate $ git clone https://github.com/abey79/vpype ../vpype $ pip install -e ../vpype   Fixed an issue with the random command when using non-square area (#395)   That’s a two-year-old bug I can’t believe I hadn’t seen before 🙄 (I use random a lot when testing out stuff during development.)\n Renamed the bundled config file to vpype_config.toml (#359)   This is the config file bundled with vpype. It used to be called hpgl_devices.toml, but now it also contains the build-in configurations of the new pens command (cmyk and rgb). The old name didn’t make sense anymore.\nAPI changes:\n Moved all CLI-related APIs from vpype to vpype_cli (#388) Updated the block processor API (breaking change) (#395) …   This release comes with scores of changes at the API level (to many to list here). Two of these changes deserve a note though.\nFirst, a fair amount of infrastructure used by the vpype CLI (e.g. the @generator decorator and friends) used to reside in the vpype package instead of vpype_cli. This is not ideal for many reasons and I’m moving away from it. vpype should be a “pure” library, whereas vpype_cli should contain everything needed for its CLI (and for plug-ins). These are not yet breaking changes but will generate deprecation warnings with most plug-ins. I will ensure that they are fixed ASAP.\nSecondly, as part of the block processor overhaul, the @block_processor decorator had breaking changes without backward-compatible deprecation. I am not aware of any third-party code actually using it, so this shouldn’t cause any issue.\nWhat’s next? Congrats if you got this far! 😲🏆\nI hope you’ll enjoy vpype 1.9 as much as I sweated preparing it. 😅\nFeedback is welcome, via discussions for support/suggestions or issues for bugs. As always, I hang out on the drawingbots.net’s Discord server and am available for a chat.\nContributions are most welcome too, and the documentation is one area where help is always beneficial. I’ve gathered a few ideas of what can be done here.\nTo conclude, here are my probable areas of focus for the coming weeks/months:\n Given the scope of this release, I’m expecting to deal with increased user support and a few kirks and bugs to address. I’ll be available for this in the short term. Property-related stuff must be ported to vsketch, including a nice API to set layer name, color, pen-width, etc. The next big topic for vpype is its UX. At least, I want to improve the look and usability of the integrated help (using the brand new rich-click project), and add some visual feedback during execution. With support for Python 3.7 dropped, compatibility with Python 3.10 is now on the menu. Whatever user feedback might steer my attention to 😉  ","wordCount":"3472","inLanguage":"en","image":"https://bylr.info/vpype_19/word_cloud.png","datePublished":"2022-03-03T00:00:00Z","dateModified":"2022-03-03T00:00:00Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://bylr.info/articles/2022/03/03/annotated-release-notes-vpype-1.9/"},"publisher":{"@type":"Organization","name":"bylr.info","logo":{"@type":"ImageObject","url":"https://bylr.info/favicon.ico"}}}</script>
+</head>
+<body id=top>
+<script>window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://bylr.info/ accesskey=h title="bylr.info (Alt + H)">bylr.info</a>
+<span class=logo-switches>
+</span>
+</div>
+<ul id=menu>
+<li>
+<a href=https://bylr.info/about/ title=about>
+<span>about</span>
+</a>
+</li>
+<li>
+<a href=https://bylr.info/archives title=archives>
+<span>archives</span>
+</a>
+</li>
+<li>
+<a href=https://bylr.info/tags/ title=tags>
+<span>tags</span>
+</a>
+</li>
+</ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<h1 class=post-title>
+Annotated Release Notes: vpype 1.9
+</h1>
+<div class=post-meta><span title="2022-03-03 00:00:00 +0000 UTC">March 3, 2022</span>&nbsp;|&nbsp;<a href=https://github.com/abey79/abey79.github.io/blob/main/content/articles/vpype-1.9.md rel="noopener noreferrer" target=_blank>Suggest Changes</a>
+</div>
+</header>
+<figure class=entry-cover><img loading=lazy src=https://bylr.info/vpype_19/word_cloud.png alt="vpype 1.9 word cloud">
+</figure><div class=toc>
+<details>
+<summary accesskey=c title="(Alt + C)">
+<span class=details>Table of Contents</span>
+</summary>
+<div class=inner><ul>
+<li>
+<a href=#properties aria-label=Properties>Properties</a><ul>
+<li>
+<a href=#basics aria-label=Basics>Basics</a></li>
+<li>
+<a href=#layer-color-pen-width-and-name aria-label="Layer color, pen width, and name">Layer color, pen width, and name</a></li>
+<li>
+<a href=#from-svg-attributes-to-properties aria-label="From SVG attributes to properties">From SVG attributes to properties</a></li>
+<li>
+<a href=#source-files aria-label="Source files">Source files</a></li>
+<li>
+<a href=#property-substitution aria-label="Property substitution">Property substitution</a></li></ul>
+</li>
+<li>
+<a href=#expressions aria-label=Expressions>Expressions</a></li>
+<li>
+<a href=#block-processors aria-label="Block processors">Block processors</a></li>
+<li>
+<a href=#other-changes aria-label="Other changes">Other changes</a></li>
+<li>
+<a href=#whats-next aria-label="What&amp;rsquo;s next?">What&rsquo;s next?</a>
+</li>
+</ul>
+</div>
+</details>
+</div>
+<div class=post-content>
+<p><a href=https://github.com/abey79/vpype><em>vpype</em></a> 1.9 is finally out! 🎉</p>
+<p>I recently stumbled upon a <a href=https://simonwillison.net/2022/Jan/31/release-notes/>post</a> by <a href=https://twitter.com/simonw>Simon Willison</a> where he promotes the idea of <em>annotated release notes</em>. As it turns out, this release is, by any metric I can think of, the biggest and most transformative so far. The associated <a href=https://github.com/abey79/vpype/blob/master/CHANGELOG.md#19>change log</a> is consequently rather unwieldy and calls, you guessed it 💡, for the present annotated release notes.</p>
+<p>(Note: although the <a href=https://github.com/abey79/vpype/blob/master/CHANGELOG.md#19>original release notes</a> are extensively quoted in this article, I reshuffled and shortened the original material. Make sure to check the base material for an authoritative list of change.)</p>
+<h2 id=properties>Properties<a hidden class=anchor aria-hidden=true href=#properties>#</a></h2>
+<h3 id=basics>Basics<a hidden class=anchor aria-hidden=true href=#basics>#</a></h3>
+<blockquote class=extract>
+<p><ul>
+<li>
+<p>Added support for global and per-layer <a href=(https://vpype.readthedocs.io/en/latest/fundamentals.html#properties)>properties</a> (#359)</p>
+<p>This feature introduces metadata to the pipeline in the form of properties which may either be attached to specific layers (layer property) or all of them (global property). Properties are identified by a name and may be of arbitrary type (e.g. integer, floating point, color, etc.). A number of <a href=https://vpype.readthedocs.io/en/latest/fundamentals.html#system-properties>system properties</a> with a specific name (prefixed with <code>vp_</code>) and type are introduced to support some of the new features.</p>
+</li>
+</ul>
+</p>
+</blockquote>
+<p>Metadata is data which says something about other data, and <em>vpype</em> lacked such a thing. Until now, what was passed from one command to the next consisted <em>exclusively</em> of paths sorted into layers, without any context such as what the color of these paths might be. One command could &ldquo;know&rdquo; about something (e.g. <code>read</code> knows, from the SVG, the color of a layer), but it could not &ldquo;tell&rdquo; the next command(s) about it.</p>
+<p>This is no more, thanks to properties. They offer a generic mechanism to attach data to pipeline and layers. They are the backbone of several features introduced today, and lay the ground for future features within <em>vpype</em> or in plug-ins.</p>
+<h3 id=layer-color-pen-width-and-name>Layer color, pen width, and name<a hidden class=anchor aria-hidden=true href=#layer-color-pen-width-and-name>#</a></h3>
+<blockquote class=extract>
+<p><ul>
+<li>Layer color, pen width, and name are now customizable (#359, #376, #389)
+<ul>
+<li>The <code>read</code> commands now sets layer color, pen width, and name based on the input SVG if possible.</li>
+<li>The new <code>color</code>, <code>penwdith</code>, and <code>name</code> commands can be used to modify layer color, pen width, and name.</li>
+<li>The new <code>pens</code> command can apply a predefined or custom scheme on multiple layers at once. Two common schemes are built-in: <code>rgb</code> and <code>cmyk</code>. <a href=https://vpype.readthedocs.io/en/latest/cookbook.html#creating-a-custom-pen-configuration>Custom schemes</a> can be defined in the configuration file.</li>
+<li>The <code>show</code> and <code>write</code> commands now take into account these layer properties.</li>
+</ul>
+</li>
+</ul>
+</p>
+</blockquote>
+<p>Supporting arbitrary layer colors, pen widths, and names, has long been amongst the most requested features. Well, thanks to properties, here they are. It happens automagically when using <code>read</code>, and the new commands can further customise these values:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>$ vpype <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    rect --layer <span style=color:#ae81ff>1</span> <span style=color:#ae81ff>0</span> <span style=color:#ae81ff>0</span> 5cm 5cm <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    color --layer <span style=color:#ae81ff>1</span> purple <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    penwidth --layer <span style=color:#ae81ff>1</span> 0.5mm <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    circle --layer <span style=color:#ae81ff>2</span> 4cm 4cm 2cm <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    color --layer <span style=color:#ae81ff>2</span> orange <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    penwidth --layer <span style=color:#ae81ff>2</span> 5mm <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    show
+</code></pre></div><img src=/vpype_19/color_penwidth.png alt width=40% style=display:block;margin-left:auto;margin-right:auto>
+<p>The new, high-level <code>color</code>, <code>penwidth</code>, and <code>name</code> commands are simple wrappers which change the value of specific <a href=https://vpype.readthedocs.io/en/latest/fundamentals.html#system-properties>system properties</a> (i.e. <code>vp_color</code>, <code>vp_pen_width</code>, resp. <code>vp_name</code>):</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console>$ vpype random name <span style=color:#e6db74>&#34;hello&#34;</span> color purple penwidth 0.1mm proplist --layer <span style=color:#ae81ff>1</span>
+listing 3 properties for layer 1
+  vp_color: (color) #800080
+  vp_name: (str) hello
+  vp_pen_width: (float) 0.37795275590551186
+</code></pre></div><p>System properties differ from &ldquo;regular&rdquo; properties only in the sense that they have special meaning to <em>vpype</em>. By convention, their name is prefixed with <code>vp_</code>.</p>
+<p>Special mention for the new <code>pens</code> command, which is short for <em>here is the set of pens I intend to use for this plot</em>. It sets in bulk layer colors, pen widths and/or names all at once, based on a built-in or <a href=https://vpype.readthedocs.io/en/latest/cookbook.html#creating-a-custom-pen-configuration>custom</a> configuration. For example, this produces a CMYK SVG using the <a href=https://github.com/serycjon/vpype-flow-imager>flow imager</a> plug-in:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ vpype <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    flow_img --layer <span style=color:#ae81ff>1</span> <span style=color:#f92672>[</span>...<span style=color:#f92672>]</span> input_cyan.jpg <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    flow_img --layer <span style=color:#ae81ff>2</span> <span style=color:#f92672>[</span>...<span style=color:#f92672>]</span> input_magenta.jpg <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    flow_img --layer <span style=color:#ae81ff>3</span> <span style=color:#f92672>[</span>...<span style=color:#f92672>]</span> input_yellow.jpg <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    flow_img --layer <span style=color:#ae81ff>4</span> <span style=color:#f92672>[</span>...<span style=color:#f92672>]</span> input_black.jpg <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    pens cmyk <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    write output.svg
+</code></pre></div>
+<blockquote class=extract>
+<p><ul>
+<li>
+<p>Introduced new commands for low-level inspection and modification of properties (#359)</p>
+<ul>
+<li><code>propget</code>: gets the value of a given global or layer property</li>
+<li><code>proplist</code>: lists all global and/or layer properties and their value</li>
+<li><code>propset</code>: sets the value of a given global or layer property</li>
+<li><code>propdel</code>: deletes a given global or layer property</li>
+<li><code>propclear</code>: removes all global and/or layer properties</li>
+</ul>
+</li>
+</ul>
+</p>
+</blockquote>
+<p>These are low-level commands to interact with properties. Although they have limited use in real-world workflows, they come in handy when learning about properties or crafting complex pipelines.</p>
+<blockquote class=extract>
+<p><ul>
+<li>
+<p>Updated layer operation commands to handle properties (#359)</p>
+<ul>
+<li>When a single source layer is specified and <code>--prob</code> is not used, the <code>lcopy</code> and <code>lmove</code> commands now copy the source layer&rsquo;s properties to the destination layer (possibly overwriting existing properties).</li>
+<li>When <code>--prob</code> is not used, the <code>lswap</code> command now swaps the layer properties as well.</li>
+<li>These behaviors can be disabled with the <code>--no-prop</code> option.</li>
+</ul>
+</li>
+</ul>
+</p>
+</blockquote>
+<p>With properties, some of the layer manipulation commands became somewhat ambiguous. For example, what happens with properties when using <code>lmove all 1</code> (merges all layers into layer one) or <code>move --prob 0.5 1 2</code> (picks geometries from layer 1 with a 50% probability and moves them to layer 2)?</p>
+<p>I opted for a strategy where layer properties are affected <em>only</em> for unambiguous cases. This is basically when a single layer is moved/copied and when probabilistic behaviour is not used at all. In all other cases, the layer properties are left unchanged.</p>
+<h3 id=from-svg-attributes-to-properties>From SVG attributes to properties<a hidden class=anchor aria-hidden=true href=#from-svg-attributes-to-properties>#</a></h3>
+<blockquote class=extract>
+<p><ul>
+<li>
+<p>Added the <code>--attr</code> option to the <code>read</code> command to (optionally) sort geometries by attributes (e.g. stroke color, stroke width, etc.) instead of by SVG layer (#378, #389)</p>
+</li>
+<li>
+<p>The <code>read</code> and <code>write</code> commands now preserve a sub-set of SVG attributes (experimental) (#359, #389)</p>
+<p>The <code>read</code> command identifies SVG attributes (e.g. <code>stroke-dasharray</code>) which are common in all geometries within each layer. These attributes are saved as layer properties with their name prefixed with <code>svg_</code> (e.g. <code>svg_stroke-dasharray</code>). The <code>write</code> command can optionally restore these attributes in the output SVG using the <code>--restore-attribs</code> option.</p>
+</li>
+</ul>
+</p>
+</blockquote>
+<p>As noted, the <code>read</code> command now tries to extract SVG attributes and store them as layer properties. There are two motivations for that. First, it enables the <code>write</code> command to optionally restore these attributes in the output file, in order to achieve a higher degree of fidelity. (This feature is experimental and opt-in for the time being.) Second, it enables future features or plug-ins to do neat things such as generating hatch fills when <code>fill</code> is set to a color, or cutting paths in bits to emulate <code>stroke-dasharray</code> if defined.</p>
+<p>Now, since properties are only available at the layer level (or globally), <code>read</code> discards SVG attributes that are not shared amongst <em>every</em> paths within a given layer. Let&rsquo;s take an example:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-svg data-lang=svg><span style=color:#f92672>&lt;svg</span> <span style=color:#a6e22e>xmlns=</span><span style=color:#e6db74>&#34;http://www.w3.org/2000/svg&#34;</span> <span style=color:#a6e22e>width=</span><span style=color:#e6db74>&#34;650&#34;</span> <span style=color:#a6e22e>height=</span><span style=color:#e6db74>&#34;650&#34;</span><span style=color:#f92672>&gt;</span>
+    <span style=color:#f92672>&lt;circle</span> <span style=color:#a6e22e>cx=</span><span style=color:#e6db74>&#34;150&#34;</span> <span style=color:#a6e22e>cy=</span><span style=color:#e6db74>&#34;150&#34;</span> <span style=color:#a6e22e>r=</span><span style=color:#e6db74>&#34;100&#34;</span> <span style=color:#a6e22e>stroke=</span><span style=color:#e6db74>&#34;red&#34;</span> <span style=color:#a6e22e>stroke-width=</span><span style=color:#e6db74>&#34;0.5mm&#34;</span> <span style=color:#a6e22e>fill=</span><span style=color:#e6db74>&#34;green&#34;</span> <span style=color:#f92672>/&gt;</span>
+    <span style=color:#f92672>&lt;rect</span> <span style=color:#a6e22e>x=</span><span style=color:#e6db74>&#34;400&#34;</span> <span style=color:#a6e22e>y=</span><span style=color:#e6db74>&#34;200&#34;</span> <span style=color:#a6e22e>width=</span><span style=color:#e6db74>&#34;200&#34;</span> <span style=color:#a6e22e>height=</span><span style=color:#e6db74>&#34;400&#34;</span> <span style=color:#a6e22e>stroke=</span><span style=color:#e6db74>&#34;blue&#34;</span> <span style=color:#a6e22e>stroke-width=</span><span style=color:#e6db74>&#34;0.5mm&#34;</span> <span style=color:#a6e22e>fill=</span><span style=color:#e6db74>&#34;green&#34;</span> <span style=color:#f92672>/&gt;</span>
+    <span style=color:#f92672>&lt;path</span> <span style=color:#a6e22e>d=</span><span style=color:#e6db74>&#34;M250,600 l-200,0 l0,-200 z&#34;</span> <span style=color:#a6e22e>stroke=</span><span style=color:#e6db74>&#34;blue&#34;</span> <span style=color:#a6e22e>stroke-width=</span><span style=color:#e6db74>&#34;0.1mm&#34;</span> <span style=color:#a6e22e>fill=</span><span style=color:#e6db74>&#34;green&#34;</span> <span style=color:#f92672>/&gt;</span>
+<span style=color:#f92672>&lt;/svg&gt;</span>
+</code></pre></div><p>This SVG only contains top-level elements, which <em>vpype</em> loads in layer 1 by default. The <code>fill</code> property is common to all paths and thus stored as a layer property, but the <code>stroke</code> and <code>stroke-width</code> attributes are heterogeneous and thus discarded. As a result, the <code>show</code> command uses the default color and pen width.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console>$ vpype read example.svg proplist --layer <span style=color:#ae81ff>1</span> show
+listing 1 properties for layer 1
+  svg_fill: (str) green
+</code></pre></div><img src=/vpype_19/read_example.png alt width=40% style=display:block;margin-left:auto;margin-right:auto>
+<p>To address this issue, the <code>read</code> command has now the option to create layers based on SVG attributes instead of structure:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console>$ vpype read --attr stroke --attr stroke-width example.svg proplist --layer all show
+listing 5 properties for layer 1
+  svg_fill: (str) green
+  svg_stroke: (str) red
+  svg_stroke-width: (str) 0.5mm
+  vp_color: (color) #ff0000
+  vp_pen_width: (float) 1.8897648
+listing 5 properties for layer 2
+  svg_fill: (str) green
+  svg_stroke: (str) blue
+  svg_stroke-width: (str) 0.5mm
+  vp_color: (color) #0000ff
+  vp_pen_width: (float) 1.8897648
+listing 5 properties for layer 3
+  svg_fill: (str) green
+  svg_stroke: (str) blue
+  svg_stroke-width: (str) 0.1mm
+  vp_color: (color) #0000ff
+  vp_pen_width: (float) 0.37795296000000006
+</code></pre></div><img src=/vpype_19/read_attr_example.png alt width=40% style=display:block;margin-left:auto;margin-right:auto>
+<p>In this case, <code>read</code> creates one layer per unique combination of <code>stroke</code> and <code>stroke-width</code> attribute, resulting in a total of three layers, each assigned with the correct properties, and correctly displayed by <code>show</code>.</p>
+<h3 id=source-files>Source files<a hidden class=anchor aria-hidden=true href=#source-files>#</a></h3>
+<blockquote class=extract>
+<p><ul>
+<li>The <code>read</code> command now records the source SVG paths in the <code>vp_source</code> and <code>vp_sources</code> system properties (see the <a href=https://vpype.readthedocs.io/en/latest/fundamentals.html#system-properties>documentation</a>) (#397, #406, #408)</li>
+</ul>
+</p>
+</blockquote>
+<p>The idea of the <code>vp_source</code> and <code>vp_sources</code> properties is to keep track of the files from which the content of the pipeline originates from. The <code>vp_source</code> property is a single path, which is overwritten by the last command importing from a file. The <code>vp_sources</code> property is a <a href=https://docs.python.org/3/tutorial/datastructures.html#sets>set</a> of <em>all</em> source files encountered so far. Both properties are <a href=https://docs.python.org/3/library/pathlib.html><code>pathlib.Path</code></a> instances.</p>
+<p>This is, for example, what happens when using <code>read</code> twice:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console>$ vpype read machine_typography_01_3.svg read machine_typography_02_3.svg proplist -g
+listing 5 global properties
+  svg_fill: (str) black
+  svg_stroke: (str) none
+  vp_page_size: (tuple) (396.850608, 559.3703808000001)
+  vp_source: (PosixPath) /private/tmp/MT/machine_typography_02_3.svg
+  vp_sources: (set) {PosixPath(&#39;/private/tmp/MT/machine_typography_01_3.svg&#39;), PosixPath(&#39;/private/tmp/MT/machine_typography_02_3.svg&#39;)}
+</code></pre></div><p>Here, <code>vp_source</code> points to the file read by the last <code>read</code> command, but <code>vp_sources</code> contains all two source files.</p>
+<p>Currently, <code>read</code> is the only command which sets these variables, but the idea is that any command involved with reading a file (SVG or otherwise) should set these properties, including plug-ins such as <a href=https://github.com/plottertools/hatched>hatched</a>, <a href=https://github.com/serycjon/vpype-flow-imager>flow imager</a>, or <a href=https://github.com/EmbroidePy/vpype-embroidery>vpype-embroidery</a>.</p>
+<p>One of the most common use case is to name the output file after the input file:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console>$ vpype flow_img <span style=color:#f92672>[</span>...<span style=color:#f92672>]</span> my_image.png write <span style=color:#e6db74>&#34;{vp_name.stem}_converted.svg&#34;</span>
+</code></pre></div><p>Note the use of a property substitution pattern, which brings us to the next topic.</p>
+<h3 id=property-substitution>Property substitution<a hidden class=anchor aria-hidden=true href=#property-substitution>#</a></h3>
+<blockquote class=extract>
+<p><ul>
+<li>
+<p>Added <a href=https://vpype.readthedocs.io/en/latest/fundamentals.html#property-substitution>property substitution</a> to CLI user input (#395)</p>
+<p>The input provided to most commands' arguments and options may now contain substitution patterns which will be replaced by the corresponding property value. Property substitution patterns are marked with curly braces (e.g. <code>{property_name}</code>) and support the same formatting capabilities as the Python&rsquo;s <a href=https://docs.python.org/3/library/string.html#formatstrings><code>format()</code> function</a>.</p>
+</li>
+</ul>
+</p>
+</blockquote>
+<p>This is where things start becoming &ldquo;meta&rdquo;! 🤯</p>
+<p>As shown in the previous example, the value of a property may now be used anywhere as input using property substitution patterns.</p>
+<p>Here is another example where the full path of the input file is drawn and displayed:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console>$ vpype read example.svg text -p 0.5cm 0.5cm <span style=color:#e6db74>&#34;{vp_source}&#34;</span> show
+</code></pre></div><img src=/vpype_19/prop_subst.png alt width=40% style=display:block;margin-left:auto;margin-right:auto>
+<p>Again, <code>vp_source</code> is a <a href=https://docs.python.org/3/library/pathlib.html><code>pathlib.Path</code></a> instance, so <code>{vp_source.name}</code> (file name) or <code>{vp_source.stem}</code> (file name without extension) could be used instead.</p>
+<p>Multiple substitution patterns can be combined and mixed with regular text. For example, this creates an output file in the same directory as, and named after, the input file:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ vpype read example.svg linesort <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    write <span style=color:#e6db74>&#34;{vp_source.parent}/{vp_source.stem}_optimised.svg&#34;</span>
+</code></pre></div><p>Of course, when using <em>vpype</em> interactively, it&rsquo;s easier to simply spell out the output file name. Instead, this kind of mechanism makes it considerably easier to write generic, reusable <a href=https://vpype.readthedocs.io/en/latest/cookbook.html#wrapping-a-vpype-pipeline-in-a-shell-script>shell scripts</a>.</p>
+<p>Note that, since property substitution internally relies on Python&rsquo;s <a href=https://docs.python.org/3/library/string.html#formatstrings><code>str.format()</code></a> function, the number formatting mini-language is available as well (e.g. <code>{vp_pen_width:.02f}</code>). See the <a href=https://vpype.readthedocs.io/en/latest/fundamentals.html#property-substitution>documentation</a> for some examples.</p>
+<p>Now, taking a step back, this feature is neat indeed, but its usefulness turns out to be limited in many non-trivial, real-world scenarios. I had hoped it would unlock several workflows I had in mind, but it just did not - or not elegantly enough. So much so that I even considered dropping the feature altogether.</p>
+<p>This was a bit frustrating, to say the least. And ultimately lead to what is the next big chapter of this release.</p>
+<h2 id=expressions>Expressions<a hidden class=anchor aria-hidden=true href=#expressions>#</a></h2>
+<blockquote class=extract>
+<p><ul>
+<li>
+<p>Added <a href=https://vpype.readthedocs.io/en/latest/fundamentals.html#expression-substitution>expression substitution</a> to CLI user input (#397)</p>
+<p>The input provided to most command&rsquo;s arguments and options may now contain expression patterns which are evaluated before the command is executed. Expression patterns are marked with the percent symbol <code>%</code> (e.g. <code>%3+4%</code>) and support a large subset of the Python language. <a href=https://vpype.readthedocs.io/en/latest/cookbook.html#load-multiple-files-merging-their-layers-by-name>A</a> <a href=https://vpype.readthedocs.io/en/latest/cookbook.html#cropping-and-framing-geometries>lot</a> <a href=https://vpype.readthedocs.io/en/latest/cookbook.html#laying-out-multiple-svgs-on-a-grid>of</a> <a href=https://vpype.readthedocs.io/en/latest/cookbook.html#create-interactive-scripts-with-input>examples</a> were added in the <a href=https://vpype.readthedocs.io/en/latest/cookbook.html>cookbook</a>.</p>
+</li>
+</ul>
+</p>
+</blockquote>
+<p>This is possibly the most transformative feature brought to <em>vpype</em> since its inception: anything between pairs of <code>%</code> characters is now evaluated as (a sub-set of) Python code, and the result is substituted in the input before it reaches the actual command. The documentation has been updated with a whole new <a href=https://vpype.readthedocs.io/en/latest/fundamentals.html#expression-substitution>section</a> about expressions (which I&rsquo;m not going to repeat here), and the <a href=https://vpype.readthedocs.io/en/latest/cookbook.html>cookbook</a> has plenty of examples making use of them. Do check them out for a taste of what expressions are capable of!</p>
+<p>This feature blurs the lines between a mere CLI tool and a programming language. This begs the question of why not using a programming language in the first place, a point <a href=https://ptb.discord.com/channels/499297341472505858/748589023731122277/939168445759631411>raised</a> by fellow Python dev and <a href=https://github.com/serycjon/vpype-flow-imager>flow imager</a> author <a href=https://github.com/serycjon>Jonas Serych</a>. <em>vpype</em> even offers a proper <a href=https://vpype.readthedocs.io/en/latest/api.html>API</a> for that!</p>
+<p>Here are my thoughts about this:</p>
+<ul>
+<li>Users of <em>vpype</em> are often not Python developers &ndash; or developers at all. Expressions build on existing <em>vpype</em> knowledge and bring, at least through examples and recipes that can be copy/pasted/customized, tiny bits of programs which are readily useful, without the need to learn much of the Python syntax and ecosystem.</li>
+<li>For many real-world cases (see the examples linked in the release notes), the resulting one-liners are more compact than the equivalent in proper code - even Python, even with <em>vpype</em> API. (Arbitrarily complex pipelines can of course be conceivably crafted as counter-examples, but this is besides the point.)</li>
+</ul>
+<blockquote class=extract>
+<p><ul>
+<li>Added the <code>eval</code> command as placeholder for executing expressions (#397)</li>
+</ul>
+</p>
+</blockquote>
+<p>Though expressions can be used in any command&rsquo;s input, some &ldquo;space&rdquo; dedicated to them in the pipeline can be useful. Typical cases include variable initialization or <a href=https://vpype.readthedocs.io/en/latest/cookbook.html#create-interactive-scripts-with-input>querying the user</a> for some parameter with the <code>input()</code> function. Several examples shown or linked below make use of this.</p>
+<h2 id=block-processors>Block processors<a hidden class=anchor aria-hidden=true href=#block-processors>#</a></h2>
+<blockquote class=extract>
+<p><ul>
+<li>
+<p>Improved block processors (#395, #397)</p>
+<ul>
+<li>Simplified and improved the infrastructure underlying block processors for better extensibility.</li>
+<li>The <code>begin</code> marker is now optional and implied whenever a block processor command is encountered. <em>Note</em>: the <code>end</code> marker must always be used to mark the end of a block.</li>
+<li>Commands inside the block now have access to the current layer structure and its metadata.</li>
+</ul>
+</li>
+</ul>
+</p>
+</blockquote>
+<p>Block processors hardly got any love since the first release of <em>vpype</em> and, as far as I can tell, weren&rsquo;t used much - if at all - due to their limitations. Properties and expressions completely reverse this situation and block processors are now where the magic happens. The changes above lay the ground work for this.</p>
+<blockquote class=extract>
+<p><ul>
+<li>
+<p>Improved the <code>grid</code> block processor (#397)</p>
+<ul>
+<li>The page size is now updated according to the grid size.</li>
+<li>The command now sets expression variables for use in the nested pipeline.</li>
+<li>Cells are now first iterated along rows instead of columns.</li>
+</ul>
+</li>
+<li>
+<p>The <code>repeat</code> block processor now sets expression variables for use in the nested pipeline (#397)</p>
+</li>
+<li>
+<p>Added <code>forfile</code> block processor to iterate over a list of file (#397)</p>
+</li>
+<li>
+<p>Added <code>forlayer</code> block processor to iterate over the existing layers (#397)</p>
+</li>
+<li>
+<p>The <code>read</code> command now will ignore a missing file if <code>--no-fail</code> parameter is used (#397)</p>
+</li>
+<li>
+<p>Changed the initial default target layer to 1 (#395)</p>
+<p>Previously, the first generator command of the pipeline would default to create a new layer if the <code>--layer</code> option was not provided. This could lead to unexpected behaviour in several situation. The target layer is now layer 1. For subsequent generators, the existing behaviour of using the previous generator target layer as default remains.</p>
+</li>
+</ul>
+</p>
+</blockquote>
+<p>That&rsquo;s two new block processor commands, and another two finally coming to life, plus a few changes to make them work better with real-world workflows.</p>
+<p>One of the key changes is that block processors now set temporary expression variables (prefixed with <code>_</code>) that can be used in the nested pipeline. They are listed in each command&rsquo;s help text:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console>$ vpype grid --help
+Usage: vpype grid [OPTIONS] NX NY
+<span style=color:#960050;background-color:#1e0010>
+</span><span style=color:#960050;background-color:#1e0010></span>  Creates a NX by NY grid of geometry
+<span style=color:#960050;background-color:#1e0010>
+</span><span style=color:#960050;background-color:#1e0010></span>  [...]
+<span style=color:#960050;background-color:#1e0010>
+</span><span style=color:#960050;background-color:#1e0010></span>  The following variables are set by `grid` and available for expressions:
+<span style=color:#960050;background-color:#1e0010>
+</span><span style=color:#960050;background-color:#1e0010></span>      _nx: number of columns (NX)
+      _ny: number of rows (NY)
+      _n: total number of cells (NX*NY)
+      _x: current column (0 to NX-1)
+      _y: current row (0 to NY-1)
+      _i: current cell (0 to _n-1)
+  
+  [...]
+</code></pre></div><p>Another novelty is the introduction of two new block processor commands:</p>
+<ul>
+<li>The <code>forfile</code> command accepts a pathname pattern (e.g. <code>*.svg</code>) and executes the nested pipeline for each of the paths it expends into. It makes things like <a href=https://vpype.readthedocs.io/en/latest/cookbook.html#batch-processing-multiple-svgs-with-forfile>batch processing files</a>, <a href=https://vpype.readthedocs.io/en/latest/cookbook.html#merge-multiple-svgs-into-a-multilayer-file>merging multiple SVGs into a multilayer file</a>, or <a href=https://vpype.readthedocs.io/en/latest/cookbook.html#laying-out-multiple-svgs-on-a-grid>laying out multiple files on a grid</a> a breeze.</li>
+<li>The <code>forlayer</code> command executes the nested pipeline for each of the exising layers, which is useful, e.g., to <a href=https://vpype.readthedocs.io/en/latest/cookbook.html#saving-each-layer-as-a-separate-file>export one file per layer</a>.</li>
+</ul>
+<p>Checks the related <a href=https://vpype.readthedocs.io/en/latest/fundamentals.html#blocks>documentation</a> for more details.</p>
+<p>This example, taken from the <a href=https://vpype.readthedocs.io/en/latest/cookbook.html#laying-out-multiple-svgs-on-a-grid>grid layout recipe</a>, demonstrates best what <em>vpype</em> 1.9 is about:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ vpype <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>   eval <span style=color:#e6db74>&#34;files=glob(&#39;*.svg&#39;)&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>   eval <span style=color:#e6db74>&#34;cols=6; rows=ceil(len(files)/cols)&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>   eval <span style=color:#e6db74>&#34;names={};n=100&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>   grid -o 10cm 15cm <span style=color:#e6db74>&#34;%cols%&#34;</span> <span style=color:#e6db74>&#34;%rows%&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>       read --no-fail <span style=color:#e6db74>&#34;%files[_i] if _i &lt; len(files) else &#39;&#39;%&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>       layout -m 0.5cm 10x15cm <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>       forlayer <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>           eval <span style=color:#e6db74>&#34;%if _name not in names: names[_name] = n; n = n+1%&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>           lmove %_lid% <span style=color:#e6db74>&#34;%names[_name]%&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>       end <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>   end <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>   write combined.svg
+</code></pre></div><p>It creates a grid layout from multiple SVG files, combining layers using their name (e.g. all &ldquo;yellow&rdquo; layers in input files are merged in a single &ldquo;yellow&rdquo; layer in the output file). Check the <a href=https://vpype.readthedocs.io/en/latest/cookbook.html#laying-out-multiple-svgs-on-a-grid>recipe</a> for a detailed explanation.</p>
+<p>This pipeline has it all:</p>
+<ul>
+<li>extensive use of expressions,</li>
+<li>two nested blocks, using their expression variables (prefixed with <code>_</code>),</li>
+<li>use of properties (via the <code>_name</code> variable set by <code>forlayer</code>, which contains the current layer&rsquo;s <code>vp_name</code> property).</li>
+</ul>
+<p>Here is how it looks when run on my <a href=https://github.com/abey79/sketches#machine_typography>Machine Typography</a> #ptpx project:</p>
+<img src=/vpype_19/machine_typography.png alt width=60% style=display:block;margin-left:auto;margin-right:auto>
+<h2 id=other-changes>Other changes<a hidden class=anchor aria-hidden=true href=#other-changes>#</a></h2>
+<blockquote class=extract>
+<p><strong>Note</strong>: This is the last version of <em>vpype</em> to support Python 3.7.</p>
+</blockquote>
+<p>It&rsquo;s the year of the <a href=https://realpython.com/python-walrus-operator/>walrus</a> for <em>vpype</em>! 🦭</p>
+<blockquote class=extract>
+<p><ul>
+<li>Added <code>pagerotate</code> command, to rotate the page layout (including geometries) by 90 degrees (#404)</li>
+</ul>
+</p>
+</blockquote>
+<p>This command is useful for plotters without native support for both portrait and landscape orientations. Your plotter support only, say, landscape orientation and you want to plot a portrait-oriented file? This pipeline does the trick:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console>$ vpype read portrait_input.svg pagerotate wrote landscape_output.svg
+</code></pre></div>
+<blockquote class=extract>
+<p><ul>
+<li>Added <code>--keep</code> option to the <code>ldelete</code> command (to delete all layers but those specified) (#383)</li>
+</ul>
+</p>
+</blockquote>
+<p>There was formerly no way to delete all layers but one. The new <code>--keep</code> option fills this gap.</p>
+<blockquote class=extract>
+<p><ul>
+<li>Pinned poetry-core to 1.0.8 to enable editable installs (#410)</li>
+</ul>
+</p>
+</blockquote>
+<p><a href=https://python-poetry.org>Poetry</a> finally <a href=https://github.com/python-poetry/poetry/issues/34>supports</a> <a href=https://pip.pypa.io/en/stable/cli/pip_install/#editable-installs>editable installs</a> thanks to <a href=https://www.python.org/dev/peps/pep-0660/>PEP 660</a> 🎉</p>
+<p>This change is relevant when developing jointly on <em>vpype</em> and another project that depends on it (e.g. <a href=https://github.com/abey79/vsketch><em>vsketch</em></a>, or some plug-in). In such cases, <em>vpype</em> can now be installed in editable mode from a local checkout. Modifications made to it will immediately be available to the dependent project:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console>$ cd my-plugin
+$ source venv/bin/activate
+$ git clone https://github.com/abey79/vpype ../vpype
+$ pip install -e ../vpype
+</code></pre></div>
+<blockquote class=extract>
+<p><ul>
+<li>Fixed an issue with the <code>random</code> command when using non-square area (#395)</li>
+</ul>
+</p>
+</blockquote>
+<p>That&rsquo;s a two-year-old bug I can&rsquo;t believe I hadn&rsquo;t seen before 🙄 (I use <code>random</code> <em>a lot</em> when testing out stuff during development.)</p>
+<blockquote class=extract>
+<p><ul>
+<li>Renamed the bundled config file to <code>vpype_config.toml</code> (#359)</li>
+</ul>
+</p>
+</blockquote>
+<p>This is the config file bundled with <em>vpype</em>. It used to be called <code>hpgl_devices.toml</code>, but now it also contains the build-in configurations of the new <code>pens</code> command (<code>cmyk</code> and <code>rgb</code>). The old name didn&rsquo;t make sense anymore.</p>
+<blockquote class=extract>
+<p><p>API changes:</p>
+<ul>
+<li>Moved all CLI-related APIs from <code>vpype</code> to <code>vpype_cli</code> (#388)</li>
+<li>Updated the block processor API (breaking change) (#395)</li>
+<li>&mldr;</li>
+</ul>
+</p>
+</blockquote>
+<p>This release comes with scores of changes at the API level (to many to list here). Two of these changes deserve a note though.</p>
+<p>First, a fair amount of infrastructure used by the <em>vpype</em> CLI (e.g. the <code>@generator</code> decorator and friends) used to reside in the <code>vpype</code> package instead of <code>vpype_cli</code>. This is not ideal for many reasons and I&rsquo;m moving away from it. <code>vpype</code> should be a &ldquo;pure&rdquo; library, whereas <code>vpype_cli</code> should contain everything needed for its CLI (and for plug-ins). These are not yet breaking changes but will generate deprecation warnings with most plug-ins. I will ensure that they are fixed ASAP.</p>
+<p>Secondly, as part of the block processor overhaul, the <code>@block_processor</code> decorator had breaking changes without backward-compatible deprecation. I am not aware of any third-party code actually using it, so this shouldn&rsquo;t cause any issue.</p>
+<h2 id=whats-next>What&rsquo;s next?<a hidden class=anchor aria-hidden=true href=#whats-next>#</a></h2>
+<p>Congrats if you got this far! 😲🏆</p>
+<p>I hope you&rsquo;ll enjoy <em>vpype</em> 1.9 as much as I sweated preparing it. 😅</p>
+<p>Feedback is welcome, via <a href=https://github.com/abey79/vpype/discussions>discussions</a> for support/suggestions or <a href=https://github.com/abey79/vpype/issues>issues</a> for bugs. As always, I hang out on the <a href=https://drawingbots.net>drawingbots.net</a>&rsquo;s <a href=https://discord.com/invite/XHP3dBg>Discord server</a> and am available for a chat.</p>
+<p>Contributions are most welcome too, and the documentation is one area where help is always beneficial. I&rsquo;ve gathered a few ideas of what can be done <a href=https://github.com/abey79/vpype/issues/400>here</a>.</p>
+<p>To conclude, here are my probable areas of focus for the coming weeks/months:</p>
+<ul>
+<li>Given the scope of this release, I&rsquo;m expecting to deal with increased user support and a few kirks and bugs to address. I&rsquo;ll be available for this in the short term.</li>
+<li>Property-related stuff must be ported to <a href=https://github.com/abey79/vsketch><em>vsketch</em></a>, including a nice API to set layer name, color, pen-width, etc.</li>
+<li>The next big topic for <em>vpype</em> is its UX. At least, I want to improve the look and usability of the integrated help (using the brand new <a href=https://github.com/ewels/rich-click>rich-click</a> project), and add some visual feedback during execution.</li>
+<li>With support for Python 3.7 dropped, compatibility with Python 3.10 is now on the menu.</li>
+<li>Whatever user feedback might steer my attention to 😉</li>
+</ul>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://bylr.info/tags/vpype/>vpype</a></li>
+</ul>
+</footer><script src=https://utteranc.es/client.js repo=abey79/abey79.github.io issue-term=pathname label=comments theme=github-light crossorigin=anonymous async></script>
+</article>
+</main>
+<footer class=footer>
+<span>© 2022 Antoine Beyeler –</span>
+<span>
+Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a>
+</span>
+</footer>
+<script>let menu=document.getElementById('menu');menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>document.querySelectorAll('pre > code').forEach(b=>{const c=b.parentNode.parentNode,a=document.createElement('button');a.classList.add('copy-code'),a.innerText='copy';function d(){a.innerText='copied!',setTimeout(()=>{a.innerText='copy'},2e3)}a.addEventListener('click',e=>{if('clipboard'in navigator){navigator.clipboard.writeText(b.textContent),d();return}const a=document.createRange();a.selectNodeContents(b);const c=window.getSelection();c.removeAllRanges(),c.addRange(a);try{document.execCommand('copy'),d()}catch(a){}c.removeRange(a)}),c.classList.contains("highlight")?c.appendChild(a):c.parentNode.firstChild==c||(b.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?b.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(a):b.parentNode.appendChild(a))})</script>
+</body>
+</html>
