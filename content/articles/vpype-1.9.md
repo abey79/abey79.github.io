@@ -1,6 +1,7 @@
 ---
 title: "Annotated Release Notes: vpype 1.9"
 date: 2022-03-03
+lastmod: 2022-03-04
 showtoc: true
 tocopen: false
 tags:
@@ -90,10 +91,7 @@ Special mention for the new `pens` command, which is short for *here is the set 
 
 ```bash
 $ vpype \
-    flow_img --layer 1 [...] input_cyan.jpg \
-    flow_img --layer 2 [...] input_magenta.jpg \
-    flow_img --layer 3 [...] input_yellow.jpg \
-    flow_img --layer 4 [...] input_black.jpg \
+    flow_img [...] --cmyk input.jpg \
     pens cmyk \
     write output.svg
 ```
