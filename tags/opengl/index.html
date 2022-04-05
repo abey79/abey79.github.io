@@ -3,11 +3,11 @@
 <meta http-equiv=x-ua-compatible content="IE=edge">
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
 <meta name=robots content="index, follow">
-<title>Archive | bylr.info</title>
+<title>opengl | bylr.info</title>
 <meta name=keywords content>
-<meta name=description content="archives">
+<meta name=description content>
 <meta name=author content>
-<link rel=canonical href=https://bylr.info/archives/>
+<link rel=canonical href=https://bylr.info/tags/opengl/>
 <meta name=google-site-verification content="XYZabc">
 <link crossorigin=anonymous href=/assets/css/stylesheet.min.f6364f0298529c96c7e2c46c052c3c43abac92be3dc56a2b271e1b75a45d9aa7.css integrity="sha256-9jZPAphSnJbH4sRsBSw8Q6uskr49xWorJx4bdaRdmqc=" rel="preload stylesheet" as=style>
 <link rel=icon href=https://bylr.info/favicon.ico>
@@ -18,23 +18,21 @@
 <meta name=theme-color content="#2e2e33">
 <meta name=msapplication-TileColor content="#2e2e33">
 <meta name=generator content="Hugo 0.91.2">
+<link rel=alternate type=application/rss+xml href=https://bylr.info/tags/opengl/index.xml>
 <noscript>
 <style>#theme-toggle,.top-link{display:none}</style>
 <style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
 </noscript>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-D1H30VS7VK"></script>
 <script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-D1H30VS7VK',{anonymize_ip:!1})}</script>
-<meta property="og:title" content="Archive">
-<meta property="og:description" content="archives">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://bylr.info/archives/"><meta property="og:image" content="https://bylr.info/android-chrome-512x512.png"><meta property="article:section" content>
-<meta property="og:site_name" content="Antoine Beyeler">
+<meta property="og:title" content="opengl">
+<meta property="og:description" content>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bylr.info/tags/opengl/"><meta property="og:image" content="https://bylr.info/android-chrome-512x512.png"><meta property="og:site_name" content="Antoine Beyeler">
 <meta name=twitter:card content="summary_large_image">
 <meta name=twitter:image content="https://bylr.info/android-chrome-512x512.png">
-<meta name=twitter:title content="Archive">
-<meta name=twitter:description content="archives">
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Archive","item":"https://bylr.info/archives/"}]}</script>
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Archive","name":"Archive","description":"archives","keywords":[],"articleBody":"","wordCount":"0","inLanguage":"en","datePublished":"0001-01-01T00:00:00Z","dateModified":"0001-01-01T00:00:00Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://bylr.info/archives/"},"publisher":{"@type":"Organization","name":"bylr.info","logo":{"@type":"ImageObject","url":"https://bylr.info/favicon.ico"}}}</script>
+<meta name=twitter:title content="opengl">
+<meta name=twitter:description content>
 </head>
 <body class=list id=top>
 <script>window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
@@ -53,7 +51,7 @@
 </li>
 <li>
 <a href=https://bylr.info/archives title=archives>
-<span class=active>archives</span>
+<span>archives</span>
 </a>
 </li>
 <li>
@@ -66,45 +64,20 @@
 </header>
 <main class=main>
 <header class=page-header>
-<h1>Archive</h1>
+<h1>opengl</h1>
 </header>
-<div class=archive-year>
-<h2 class=archive-year-header>2022<sup class=archive-count>&nbsp;&nbsp;3</sup>
+<article class="post-entry tag-entry">
+<header class=entry-header>
+<h2>TIL: aligning horizontal or vertical lines to the pixel grid with OpenGL
 </h2>
-<div class=archive-month>
-<h3 class=archive-month-header>April<sup class=archive-count>&nbsp;&nbsp;1</sup></h3>
-<div class=archive-posts>
-<div class=archive-entry>
-<h3 class=archive-entry-title>TIL: aligning horizontal or vertical lines to the pixel grid with OpenGL
-</h3>
-<div class=archive-meta><span title="2022-04-05 00:00:00 +0000 UTC">April 5, 2022</span></div>
+</header>
+<section class=entry-content>
+<p>When I started using my new M1 Max MacBook Pro in December, a bunch of vpype’s tests started to fail. The failing tests were all image-based: an image is rendered and then compared to a previously-generated, reference image. This process is made easy thanks to this Pytest fixture.
+In this case, the reference images were generated long ago on my previous, Intel/AMD-based MacBook Pro. This GIF highlights the discrepancy I’d get with images generated on my new computer (notice how the ruler’s thickness varies):...</p>
+</section>
+<footer class=entry-footer><span title="2022-04-05 00:00:00 +0000 UTC">April 5, 2022</span></footer>
 <a class=entry-link aria-label="post link to TIL: aligning horizontal or vertical lines to the pixel grid with OpenGL" href=https://bylr.info/articles/2022/04/05/til-aligning-horizontal-or-vertical-lines-to-the-pixel-grid-with-opengl/></a>
-</div>
-</div>
-</div>
-<div class=archive-month>
-<h3 class=archive-month-header>March<sup class=archive-count>&nbsp;&nbsp;1</sup></h3>
-<div class=archive-posts>
-<div class=archive-entry>
-<h3 class=archive-entry-title>Annotated Release Notes: vpype 1.9
-</h3>
-<div class=archive-meta><span title="2022-03-03 00:00:00 +0000 UTC">March 3, 2022</span>&nbsp;·&nbsp;<span title="Last updated 2022-03-04 00:00:00 +0000 UTC">Last updated on March 4, 2022</span></div>
-<a class=entry-link aria-label="post link to Annotated Release Notes: vpype 1.9" href=https://bylr.info/articles/2022/03/03/annotated-release-notes-vpype-1.9/></a>
-</div>
-</div>
-</div>
-<div class=archive-month>
-<h3 class=archive-month-header>February<sup class=archive-count>&nbsp;&nbsp;1</sup></h3>
-<div class=archive-posts>
-<div class=archive-entry>
-<h3 class=archive-entry-title>First post
-</h3>
-<div class=archive-meta><span title="2022-02-20 00:00:00 +0000 UTC">February 20, 2022</span></div>
-<a class=entry-link aria-label="post link to First post" href=https://bylr.info/articles/2022/02/20/first-post/></a>
-</div>
-</div>
-</div>
-</div>
+</article>
 </main>
 <footer class=footer>
 <span>© 2022 Antoine Beyeler –</span>

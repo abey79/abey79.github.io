@@ -1,0 +1,113 @@
+<!doctype html><html lang=en dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>TIL: aligning horizontal or vertical lines to the pixel grid with OpenGL | bylr.info</title>
+<meta name=keywords content="opengl,python,til">
+<meta name=description content="When I started using my new M1 Max MacBook Pro in December, a bunch of vpype&rsquo;s tests started to fail. The failing tests were all image-based: an image is rendered and then compared to a previously-generated, reference image. This process is made easy thanks to this Pytest fixture.
+In this case, the reference images were generated long ago on my previous, Intel/AMD-based MacBook Pro. This GIF highlights the discrepancy I&rsquo;d get with images generated on my new computer (notice how the ruler&rsquo;s thickness varies):">
+<meta name=author content>
+<link rel=canonical href=https://bylr.info/articles/2022/04/05/til-aligning-horizontal-or-vertical-lines-to-the-pixel-grid-with-opengl/>
+<meta name=google-site-verification content="XYZabc">
+<link crossorigin=anonymous href=/assets/css/stylesheet.min.f6364f0298529c96c7e2c46c052c3c43abac92be3dc56a2b271e1b75a45d9aa7.css integrity="sha256-9jZPAphSnJbH4sRsBSw8Q6uskr49xWorJx4bdaRdmqc=" rel="preload stylesheet" as=style>
+<script defer crossorigin=anonymous src=/assets/js/highlight.min.7680afc38aa6b15ddf158a4f3780b7b1f7dde7e91d26f073e6229bb7a0793c92.js integrity="sha256-doCvw4qmsV3fFYpPN4C3sffd5+kdJvBz5iKbt6B5PJI=" onload=hljs.initHighlightingOnLoad()></script>
+<link rel=icon href=https://bylr.info/favicon.ico>
+<link rel=icon type=image/png sizes=16x16 href=https://bylr.info/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://bylr.info/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://bylr.info/apple-touch-icon.png>
+<link rel=mask-icon href=https://bylr.info/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<meta name=generator content="Hugo 0.91.2">
+<noscript>
+<style>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
+</noscript>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D1H30VS7VK"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-D1H30VS7VK',{anonymize_ip:!1})}</script>
+<meta property="og:title" content="TIL: aligning horizontal or vertical lines to the pixel grid with OpenGL">
+<meta property="og:description" content="When I started using my new M1 Max MacBook Pro in December, a bunch of vpype&rsquo;s tests started to fail. The failing tests were all image-based: an image is rendered and then compared to a previously-generated, reference image. This process is made easy thanks to this Pytest fixture.
+In this case, the reference images were generated long ago on my previous, Intel/AMD-based MacBook Pro. This GIF highlights the discrepancy I&rsquo;d get with images generated on my new computer (notice how the ruler&rsquo;s thickness varies):">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://bylr.info/articles/2022/04/05/til-aligning-horizontal-or-vertical-lines-to-the-pixel-grid-with-opengl/"><meta property="og:image" content="https://bylr.info/android-chrome-512x512.png"><meta property="article:section" content="articles">
+<meta property="article:published_time" content="2022-04-05T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-04-05T00:00:00+00:00"><meta property="og:site_name" content="Antoine Beyeler">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://bylr.info/android-chrome-512x512.png">
+<meta name=twitter:title content="TIL: aligning horizontal or vertical lines to the pixel grid with OpenGL">
+<meta name=twitter:description content="When I started using my new M1 Max MacBook Pro in December, a bunch of vpype&rsquo;s tests started to fail. The failing tests were all image-based: an image is rendered and then compared to a previously-generated, reference image. This process is made easy thanks to this Pytest fixture.
+In this case, the reference images were generated long ago on my previous, Intel/AMD-based MacBook Pro. This GIF highlights the discrepancy I&rsquo;d get with images generated on my new computer (notice how the ruler&rsquo;s thickness varies):">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Articles","item":"https://bylr.info/articles/"},{"@type":"ListItem","position":2,"name":"TIL: aligning horizontal or vertical lines to the pixel grid with OpenGL","item":"https://bylr.info/articles/2022/04/05/til-aligning-horizontal-or-vertical-lines-to-the-pixel-grid-with-opengl/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"TIL: aligning horizontal or vertical lines to the pixel grid with OpenGL","name":"TIL: aligning horizontal or vertical lines to the pixel grid with OpenGL","description":"When I started using my new M1 Max MacBook Pro in December, a bunch of vpype\u0026rsquo;s tests started to fail. The failing tests were all image-based: an image is rendered and then compared to a previously-generated, reference image. This process is made easy thanks to this Pytest fixture.\nIn this case, the reference images were generated long ago on my previous, Intel/AMD-based MacBook Pro. This GIF highlights the discrepancy I\u0026rsquo;d get with images generated on my new computer (notice how the ruler\u0026rsquo;s thickness varies):","keywords":["opengl","python","til"],"articleBody":"When I started using my new M1 Max MacBook Pro in December, a bunch of vpype’s tests started to fail. The failing tests were all image-based: an image is rendered and then compared to a previously-generated, reference image. This process is made easy thanks to this Pytest fixture.\nIn this case, the reference images were generated long ago on my previous, Intel/AMD-based MacBook Pro. This GIF highlights the discrepancy I’d get with images generated on my new computer (notice how the ruler’s thickness varies):\nAs I’m currently working on this viewer again, I finally spent two days tracking this issue – and finally found its cause.\nWithout giving it a thought, I first used integer coordinates for those ruler lines. However, coordinates refer to pixel boundaries – not pixel centres. This means than an horizontal line with integer coordinates (e.g. [(2, 2), (7, 2)]) sits halfway between two consecutive rows of pixel:\nWhich of the 2nd or 3rd row of pixel eventually gets drawn is up to a coin toss – or rather the rounding strategy of your particular OpenGL driver/GPU/OS combination.\nBy offsetting the coordinates by half a pixel (e.g. [(2, 2.5), (7, 2.5)]), one can force the line on a specific pixel row and avoid any rounding:\nThis makes the rendering more predictable across platforms.\nUltimately, the fix was very simple (I just changed the ruler thickness from 20 to 19.5), but figuring it out was tricky (relevant discussions on ModernGL’s Discord server). Hopefully I wont forget about it after writing this TIL.\n","wordCount":"255","inLanguage":"en","datePublished":"2022-04-05T00:00:00Z","dateModified":"2022-04-05T00:00:00Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://bylr.info/articles/2022/04/05/til-aligning-horizontal-or-vertical-lines-to-the-pixel-grid-with-opengl/"},"publisher":{"@type":"Organization","name":"bylr.info","logo":{"@type":"ImageObject","url":"https://bylr.info/favicon.ico"}}}</script>
+</head>
+<body id=top>
+<script>window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://bylr.info/ accesskey=h title="bylr.info (Alt + H)">bylr.info</a>
+<span class=logo-switches>
+</span>
+</div>
+<ul id=menu>
+<li>
+<a href=https://bylr.info/about/ title=about>
+<span>about</span>
+</a>
+</li>
+<li>
+<a href=https://bylr.info/archives title=archives>
+<span>archives</span>
+</a>
+</li>
+<li>
+<a href=https://bylr.info/tags/ title=tags>
+<span>tags</span>
+</a>
+</li>
+</ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<h1 class=post-title>
+TIL: aligning horizontal or vertical lines to the pixel grid with OpenGL
+</h1>
+<div class=post-meta><span title="2022-04-05 00:00:00 +0000 UTC">April 5, 2022</span>&nbsp;|&nbsp;<a href=https://github.com/abey79/abey79.github.io/blob/main/content/articles/til-pixel-grid.md rel="noopener noreferrer" target=_blank>Suggest Changes</a>
+</div>
+</header>
+<div class=post-content><p>When I started using my new M1 Max MacBook Pro in December, a bunch of <a href=https://github.com/abey79/vpype><em>vpype</em></a>&rsquo;s tests started to fail. The failing tests were all image-based: an image is rendered and then compared to a previously-generated, reference image. This process is made easy thanks to <a href=https://github.com/abey79/vpype/blob/cd95e2da1940171e33ed0001255b763fa0d5f082/tests/conftest.py#L96>this Pytest fixture</a>.</p>
+<p>In this case, the reference images were generated long ago on my previous, Intel/AMD-based MacBook Pro. This GIF highlights the discrepancy I&rsquo;d get with images generated on my new computer (notice how the ruler&rsquo;s thickness varies):</p>
+<img src=/til-pixel-grid/m1_render.gif alt="animated gif highlighting rendering discrepancy with horizontal and vertical lines" width=650px style=display:block;margin-left:auto;margin-right:auto>
+<p>As I&rsquo;m currently working on this viewer again, I finally spent two days tracking this issue – and finally found its cause.</p>
+<p>Without giving it a thought, I first used integer coordinates for those ruler lines. However, coordinates refer to pixel <em>boundaries</em> – not pixel <em>centres</em>. This means than an horizontal line with integer coordinates (e.g. <code>[(2, 2), (7, 2)]</code>) sits halfway between two consecutive rows of pixel:</p>
+<img src=/til-pixel-grid/pixel_grid.png alt="schematic of a line not aligned with the pixel grid" width=500px style=display:block;margin-left:auto;margin-right:auto>
+<p>Which of the 2nd or 3rd row of pixel eventually gets drawn is up to a coin toss – or rather the rounding strategy of your particular OpenGL driver/GPU/OS combination.</p>
+<p>By offsetting the coordinates by half a pixel (e.g. <code>[(2, 2.5), (7, 2.5)]</code>), one can force the line on a specific pixel row and avoid any rounding:</p>
+<img src=/til-pixel-grid/pixel_grid_aligned.png alt="schematic of a line aligned with the pixel grid" width=500px style=display:block;margin-left:auto;margin-right:auto>
+<p>This makes the rendering more predictable across platforms.</p>
+<p>Ultimately, the fix was very simple (I just changed the ruler thickness from <code>20</code> to <code>19.5</code>), but figuring it out was tricky (<a href=https://ptb.discord.com/channels/550302843777712148/811289127609827358/960561872774500412>relevant discussions</a> on <a href=https://github.com/moderngl/moderngl>ModernGL</a>&rsquo;s Discord server). Hopefully I wont forget about it after writing this TIL.</p>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://bylr.info/tags/opengl/>opengl</a></li>
+<li><a href=https://bylr.info/tags/python/>python</a></li>
+<li><a href=https://bylr.info/tags/til/>til</a></li>
+</ul>
+</footer><script src=https://utteranc.es/client.js repo=abey79/abey79.github.io issue-term=pathname label=comments theme=github-light crossorigin=anonymous async></script>
+</article>
+</main>
+<footer class=footer>
+<span>© 2022 Antoine Beyeler –</span>
+<span>
+Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a>
+</span>
+</footer>
+<script>let menu=document.getElementById('menu');menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>document.querySelectorAll('pre > code').forEach(b=>{const c=b.parentNode.parentNode,a=document.createElement('button');a.classList.add('copy-code'),a.innerText='copy';function d(){a.innerText='copied!',setTimeout(()=>{a.innerText='copy'},2e3)}a.addEventListener('click',e=>{if('clipboard'in navigator){navigator.clipboard.writeText(b.textContent),d();return}const a=document.createRange();a.selectNodeContents(b);const c=window.getSelection();c.removeAllRanges(),c.addRange(a);try{document.execCommand('copy'),d()}catch(a){}c.removeRange(a)}),c.classList.contains("highlight")?c.appendChild(a):c.parentNode.firstChild==c||(b.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?b.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(a):b.parentNode.appendChild(a))})</script>
+</body>
+</html>
