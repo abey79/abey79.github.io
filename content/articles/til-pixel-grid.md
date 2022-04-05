@@ -1,7 +1,6 @@
 ---
 title: "TIL: aligning horizontal or vertical lines to the pixel grid with OpenGL"
 date: 2022-04-05
-draft: true
 tags:
   - opengl
   - python
