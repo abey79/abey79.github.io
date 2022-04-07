@@ -1,0 +1,278 @@
+<!doctype html><html lang=en dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>Annotated Release Notes: vpype 1.10 | bylr.info</title>
+<meta name=keywords content="vpype">
+<meta name=description content="I originally intended vpype 1.10 to be a &lsquo;quick-and-dirty&rsquo;, bug-fix-only release but it ended up being quite substantial, so let&rsquo;s dive in.
+New features and improvements   Improved support for layer pen width and opacity in the viewer (#448)
+ The &ldquo;Pen Width&rdquo; and &ldquo;Pen Opacity&rdquo; menus are now named &ldquo;Default Pen Width&rdquo; and &ldquo;Default Pen Opacity&rdquo;. The layer opacity is now used for display by default. It can be overridden by the default pen opacity by checking the &ldquo;Override&rdquo; item from the &ldquo;Default Pen Opacity&rdquo; menu.">
+<meta name=author content>
+<link rel=canonical href=https://bylr.info/articles/2022/04/07/annotated-release-notes-vpype-1.10/>
+<meta name=google-site-verification content="XYZabc">
+<link crossorigin=anonymous href=/assets/css/stylesheet.min.f6364f0298529c96c7e2c46c052c3c43abac92be3dc56a2b271e1b75a45d9aa7.css integrity="sha256-9jZPAphSnJbH4sRsBSw8Q6uskr49xWorJx4bdaRdmqc=" rel="preload stylesheet" as=style>
+<script defer crossorigin=anonymous src=/assets/js/highlight.min.7680afc38aa6b15ddf158a4f3780b7b1f7dde7e91d26f073e6229bb7a0793c92.js integrity="sha256-doCvw4qmsV3fFYpPN4C3sffd5+kdJvBz5iKbt6B5PJI=" onload=hljs.initHighlightingOnLoad()></script>
+<link rel=icon href=https://bylr.info/favicon.ico>
+<link rel=icon type=image/png sizes=16x16 href=https://bylr.info/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://bylr.info/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://bylr.info/apple-touch-icon.png>
+<link rel=mask-icon href=https://bylr.info/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<meta name=generator content="Hugo 0.91.2">
+<noscript>
+<style>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
+</noscript>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D1H30VS7VK"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-D1H30VS7VK',{anonymize_ip:!1})}</script>
+<meta property="og:title" content="Annotated Release Notes: vpype 1.10">
+<meta property="og:description" content="I originally intended vpype 1.10 to be a &lsquo;quick-and-dirty&rsquo;, bug-fix-only release but it ended up being quite substantial, so let&rsquo;s dive in.
+New features and improvements   Improved support for layer pen width and opacity in the viewer (#448)
+ The &ldquo;Pen Width&rdquo; and &ldquo;Pen Opacity&rdquo; menus are now named &ldquo;Default Pen Width&rdquo; and &ldquo;Default Pen Opacity&rdquo;. The layer opacity is now used for display by default. It can be overridden by the default pen opacity by checking the &ldquo;Override&rdquo; item from the &ldquo;Default Pen Opacity&rdquo; menu.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://bylr.info/articles/2022/04/07/annotated-release-notes-vpype-1.10/">
+<meta property="og:image" content="https://bylr.info/vpype_110/demo.png"><meta property="article:section" content="articles">
+<meta property="article:published_time" content="2022-04-07T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-04-07T00:00:00+00:00"><meta property="og:site_name" content="Antoine Beyeler">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://bylr.info/vpype_110/demo.png">
+<meta name=twitter:title content="Annotated Release Notes: vpype 1.10">
+<meta name=twitter:description content="I originally intended vpype 1.10 to be a &lsquo;quick-and-dirty&rsquo;, bug-fix-only release but it ended up being quite substantial, so let&rsquo;s dive in.
+New features and improvements   Improved support for layer pen width and opacity in the viewer (#448)
+ The &ldquo;Pen Width&rdquo; and &ldquo;Pen Opacity&rdquo; menus are now named &ldquo;Default Pen Width&rdquo; and &ldquo;Default Pen Opacity&rdquo;. The layer opacity is now used for display by default. It can be overridden by the default pen opacity by checking the &ldquo;Override&rdquo; item from the &ldquo;Default Pen Opacity&rdquo; menu.">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Articles","item":"https://bylr.info/articles/"},{"@type":"ListItem","position":2,"name":"Annotated Release Notes: vpype 1.10","item":"https://bylr.info/articles/2022/04/07/annotated-release-notes-vpype-1.10/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Annotated Release Notes: vpype 1.10","name":"Annotated Release Notes: vpype 1.10","description":"I originally intended vpype 1.10 to be a \u0026lsquo;quick-and-dirty\u0026rsquo;, bug-fix-only release but it ended up being quite substantial, so let\u0026rsquo;s dive in.\nNew features and improvements   Improved support for layer pen width and opacity in the viewer (#448)\n The \u0026ldquo;Pen Width\u0026rdquo; and \u0026ldquo;Pen Opacity\u0026rdquo; menus are now named \u0026ldquo;Default Pen Width\u0026rdquo; and \u0026ldquo;Default Pen Opacity\u0026rdquo;. The layer opacity is now used for display by default. It can be overridden by the default pen opacity by checking the \u0026ldquo;Override\u0026rdquo; item from the \u0026ldquo;Default Pen Opacity\u0026rdquo; menu.","keywords":["vpype"],"articleBody":"I originally intended vpype 1.10 to be a ‘quick-and-dirty’, bug-fix-only release but it ended up being quite substantial, so let’s dive in.\nNew features and improvements   Improved support for layer pen width and opacity in the viewer (#448)\n The “Pen Width” and “Pen Opacity” menus are now named “Default Pen Width” and “Default Pen Opacity”. The layer opacity is now used for display by default. It can be overridden by the default pen opacity by checking the “Override” item from the “Default Pen Opacity” menu. The layer pen width is now used for display by default as well. Likewise, it can be overridden by checking the “Override” item from the “Default Pen Width” menu.     This alone is reason to upgrade, and, if we’re being honest, it should have been done in the previous release. The display logic of the viewer is now as follows:\n By default, honor the layer’s pen width and opacity if present. If pen width and/or opacity is not set, revert to the value set in the menu (0.3mm / 80% by default). Either or both of the displayed pen width and opacity can be forced to the value in the menu using the new “Override” menu item.  It is worth noting that opacity is not a standalone layer property, but is part of its RGBA color property (vp_color). Weirdly, vpype 1.9’s viewer would honor the base color (RGB), but not its alpha chanel. (See next feature, though.)\nBy the way, this article’s cover image is a screenshot of the viewer made with this command:\n(Yes, this is a properly syntax-highlighted vpype command made with a custom script and Rich’s new SVG export. This is very preliminary, but, in time, something to improve on and deploy more widely in the doc and elsewhere.)\n Added the alpha command to set layer opacity without changing the base color (#447, #451)   While working on the viewer improvements, I realized how inconvenient it was to set an arbitrary opacity value. Using CSS color names (e.g. color red) always sets opacity to 100% and there is no way around the hex notation for a custom value (e.g. color #ff00007f or color #f007). The new alpha command fills that gap: color red alpha 0.5.\n Added HPGL configuration for the Calcomp Artisan plotter (thanks to Andee Collard and @ithinkido) (#418)   Good news for Calcomp Artisan’s owners! Let this be a reminder that I welcome this kind of contribution. Though I’d like to, I can’t own every single type of vintage plotter! 😅\n  The read command now better handles SVGs with missing width or height attributes (#446)\nWhen the width or height attribute is missing or expressed as percent, the read command now attempts to use the viewBox attribute to set the page size, defaulting to 1000x1000px if missing. This behavior can be overridden with the --display-size and the --display-landscape parameters.\n   I recently came across a SVG with a viewBox defined but no width/height attributes:\n xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1191.26 1684.49\"... In such an instance, using the read command used to default to an A4 page size, while the vpype.read_svg() API (and friends) would default to a 1000x1000px page size. This is both inconsistent and missing the opportunity to fallback on the viewBox. vpype now fully delegates this fallback logic to svgelements, which does a good job at making the most of the available information. Also, if everything is missing (or width/height are expressed in percents), vpype consistently falls back to 1000x1000px.\n Added the --dont-set-date option to the write command (#442)   This one is a bit niche. vpype adds some metadata to the SVG, including the date and time at which it was generated (note the  tag):\n$ vpype line 1cm 1cm 5cm 3cm layout a6 write -f svg - =\"1.0\" encoding=\"utf-8\" ? =\"http://www.w3.org/2000/svg\" xmlns:cc=\"http://creativecommons.org/ns\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:ev=\"http://www.w3.org/2001/xml-events\" xmlns:inkscape=\"http://www.inkscape.org/namespaces/inkscape\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns\" xmlns:sodipodi=\"http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" baseProfile=\"tiny\" height=\"14.8cm\" version=\"1.2\" viewBox=\"0 0 396.85039370078744 559.3700787401575\" width=\"10.5cm\"    image/svg+xml vpype line 1cm 1cm 5cm 3cm layout a6 write -f svg -  2022-04-07T10:15:00.532842     =\"none\" id=\"layer1\" inkscape:groupmode=\"layer\" inkscape:label=\"1\" stroke=\"#0000ff\" style=\"display:inline\" =\"122.8346\" x2=\"274.0157\" y1=\"241.8898\" y2=\"317.4803\"/   This is all well and good until you automate the generation of SVGs under a version control system, which is what I did for vpype-perspective’s documentation figures. A PyDoIt dodo.py files converts any .vpy file it finds into corresponding SVGs – basically a Python-powered, overcharged Makefile. (This is a rather neat process which, by the way, should get its own article someday.) In this kind of setup, having a ever-changing date in the SVG yields many unwanted VCS diffs which can now be avoided using this option.\nBug fixes  Fixed an issue with forlayer where the _n variable was improperly set (#443)   One word: inexcusable 🙄\n Fixed an issue with write where layer opacity was included in the stroke attribute instead of using stroke-opacity, which, although compliant, was not compatible with Inkscape (#429)   This one is Inkscape’s fault. Using stroke-opacity is “more compatible” anyways, so it’s a good move regardless.\n Fixed an issue with vpype --help where commands from plug-ins would not be listed (#444)   I ran into an issue with Click where a sub-command plug-in using APIs from the top-level command’s package (a scheme widely used by vpype and its plug-ins) would fail because of circular imports. The workaround I used in vpype 1.9 meant that plug-ins were no longer listed in vpype --help. This is fixed now, but this may not be the end of the story. I tried – and failed – to reproduce the original issue in a minimal demo project and I’ll have to further dig into this someday.\n Fixed a minor issue where plug-ins would be reloaded each time vpype_cli.execute() is called (#444)   By “minor”, I mean that this amounted to a tiny performance hit for Python scripts using vpype’s execute() API multiple times.\n Fixed a rendering inconsistency in the viewer where the ruler width could vary by one pixel depending on the OpenGL driver/GPU/OS combination (#448)   The ruler of vpype’s viewer is supposed to be 20px wide, but it turns out that either of the horizontal or the vertical one was 21px wide instead. Which one? It depends on the platform and my Intel/AMD- and M1-based laptops disagreed on the matter! 😲\nIt took me a while to discover that this is due to drawing lines at a 0.5px offset with respect to the pixel grid, leading to unpredictable rounding behavior. This is basically what happens when drawing horizontal or vertical lines with integer coordinates, and I wrote about it a few days ago.\nYou’d think that not one soul would care about this, but some of my tests are based on comparing newly rendered images of the viewer with previously-generated reference images, and those tests would fail on my new M1 Mac.\nAPI changes  Added vpype_cli.FloatType(), vpype_cli.IntRangeType(), vpype_cli.FloatRangeType(), and vpype_cli.ChoiceType() (#430, #447)   These Click types provide support for property and expression substitution. They were missing from vpype 1.9 because they aren’t needed internally. Plug-ins, however, wanted them, including flow imager and my new vpype-perspective.\n Changed vpype.Document.add_to_sources() to also modify the vp_source property (#431)   This will simplify the code needed to handle sources in plug-ins.\n Changed the parameter name of both vpype_viewer.Engine() and vpype_viewer.render_image() from pen_width and pen_opacity to default_pen_width and default_pen_opacity (breaking change) (#448) Added override_pen_width and override_pen_opacity boolean parameters to both vpype_viewer.Engine() and vpype_viewer.render_image() (#448) Added a set_date:bool = True argument to vpype.write_svg() (#442) Changed the default value of default_width and default_height arguments of vpype.read_svg() (and friends) to None to allow svgelement better handle missing width/height attributes (#446)   These are the API counterparts of some of the changes described before.\nOther changes  Added support for Python 3.10 and dropped support for Python 3.7 (#417)   Walruses have appeared already! 🦭\n Updated code base with modern typing syntax (using pyupgrade) (#427)   I was this year old when I learned that you can use modern typing syntax (such as list[int] | None) with older Python versions thanks to this statement:\nfrom __future__ import annotations I swiftly ran pyupgrade on the entire code base to bring it up to date.\n Updated the documentation template (#428)   It looks cleaner now IMO, though there is still a whole lot that could be improved.\n Updated installation instructions to use pipx (#428)   I have yet to get over how long it took me to realize this! 😳 I’m sorry for everyone who has struggled with virtual environments to install vpype!\n","wordCount":"1404","inLanguage":"en","image":"https://bylr.info/vpype_110/demo.png","datePublished":"2022-04-07T00:00:00Z","dateModified":"2022-04-07T00:00:00Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://bylr.info/articles/2022/04/07/annotated-release-notes-vpype-1.10/"},"publisher":{"@type":"Organization","name":"bylr.info","logo":{"@type":"ImageObject","url":"https://bylr.info/favicon.ico"}}}</script>
+</head>
+<body id=top>
+<script>window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://bylr.info/ accesskey=h title="bylr.info (Alt + H)">bylr.info</a>
+<span class=logo-switches>
+</span>
+</div>
+<ul id=menu>
+<li>
+<a href=https://bylr.info/about/ title=about>
+<span>about</span>
+</a>
+</li>
+<li>
+<a href=https://bylr.info/archives title=archives>
+<span>archives</span>
+</a>
+</li>
+<li>
+<a href=https://bylr.info/tags/ title=tags>
+<span>tags</span>
+</a>
+</li>
+</ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<h1 class=post-title>
+Annotated Release Notes: vpype 1.10
+</h1>
+<div class=post-meta><span title="2022-04-07 00:00:00 +0000 UTC">April 7, 2022</span>&nbsp;|&nbsp;<a href=https://github.com/abey79/abey79.github.io/blob/main/content/articles/vpype-1.10.md rel="noopener noreferrer" target=_blank>Suggest Changes</a>
+</div>
+</header>
+<figure class=entry-cover><img loading=lazy src=https://bylr.info/vpype_110/demo.png alt="vpype 1.10 screen shot">
+</figure>
+<div class=post-content><p>I originally intended <a href=https://github.com/abey79/vpype/releases/tag/1.10.0><em>vpype</em> 1.10</a> to be a &lsquo;quick-and-dirty&rsquo;, bug-fix-only release but it ended up being quite substantial, so let&rsquo;s dive in.</p>
+<h2 id=new-features-and-improvements>New features and improvements<a hidden class=anchor aria-hidden=true href=#new-features-and-improvements>#</a></h2>
+<blockquote class=extract>
+<p><ul>
+<li>
+<p>Improved support for layer pen width and opacity in the viewer (#448)</p>
+<ul>
+<li>The &ldquo;Pen Width&rdquo; and &ldquo;Pen Opacity&rdquo; menus are now named &ldquo;Default Pen Width&rdquo; and &ldquo;Default Pen Opacity&rdquo;.</li>
+<li>The layer opacity is now used for display by default. It can be overridden by the default pen opacity by checking the &ldquo;Override&rdquo; item from the &ldquo;Default Pen Opacity&rdquo; menu.</li>
+<li>The layer pen width is now used for display by default as well. Likewise, it can be overridden by checking the &ldquo;Override&rdquo; item from the &ldquo;Default Pen Width&rdquo; menu.</li>
+</ul>
+</li>
+</ul>
+</p>
+</blockquote>
+<p>This alone is reason to upgrade, and, if we&rsquo;re being honest, it should have been done in the previous release. The display logic of the viewer is now as follows:</p>
+<ul>
+<li>By default, honor the layer&rsquo;s pen width and opacity if present.</li>
+<li>If pen width and/or opacity is not set, revert to the value set in the menu (0.3mm / 80% by default).</li>
+<li>Either or both of the displayed pen width and opacity can be forced to the value in the menu using the new &ldquo;Override&rdquo; menu item.</li>
+</ul>
+<p>It is worth noting that opacity is not a standalone layer property, but is part of its RGBA color property (<code>vp_color</code>). Weirdly, <em>vpype</em> 1.9&rsquo;s viewer would honor the base color (RGB), but not its alpha chanel. (See next feature, though.)</p>
+<p>By the way, this article&rsquo;s cover image is a screenshot of the viewer made with this command:</p>
+<img src=/vpype_110/demo_cmd.png alt="vpype  repeat 100  circle --layer %_i+1% %_i*mm% 0 1cm  color --layer %_i+1% red  alpha --layer %_i+1% %(_i+1)*.7/_n%  end  repeat 50  circle --layer %_i+101% %2*_i*mm% 3cm 1cm  color --layer %_i+101% blue  penwidth --layer %_i+101% %(0.05+_i/100)*2.5*mm%  end  layout --fit-to-margins 1cm --landscape 21x10cm  show" width=85% style=display:block;margin-left:auto;margin-right:auto>
+<p>(Yes, this is a properly syntax-highlighted <em>vpype</em> command made with a custom script and <a href=https://github.com/Textualize/rich>Rich</a>&rsquo;s new <a href="https://twitter.com/willmcgugan/status/1510621023678476291?s=20&t=KegUSS_vGKzzG8GzoFsoFQ">SVG export</a>. This is very preliminary, but, in time, something to improve on and deploy more widely in the doc and elsewhere.)</p>
+<blockquote class=extract>
+<p><ul>
+<li>Added the <code>alpha</code> command to set layer opacity without changing the base color (#447, #451)</li>
+</ul>
+</p>
+</blockquote>
+<p>While working on the viewer improvements, I realized how inconvenient it was to set an arbitrary opacity value. Using CSS color names (e.g. <code>color red</code>) always sets opacity to 100% and there is no way around the hex notation for a custom value (e.g. <code>color #ff00007f</code> or <code>color #f007</code>). The new <code>alpha</code> command fills that gap: <code>color red alpha 0.5</code>.</p>
+<blockquote class=extract>
+<p><ul>
+<li>Added HPGL configuration for the Calcomp Artisan plotter (thanks to Andee Collard and @ithinkido) (#418)</li>
+</ul>
+</p>
+</blockquote>
+<p>Good news for Calcomp Artisan&rsquo;s owners! Let this be a reminder that I welcome this kind of contribution. Though I&rsquo;d like to, I can&rsquo;t own every single type of vintage plotter! 😅</p>
+<blockquote class=extract>
+<p><ul>
+<li>
+<p>The <code>read</code> command now better handles SVGs with missing <code>width</code> or <code>height</code> attributes (#446)</p>
+<p>When the <code>width</code> or <code>height</code> attribute is missing or expressed as percent, the <code>read</code> command now attempts to use the <code>viewBox</code> attribute to set the page size, defaulting to 1000x1000px if missing. This behavior can be overridden with the <code>--display-size</code> and the <code>--display-landscape</code> parameters.</p>
+</li>
+</ul>
+</p>
+</blockquote>
+<p>I recently came across a SVG with a <code>viewBox</code> defined but no <code>width</code>/<code>height</code> attributes:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-svg data-lang=svg><span style=color:#f92672>&lt;svg</span> <span style=color:#a6e22e>xmlns=</span><span style=color:#e6db74>&#34;http://www.w3.org/2000/svg&#34;</span> <span style=color:#a6e22e>viewBox=</span><span style=color:#e6db74>&#34;0 0 1191.26 1684.49&#34;</span><span style=color:#f92672>&gt;</span>...<span style=color:#f92672>&lt;/svg&gt;</span>
+</code></pre></div><p>In such an instance, using the <code>read</code> command used to default to an A4 page size, while the <code>vpype.read_svg()</code> API (and friends) would default to a 1000x1000px page size. This is both inconsistent and missing the opportunity to fallback on the <code>viewBox</code>. <em>vpype</em> now fully delegates this fallback logic to <a href=https://github.com/meerk40t/svgelements><code>svgelements</code></a>, which does a good job at making the most of the available information. Also, if everything is missing (or <code>width</code>/<code>height</code> are expressed in percents), <em>vpype</em> consistently falls back to 1000x1000px.</p>
+<blockquote class=extract>
+<p><ul>
+<li>Added the <code>--dont-set-date</code> option to the <code>write</code> command (#442)</li>
+</ul>
+</p>
+</blockquote>
+<p>This one is a bit niche. <em>vpype</em> adds some metadata to the SVG, including the date and time at which it was generated (note the <code>&lt;dc:date></code> tag):</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>$ vpype line 1cm 1cm 5cm 3cm layout a6 write -f svg -
+&lt;?xml version<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;1.0&#34;</span> encoding<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;utf-8&#34;</span> ?&gt;
+&lt;svg xmlns<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://www.w3.org/2000/svg&#34;</span> xmlns:cc<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://creativecommons.org/ns&#34;</span> xmlns:dc<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://purl.org/dc/elements/1.1/&#34;</span> xmlns:ev<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://www.w3.org/2001/xml-events&#34;</span> xmlns:inkscape<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://www.inkscape.org/namespaces/inkscape&#34;</span> xmlns:rdf<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://www.w3.org/1999/02/22-rdf-syntax-ns&#34;</span> xmlns:sodipodi<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd&#34;</span> xmlns:xlink<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://www.w3.org/1999/xlink&#34;</span> baseProfile<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;tiny&#34;</span> height<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;14.8cm&#34;</span> version<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;1.2&#34;</span> viewBox<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;0 0 396.85039370078744 559.3700787401575&#34;</span> width<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;10.5cm&#34;</span>&gt;
+  &lt;metadata&gt;
+    &lt;rdf:RDF&gt;
+      &lt;cc:Work&gt;
+        &lt;dc:format&gt;image/svg+xml&lt;/dc:format&gt;
+        &lt;dc:source&gt;vpype line 1cm 1cm 5cm 3cm layout a6 write -f svg -
+&lt;/dc:source&gt;
+        &lt;dc:date&gt;2022-04-07T10:15:00.532842&lt;/dc:date&gt;
+      &lt;/cc:Work&gt;
+    &lt;/rdf:RDF&gt;
+  &lt;/metadata&gt;
+  &lt;defs/&gt;
+  &lt;g fill<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;none&#34;</span> id<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;layer1&#34;</span> inkscape:groupmode<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;layer&#34;</span> inkscape:label<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;1&#34;</span> stroke<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;#0000ff&#34;</span> style<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;display:inline&#34;</span>&gt;
+    &lt;line x1<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;122.8346&#34;</span> x2<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;274.0157&#34;</span> y1<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;241.8898&#34;</span> y2<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;317.4803&#34;</span>/&gt;
+  &lt;/g&gt;
+&lt;/svg&gt;
+</code></pre></div><p>This is all well and good until you automate the generation of SVGs under a version control system, which is what I did for <a href=https://github.com/abey79/vpype-perspective>vpype-perspective</a>&rsquo;s documentation figures. A <a href=https://pydoit.org>PyDoIt</a> <a href=https://github.com/abey79/vpype-perspective/blob/main/examples/dodo.py><code>dodo.py</code></a> files converts any <code>.vpy</code> file it finds into corresponding SVGs – basically a Python-powered, overcharged <code>Makefile</code>. (This is a rather neat process which, by the way, should get its own article someday.) In this kind of setup, having a ever-changing date in the SVG yields many unwanted VCS diffs which can now be avoided using this option.</p>
+<h2 id=bug-fixes>Bug fixes<a hidden class=anchor aria-hidden=true href=#bug-fixes>#</a></h2>
+<blockquote class=extract>
+<p><ul>
+<li>Fixed an issue with <code>forlayer</code> where the <code>_n</code> variable was improperly set (#443)</li>
+</ul>
+</p>
+</blockquote>
+<p>One word: inexcusable 🙄</p>
+<blockquote class=extract>
+<p><ul>
+<li>Fixed an issue with <code>write</code> where layer opacity was included in the <code>stroke</code> attribute instead of using <code>stroke-opacity</code>, which, although compliant, was not compatible with Inkscape (#429)</li>
+</ul>
+</p>
+</blockquote>
+<p>This one is <a href=https://gitlab.com/inkscape/inbox/-/issues/1195>Inkscape</a>&rsquo;s <a href=https://gitlab.com/inkscape/inbox/-/issues/1195>fault</a>. Using <code>stroke-opacity</code> is &ldquo;more compatible&rdquo; anyways, so it&rsquo;s a good move regardless.</p>
+<blockquote class=extract>
+<p><ul>
+<li>Fixed an issue with <code>vpype --help</code> where commands from plug-ins would not be listed (#444)</li>
+</ul>
+</p>
+</blockquote>
+<p>I ran into an issue with <a href=https://click.palletsprojects.com>Click</a> where a sub-command plug-in using APIs from the top-level command&rsquo;s package (a scheme widely used by <em>vpype</em> and its plug-ins) would fail because of circular imports. The workaround I used in <em>vpype</em> 1.9 meant that plug-ins were no longer listed in <code>vpype --help</code>. This is fixed now, but this may not be the end of the story. I tried – and failed – to reproduce the original issue in a minimal demo project and I&rsquo;ll have to further dig into this someday.</p>
+<blockquote class=extract>
+<p><ul>
+<li>Fixed a minor issue where plug-ins would be reloaded each time <code>vpype_cli.execute()</code> is called (#444)</li>
+</ul>
+</p>
+</blockquote>
+<p>By &ldquo;minor&rdquo;, I mean that this amounted to a tiny performance hit for Python scripts using <em>vpype</em>&rsquo;s <a href=https://vpype.readthedocs.io/en/latest/api/vpype_cli.html#vpype_cli.execute><code>execute()</code></a> API multiple times.</p>
+<blockquote class=extract>
+<p><ul>
+<li>Fixed a rendering inconsistency in the viewer where the ruler width could vary by one pixel depending on the OpenGL driver/GPU/OS combination (#448)</li>
+</ul>
+</p>
+</blockquote>
+<p>The ruler of <em>vpype</em>&rsquo;s viewer is supposed to be 20px wide, but it turns out that either of the horizontal or the vertical one was 21px wide instead. Which one? It depends on the platform and my Intel/AMD- and M1-based laptops disagreed on the matter! 😲</p>
+<img src=/vpype_110/bad_rulers.gif alt="animation of a rendering discrepancy" width=50% style=display:block;margin-left:auto;margin-right:auto>
+<p>It took me a while to discover that this is due to drawing lines at a 0.5px offset with respect to the pixel grid, leading to unpredictable rounding behavior. This is basically what happens when drawing horizontal or vertical lines with integer coordinates, and I <a href=/articles/2022/04/05/til-aligning-horizontal-or-vertical-lines-to-the-pixel-grid-with-opengl/>wrote about it</a> a few days ago.</p>
+<p>You&rsquo;d think that not one soul would care about this, but some of my tests are based on comparing newly rendered images of the viewer with previously-generated reference images, and those tests would fail on my new M1 Mac.</p>
+<h2 id=api-changes>API changes<a hidden class=anchor aria-hidden=true href=#api-changes>#</a></h2>
+<blockquote class=extract>
+<p><ul>
+<li>Added <code>vpype_cli.FloatType()</code>, <code>vpype_cli.IntRangeType()</code>, <code>vpype_cli.FloatRangeType()</code>, and <code>vpype_cli.ChoiceType()</code> (#430, #447)</li>
+</ul>
+</p>
+</blockquote>
+<p>These <code>Click</code> types provide support for <a href=https://vpype.readthedocs.io/en/latest/fundamentals.html#property-substitution>property</a> and <a href=https://vpype.readthedocs.io/en/latest/fundamentals.html#expression-substitution>expression substitution</a>. They were missing from <em>vpype</em> 1.9 because they aren&rsquo;t needed internally. Plug-ins, however, wanted them, including <a href=https://github.com/serycjon/vpype-flow-imager>flow imager</a> and my new <a href=https://github.com/abey79/vpype-perspective>vpype-perspective</a>.</p>
+<blockquote class=extract>
+<p><ul>
+<li>Changed <code>vpype.Document.add_to_sources()</code> to also modify the <code>vp_source</code> property (#431)</li>
+</ul>
+</p>
+</blockquote>
+<p>This will simplify the code needed to handle sources in plug-ins.</p>
+<blockquote class=extract>
+<p><ul>
+<li>Changed the parameter name of both <code>vpype_viewer.Engine()</code> and <code>vpype_viewer.render_image()</code> from <code>pen_width</code> and <code>pen_opacity</code> to <code>default_pen_width</code> and <code>default_pen_opacity</code> (breaking change) (#448)</li>
+<li>Added <code>override_pen_width</code> and <code>override_pen_opacity</code> boolean parameters to both <code>vpype_viewer.Engine()</code> and <code>vpype_viewer.render_image()</code> (#448)</li>
+<li>Added a <code>set_date:bool = True</code> argument to <code>vpype.write_svg()</code> (#442)</li>
+<li>Changed the default value of <code>default_width</code> and <code>default_height</code> arguments of <code>vpype.read_svg()</code> (and friends) to <code>None</code> to allow <code>svgelement</code> better handle missing <code>width</code>/<code>height</code> attributes (#446)</li>
+</ul>
+</p>
+</blockquote>
+<p>These are the API counterparts of some of the changes described before.</p>
+<h2 id=other-changes>Other changes<a hidden class=anchor aria-hidden=true href=#other-changes>#</a></h2>
+<blockquote class=extract>
+<p><ul>
+<li>Added support for Python 3.10 and dropped support for Python 3.7 (#417)</li>
+</ul>
+</p>
+</blockquote>
+<p>Walruses <a href=https://github.com/abey79/vpype/blob/0e01b45f6e8cef0352cd369a215aeaaeade97b48/vpype/model.py#L620>have appeared</a> already! 🦭</p>
+<blockquote class=extract>
+<p><ul>
+<li>Updated code base with modern typing syntax (using <a href=https://github.com/asottile/pyupgrade>pyupgrade</a>) (#427)</li>
+</ul>
+</p>
+</blockquote>
+<p>I was this year old when I learned that you can use modern <a href=https://docs.python.org/3/library/typing.html>typing</a> syntax (such as <code>list[int] | None</code>) with older Python versions thanks to this statement:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#f92672>from</span> __future__ <span style=color:#f92672>import</span> annotations
+</code></pre></div><p>I swiftly ran <a href=https://github.com/asottile/pyupgrade>pyupgrade</a> on the entire code base to bring it up to date.</p>
+<blockquote class=extract>
+<p><ul>
+<li>Updated the <a href=https://vpype.readthedocs.io/en/latest/>documentation</a> template (#428)</li>
+</ul>
+</p>
+</blockquote>
+<p>It looks cleaner now IMO, though there is still a <a href=https://github.com/abey79/vpype/issues/400>whole lot</a> that could be improved.</p>
+<blockquote class=extract>
+<p><ul>
+<li>Updated installation instructions to use pipx (#428)</li>
+</ul>
+</p>
+</blockquote>
+<p>I have yet to get over how long it took me to realize this! 😳 I&rsquo;m sorry for everyone who has struggled with virtual environments to install <em>vpype</em>!</p>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://bylr.info/tags/vpype/>vpype</a></li>
+</ul>
+</footer><script src=https://utteranc.es/client.js repo=abey79/abey79.github.io issue-term=pathname label=comments theme=github-light crossorigin=anonymous async></script>
+</article>
+</main>
+<footer class=footer>
+<span>© 2022 Antoine Beyeler –</span>
+<span>
+Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a>
+</span>
+</footer>
+<script>let menu=document.getElementById('menu');menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>document.querySelectorAll('pre > code').forEach(b=>{const c=b.parentNode.parentNode,a=document.createElement('button');a.classList.add('copy-code'),a.innerText='copy';function d(){a.innerText='copied!',setTimeout(()=>{a.innerText='copy'},2e3)}a.addEventListener('click',e=>{if('clipboard'in navigator){navigator.clipboard.writeText(b.textContent),d();return}const a=document.createRange();a.selectNodeContents(b);const c=window.getSelection();c.removeAllRanges(),c.addRange(a);try{document.execCommand('copy'),d()}catch(a){}c.removeRange(a)}),c.classList.contains("highlight")?c.appendChild(a):c.parentNode.firstChild==c||(b.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?b.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(a):b.parentNode.appendChild(a))})</script>
+</body>
+</html>

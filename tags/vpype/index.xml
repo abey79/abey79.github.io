@@ -11,7 +11,18 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Thu, 03 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/vpype/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 07 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/vpype/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Annotated Release Notes: vpype 1.10</title>
+      <link>https://bylr.info/articles/2022/04/07/annotated-release-notes-vpype-1.10/</link>
+      <pubDate>Thu, 07 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/articles/2022/04/07/annotated-release-notes-vpype-1.10/</guid>
+      <description>I originally intended vpype 1.10 to be a &amp;lsquo;quick-and-dirty&amp;rsquo;, bug-fix-only release but it ended up being quite substantial, so let&amp;rsquo;s dive in.
+New features and improvements   Improved support for layer pen width and opacity in the viewer (#448)
+ The &amp;ldquo;Pen Width&amp;rdquo; and &amp;ldquo;Pen Opacity&amp;rdquo; menus are now named &amp;ldquo;Default Pen Width&amp;rdquo; and &amp;ldquo;Default Pen Opacity&amp;rdquo;. The layer opacity is now used for display by default. It can be overridden by the default pen opacity by checking the &amp;ldquo;Override&amp;rdquo; item from the &amp;ldquo;Default Pen Opacity&amp;rdquo; menu.</description>
+    </item>
+    
     <item>
       <title>Annotated Release Notes: vpype 1.9</title>
       <link>https://bylr.info/articles/2022/03/03/annotated-release-notes-vpype-1.9/</link>
