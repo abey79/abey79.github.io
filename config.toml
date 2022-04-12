@@ -24,7 +24,7 @@ keywords = [ "Blog", "Python" ]
 # author = "ab"  # don't show author
 images = ["/android-chrome-512x512.png" ]
 DateFormat = "January 2, 2006"
-defaultTheme = "auto"
+defaultTheme = "light"
 disableThemeToggle = true
 ShowReadingTime = false
 ShowShareButtons = false
@@ -38,6 +38,10 @@ hidemeta = false
 hideSummary = false
 showtoc = false
 tocopen = false
+
+# enable <br> in tables
+[markup.goldmark.renderer]
+unsafe = true
 
 [params.assets]
 favicon ="/favicon.ico"
