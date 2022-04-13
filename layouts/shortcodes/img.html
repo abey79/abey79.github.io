@@ -1,6 +1,7 @@
 <img src="{{ .Get "src" }}" alt="{{ .Get "alt" }}"
 {{- with .Get "width" }}width="{{ . }}"{{ end -}}
 {{- with .Get "height" }}height="{{ . }}"{{ end -}}
+{{- with .Get "title" }}title="{{ . }}"{{ end -}}
 {{- if eq (.Get "align") "right" }}style="display:block;margin-left:auto"
   {{- else if eq (.Get "align") "left" }}style="display:block;margin-right:auto"
   {{- else }}style="display:block;margin-left:auto;margin-right:auto"

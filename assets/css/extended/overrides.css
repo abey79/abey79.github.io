@@ -50,6 +50,9 @@ main {
     color: var(--content);
 }
 
+.post-content table tbody tr td {
+    vertical-align: top;
+}
 
 /* extract */
 blockquote.extract {
