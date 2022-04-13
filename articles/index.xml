@@ -11,7 +11,17 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Thu, 07 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/articles/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 13 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/articles/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How to scale a grid on a page for uniform margins?</title>
+      <link>https://bylr.info/articles/2022/04/13/grid-layout/</link>
+      <pubDate>Wed, 13 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/articles/2022/04/13/grid-layout/</guid>
+      <description>The problem Several generative art algorithms, such as Truchet tiles, use a regular grid of square cells. For example, check this interactive demo from the Generative Design book or these few pieces of mine.
+Now, let&amp;rsquo;s say you want to generate an iteration of your algorithm for printing or plotting such that all margins around the grid are the same for the given paper size. You can of course adjust the number of cell rows and columns, but how should you size the cell such as to achieve uniform margins?</description>
+    </item>
+    
     <item>
       <title>Annotated Release Notes: vpype 1.10</title>
       <link>https://bylr.info/articles/2022/04/07/annotated-release-notes-vpype-1.10/</link>
