@@ -49,7 +49,7 @@ We have the following solutions:
 
 The first solution corresponds to the special case of a square page size. In this case, the grid must be square ($N=M$) and the margins may have an arbitrary value, with the cell size varying accordingly. This is not very surprising.
 
-The second solution is where things become interesting. As intuition dictates, it is valid *only* if the grid orientation (portrait or landscape) matches the paper orientation. If so, uniform margins is achieved by choosing a cell size of $s = \frac{H-W}{M-n}$.
+The second solution is where things become interesting. As intuition dictates, it is valid *only* if the grid orientation (portrait or landscape) matches the paper orientation. If so, uniform margins is achieved by choosing a cell size of $s = \frac{H-W}{M-N}$.
 
 Note that the resulting margin $m$ may, depending on the parameters, be negative. In this case, the grid *overflows* all around the page by a constant distance. This making plotting/printing your piece inconvenient, you will have to adjust $N$ and/or $M$ to reach a positive margin value.
 
