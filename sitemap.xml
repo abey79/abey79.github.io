@@ -3,24 +3,27 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://bylr.info/articles/</loc>
-    <lastmod>2022-04-13T00:00:00+00:00</lastmod>
+    <lastmod>2022-04-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/</loc>
-    <lastmod>2022-04-13T00:00:00+00:00</lastmod>
+    <lastmod>2022-04-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://bylr.info/tags/generative/</loc>
-    <lastmod>2022-04-13T00:00:00+00:00</lastmod>
+    <loc>https://bylr.info/tags/plotter/</loc>
+    <lastmod>2022-04-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://bylr.info/articles/2022/04/13/grid-layout/</loc>
-    <lastmod>2022-04-13T00:00:00+00:00</lastmod>
+    <loc>https://bylr.info/tags/sketch/</loc>
+    <lastmod>2022-04-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://bylr.info/tags/python/</loc>
-    <lastmod>2022-04-13T00:00:00+00:00</lastmod>
+    <loc>https://bylr.info/articles/2022/04/28/sketch-fill-test/</loc>
+    <lastmod>2022-04-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/tags/</loc>
-    <lastmod>2022-04-13T00:00:00+00:00</lastmod>
+    <lastmod>2022-04-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/tags/vsketch/</loc>
+    <lastmod>2022-04-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/articles/2022/04/13/grid-layout/</loc>
     <lastmod>2022-04-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/articles/2022/04/07/annotated-release-notes-vpype-1.10/</loc>
@@ -30,6 +33,9 @@
     <lastmod>2022-04-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/tags/opengl/</loc>
+    <lastmod>2022-04-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/tags/python/</loc>
     <lastmod>2022-04-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/tags/til/</loc>
@@ -42,9 +48,6 @@
     <lastmod>2022-03-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/articles/2022/02/20/first-post/</loc>
-    <lastmod>2022-02-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://bylr.info/tags/untagged/</loc>
     <lastmod>2022-02-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/about/</loc>

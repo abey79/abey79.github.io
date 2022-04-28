@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>bylr.info</title>
-    <link>https://bylr.info/</link>
-    <description>Recent content on bylr.info</description>
+    <title>plotter on bylr.info</title>
+    <link>https://bylr.info/tags/plotter/</link>
+    <description>Recent content in plotter on bylr.info</description>
     <image>
       <url>https://bylr.info/android-chrome-512x512.png</url>
       <link>https://bylr.info/android-chrome-512x512.png</link>
@@ -11,7 +11,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Thu, 28 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 28 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/plotter/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Sketch: fill test</title>
       <link>https://bylr.info/articles/2022/04/28/sketch-fill-test/</link>
@@ -45,16 +45,6 @@ New features and improvements   Improved support for layer pen width and opacity
     </item>
     
     <item>
-      <title>TIL: aligning horizontal or vertical lines to the pixel grid with OpenGL</title>
-      <link>https://bylr.info/articles/2022/04/05/til-aligning-horizontal-or-vertical-lines-to-the-pixel-grid-with-opengl/</link>
-      <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://bylr.info/articles/2022/04/05/til-aligning-horizontal-or-vertical-lines-to-the-pixel-grid-with-opengl/</guid>
-      <description>When I started using my new M1 Max MacBook Pro in December, a bunch of vpype&amp;rsquo;s tests started to fail. The failing tests were all image-based: an image is rendered and then compared to a previously-generated, reference image. This process is made easy thanks to this Pytest fixture.
-In this case, the reference images were generated long ago on my previous, Intel/AMD-based MacBook Pro. This GIF highlights the discrepancy I&amp;rsquo;d get with images generated on my new computer (notice how the ruler&amp;rsquo;s thickness varies):</description>
-    </item>
-    
-    <item>
       <title>Annotated Release Notes: vpype 1.9</title>
       <link>https://bylr.info/articles/2022/03/03/annotated-release-notes-vpype-1.9/</link>
       <pubDate>Thu, 03 Mar 2022 00:00:00 +0000</pubDate>
@@ -62,27 +52,6 @@ In this case, the reference images were generated long ago on my previous, Intel
       <guid>https://bylr.info/articles/2022/03/03/annotated-release-notes-vpype-1.9/</guid>
       <description>vpype \ text -l1 -p 0 3.5cm &#34;Custom layer name/color/pen width&#34; \ text -l2 -p 5cm 4.5cm -s 24 &#34;Properties&#34; \ text -l2 -p 2cm 5.5cm -s 20 &#34;Expressions&#34; \ text -l1 -p 6cm 6.5cm -s 24 &#34;Better/new block processors&#34; \ text -l2 -p 3cm 8cm &#34;...and much more!&#34; \ layout -m 0.3cm -l 10x3.5cm \ penwidth -l2 0.5mm \ color -l2 &#34;%Color(226,200,0)%&#34; \ color -l1 &#34;%Color(3,118,207)%&#34; \ color -l1 blue \ show -- vpype 1.</description>
     </item>
-    
-    <item>
-      <title>First post</title>
-      <link>https://bylr.info/articles/2022/02/20/first-post/</link>
-      <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://bylr.info/articles/2022/02/20/first-post/</guid>
-      <description>&lt;p&gt;Hello again, world.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>About</title>
-      <link>https://bylr.info/about/</link>
-      <pubDate>Thu, 10 Feb 2022 20:21:40 +0100</pubDate>
-      
-      <guid>https://bylr.info/about/</guid>
-      <description>My name is Antoine Beyeler. I am a multi-disciplinary engineer and entrepreneur with a PhD in flying robotics and interests in software, aviation, photography, generative art, plotters, and home automation. I live in Lausanne, Switzerland 🇨🇭.
-With a few friends, I co-founded senseFly in 2009, which soon became the leader of fixed-wing mapping drones for surveyors, farmers, humanitarians and many others. Until my departure in 2018, I lead as CTO a team of up to 45 engineers and developed multiple generations of end-to-end mapping drone systems.</description>
-    </item>
-    
-    
     
   </channel>
 </rss>

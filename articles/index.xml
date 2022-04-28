@@ -11,7 +11,18 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Wed, 13 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/articles/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 28 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/articles/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Sketch: fill test</title>
+      <link>https://bylr.info/articles/2022/04/28/sketch-fill-test/</link>
+      <pubDate>Thu, 28 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/articles/2022/04/28/sketch-fill-test/</guid>
+      <description>Hatch fills or pixel art plotting requires a rather precise estimate of your particular pen/paper combo&amp;rsquo;s stroke width.
+For example, this test pixel art plot would benefit from a slightly thinner pitch to avoid the visible overlap between neighbouring lines:
+There is no way around experience to find the optimal pitch. I&amp;rsquo;ve created the fill_test sketch to create custom charts with test patterns precisely tuned to the pen of interest. There is indeed no point to testing a rotring isograph .</description>
+    </item>
+    
     <item>
       <title>How to scale a grid on a page for uniform margins?</title>
       <link>https://bylr.info/articles/2022/04/13/grid-layout/</link>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>vsketch on bylr.info</title>
-    <link>https://bylr.info/tags/vsketch/</link>
-    <description>Recent content in vsketch on bylr.info</description>
+    <title>sketch on bylr.info</title>
+    <link>https://bylr.info/tags/sketch/</link>
+    <description>Recent content in sketch on bylr.info</description>
     <image>
       <url>https://bylr.info/android-chrome-512x512.png</url>
       <link>https://bylr.info/android-chrome-512x512.png</link>
@@ -11,7 +11,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Thu, 28 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/vsketch/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 28 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/sketch/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Sketch: fill test</title>
       <link>https://bylr.info/articles/2022/04/28/sketch-fill-test/</link>
@@ -21,16 +21,6 @@
       <description>Hatch fills or pixel art plotting requires a rather precise estimate of your particular pen/paper combo&amp;rsquo;s stroke width.
 For example, this test pixel art plot would benefit from a slightly thinner pitch to avoid the visible overlap between neighbouring lines:
 There is no way around experience to find the optimal pitch. I&amp;rsquo;ve created the fill_test sketch to create custom charts with test patterns precisely tuned to the pen of interest. There is indeed no point to testing a rotring isograph .</description>
-    </item>
-    
-    <item>
-      <title>How to scale a grid on a page for uniform margins?</title>
-      <link>https://bylr.info/articles/2022/04/13/grid-layout/</link>
-      <pubDate>Wed, 13 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://bylr.info/articles/2022/04/13/grid-layout/</guid>
-      <description>The problem Several generative art algorithms, such as Truchet tiles, use a regular grid of square cells. For example, check this interactive demo from the Generative Design book or these few pieces of mine.
-Now, let&amp;rsquo;s say you want to generate an iteration of your algorithm for printing or plotting such that all margins around the grid are the same for the given paper size. You can of course adjust the number of cell rows and columns, but how should you size the cell such as to achieve uniform margins?</description>
     </item>
     
   </channel>
