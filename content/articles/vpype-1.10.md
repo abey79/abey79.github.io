@@ -3,6 +3,7 @@ title: "Annotated Release Notes: vpype 1.10"
 date: 2022-04-07
 tags:
   - vpype
+  - plotter
 cover:
     image: vpype_110/demo.png
     alt: "vpype 1.10 screen shot"

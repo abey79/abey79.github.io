@@ -6,6 +6,7 @@ showtoc: true
 tocopen: false
 tags:
   - vpype
+  - plotter
 cover:
     image: vpype_19/word_cloud.png
     alt: "vpype 1.9 word cloud"

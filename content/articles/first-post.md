@@ -1,9 +1,6 @@
 ---
 title: "First post"
 date: 2022-02-20
-draft: false
-tags:
-  - untagged
 ---
 
 Hello again, world.

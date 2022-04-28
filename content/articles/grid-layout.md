@@ -7,9 +7,8 @@ math: true
 cover:
     image: grid-layout/banner.png
 tags:
-  - python
   - vsketch
-  - generative
+  - plotter
 ---
 
 ## The problem
