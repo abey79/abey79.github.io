@@ -1,5 +1,5 @@
 ---
-title: "Sketch: fill test"
+title: "Sketch: fill test pattern generator"
 slug: sketch-fill-test
 date: 2022-04-28
 cover:
