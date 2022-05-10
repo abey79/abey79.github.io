@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>python on bylr.info</title>
-    <link>https://bylr.info/tags/python/</link>
-    <description>Recent content in python on bylr.info</description>
+    <title>sphinx on bylr.info</title>
+    <link>https://bylr.info/tags/sphinx/</link>
+    <description>Recent content in sphinx on bylr.info</description>
     <image>
       <url>https://bylr.info/android-chrome-512x512.png</url>
       <link>https://bylr.info/android-chrome-512x512.png</link>
@@ -11,7 +11,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Tue, 10 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 10 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/sphinx/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Generating beautiful API documentation with Sphinx AutoAPI</title>
       <link>https://bylr.info/articles/2022/05/10/api-doc-with-sphinx-autoapi/</link>
@@ -21,16 +21,6 @@
       <description>Following a recent discussion on Twitter, I decided to take yet another deep dive in my project&amp;rsquo;s documentation and fix once and for all the issues I had with it. I first focused on the automatically-generated API reference section and this article details the results of my finding. Specifically, I&amp;rsquo;m using vsketch&amp;rsquo;s API reference, which I recently updated, as an example (documentation source.
 This article addresses the following objectives:
  Produce a beautiful API documentation based on the code docstrings that is both nice to look at and easy to navigate.</description>
-    </item>
-    
-    <item>
-      <title>TIL: aligning horizontal or vertical lines to the pixel grid with OpenGL</title>
-      <link>https://bylr.info/articles/2022/04/05/til-aligning-horizontal-or-vertical-lines-to-the-pixel-grid-with-opengl/</link>
-      <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://bylr.info/articles/2022/04/05/til-aligning-horizontal-or-vertical-lines-to-the-pixel-grid-with-opengl/</guid>
-      <description>When I started using my new M1 Max MacBook Pro in December, a bunch of vpype&amp;rsquo;s tests started to fail. The failing tests were all image-based: an image is rendered and then compared to a previously-generated, reference image. This process is made easy thanks to this Pytest fixture.
-In this case, the reference images were generated long ago on my previous, Intel/AMD-based MacBook Pro. This GIF highlights the discrepancy I&amp;rsquo;d get with images generated on my new computer (notice how the ruler&amp;rsquo;s thickness varies):</description>
     </item>
     
   </channel>
