@@ -43,6 +43,9 @@ tocopen = false
 [markup.goldmark.renderer]
 unsafe = true
 
+[markup.highlight]
+style = "github"
+
 [params.assets]
 favicon ="/favicon.ico"
 favicon16x16 = "/favicon-16x16.png"

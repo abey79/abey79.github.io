@@ -54,7 +54,19 @@ main {
     vertical-align: top;
 }
 
+/* fix definition lists */
+.post-content dl {
+    margin-bottom: 20px;
+}
+
 /* extract */
 blockquote.extract {
     font-size: 14px;
+}
+
+/* tweet shortcode */
+.post-content blockquote.twitter-tweet {
+    font-size: smaller;
+    margin-left: 60px;
+    margin-right: 60px;
 }
