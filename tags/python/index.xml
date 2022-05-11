@@ -13,14 +13,13 @@
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
     <lastBuildDate>Tue, 10 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/python/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Generating beautiful API documentation with Sphinx AutoAPI</title>
+      <title>Generating beautiful Python API documentation with Sphinx AutoAPI</title>
       <link>https://bylr.info/articles/2022/05/10/api-doc-with-sphinx-autoapi/</link>
       <pubDate>Tue, 10 May 2022 00:00:00 +0000</pubDate>
       
       <guid>https://bylr.info/articles/2022/05/10/api-doc-with-sphinx-autoapi/</guid>
-      <description>Following a recent discussion on Twitter, I decided to take yet another deep dive in my project&amp;rsquo;s documentation and fix once and for all the issues I had with it. I first focused on the automatically-generated API reference section and this article details the results of my finding. Specifically, I&amp;rsquo;m using vsketch&amp;rsquo;s API reference, which I recently updated, as an example (documentation source.
-This article addresses the following objectives:
- Produce a beautiful API documentation based on the code docstrings that is both nice to look at and easy to navigate.</description>
+      <description>Following a recent discussion on Twitter, I decided to take yet another deep dive in my Python projects&#39; documentation and fix once and for all the issues I had with it. I first focused on the automatically-generated API reference section and this article details the results of my finding. Specifically, I&amp;rsquo;m using vsketch&amp;rsquo;s API reference, which I recently updated, as an example (documentation source.
+This article addresses the following objectives:</description>
     </item>
     
     <item>
