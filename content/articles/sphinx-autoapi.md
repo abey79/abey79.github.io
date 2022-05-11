@@ -1,7 +1,8 @@
 ---
-title: "Generating beautiful API documentation with Sphinx AutoAPI"
+title: "Generating beautiful Python API documentation with Sphinx AutoAPI"
 slug: api-doc-with-sphinx-autoapi
 date: 2022-05-10
+lastmod: 2022-05-11
 showtoc: true
 tocopen: true
 cover:
@@ -12,7 +13,7 @@ tags:
   - sphinx
 ---
 
-Following a recent [discussion](https://twitter.com/abey79/status/1521484512596746246?s=20&t=3kEAgQUDFiJDRzz77UdTgA) on Twitter, I decided to take yet another deep dive in my project's documentation and fix once and for all the issues I had with it. I first focused on the automatically-generated API reference section and this article details the results of my finding. Specifically, I'm using *vsketch*'s [API reference](https://vsketch.readthedocs.io/en/latest/autoapi/vsketch/index.html), which I recently updated, as an example ([documentation source](https://github.com/abey79/vsketch/tree/master/docs).
+Following a recent [discussion](https://twitter.com/abey79/status/1521484512596746246?s=20&t=3kEAgQUDFiJDRzz77UdTgA) on Twitter, I decided to take yet another deep dive in my Python projects' documentation and fix once and for all the issues I had with it. I first focused on the automatically-generated API reference section and this article details the results of my finding. Specifically, I'm using *vsketch*'s [API reference](https://vsketch.readthedocs.io/en/latest/autoapi/vsketch/index.html), which I recently updated, as an example ([documentation source](https://github.com/abey79/vsketch/tree/master/docs).
 
 This article addresses the following objectives:
 - Produce a beautiful API documentation based on the code docstrings that is both nice to look at and easy to navigate.
@@ -599,3 +600,5 @@ Here is what we covered:
 Like any software project, improving the documentation is a never-ending endeavour. As it turns out, there is one remaining issue that has been bugging me and is yet unresolved. Due to a limitation in Sphinx, AutoAPI has a tendency to mangle the TOC ordering, especially when section headings are emitted from the templates. Check these [two](https://github.com/readthedocs/sphinx-autoapi/issues/283) [issues](https://github.com/sphinx-doc/sphinx/issues/6316#issuecomment-1066195555) for more information. Hopefully they'll get solved in the future.
 
 I shall conclude by stating that, by all means, I do not consider myself a Sphinx expert — much to the contrary. I *did* spend a lot of time improving my API documentation, and figured it would be wasteful not to share my findings, especially given the relative scarcity of information on advanced Sphinx usage patterns. As a result, it is rather likely that I made mistakes and sub-optimal choices. If so, please do provide feedback, and I'll update this article to improve it.
+
+*Edit: updated title and intro to clarify the nature of the API discussed, i.e. Python API (2022-05-11).*
