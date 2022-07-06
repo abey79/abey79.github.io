@@ -11,7 +11,17 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Tue, 10 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/articles/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 06 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/articles/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Annotated Release Notes: vpype 1.11</title>
+      <link>https://bylr.info/articles/2022/07/06/annotated-release-notes-vpype-1.11/</link>
+      <pubDate>Wed, 06 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/articles/2022/07/06/annotated-release-notes-vpype-1.11/</guid>
+      <description>This release further solidifies the block commands which were overhauled in vpype 1.9. It also introduces several changes revolving around the &amp;ldquo;plotting with paint&amp;rdquo; use-case, which typically requires the brush to be regularly dipped in a paint well. This can be achieved by inserting &amp;ldquo;dipping&amp;rdquo; patterns at regular intervals determined by the cumulative drawing distance. vpype 1.11 makes this process much easier.
+Thanks a lot to Andee Collard for his useful feedback and providing this article&amp;rsquo;s banner!</description>
+    </item>
+    
     <item>
       <title>Generating beautiful Python API documentation with Sphinx AutoAPI</title>
       <link>https://bylr.info/articles/2022/05/10/api-doc-with-sphinx-autoapi/</link>

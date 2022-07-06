@@ -11,7 +11,25 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Tue, 10 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 06 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>plotter</title>
+      <link>https://bylr.info/tags/plotter/</link>
+      <pubDate>Wed, 06 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/tags/plotter/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>vpype</title>
+      <link>https://bylr.info/tags/vpype/</link>
+      <pubDate>Wed, 06 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/tags/vpype/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>python</title>
       <link>https://bylr.info/tags/python/</link>
@@ -31,15 +49,6 @@
     </item>
     
     <item>
-      <title>plotter</title>
-      <link>https://bylr.info/tags/plotter/</link>
-      <pubDate>Thu, 28 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://bylr.info/tags/plotter/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>sketch</title>
       <link>https://bylr.info/tags/sketch/</link>
       <pubDate>Thu, 28 Apr 2022 00:00:00 +0000</pubDate>
@@ -54,15 +63,6 @@
       <pubDate>Thu, 28 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>https://bylr.info/tags/vsketch/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>vpype</title>
-      <link>https://bylr.info/tags/vpype/</link>
-      <pubDate>Thu, 07 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://bylr.info/tags/vpype/</guid>
       <description></description>
     </item>
     
