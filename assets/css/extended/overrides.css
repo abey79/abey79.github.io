@@ -18,16 +18,18 @@ main {
   font-weight: normal;
 }
 
-
-/* figure */
-.post-content figure {
-    border: 3px var(--content) solid;
-    border-radius: 11px;
-    padding: 6px;
+/* img: disable round corners by setting square-corner class */
+.post-content img.square-corner {
+    border-radius: unset;
 }
 
+/* figure: disable round corners by setting square-corner class */
 .post-content figure img {
     margin: 0;
+}
+
+.post-content figure.square-corner img {
+    border-radius: unset;
 }
 
 .post-content figure figcaption {
