@@ -9,7 +9,7 @@ enableRobotsTXT = true
 buildDrafts = false
 buildFuture = false
 buildExpired = false
-googleAnalytics = "G-D1H30VS7VK"
+#googleAnalytics = "G-D1H30VS7VK"
 enableEmoji = true
 
 [minify]
@@ -84,8 +84,8 @@ url = "https://www.linkedin.com/in/abeyeler/"
 # name = "stackoverflow"
 # url = "https://stackoverflow.com/users/229511/abey"
 
-[params.analytics.google]
-SiteVerificationTag = "XYZabc"
+#[params.analytics.google]
+#SiteVerificationTag = "XYZabc"
 
 [params.cover]
 hidden = false

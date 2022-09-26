@@ -18,3 +18,7 @@ Like my skills, my contributions to generative art lean on the technical rather 
 When I am not at the computer, you may find me piloting a helicopter :helicopter: or behind the camera :camera: on my travels.
 
 ![self](/self.jpg)
+
+## About this site
+
+This site is built using [Hugo](https://gohugo.io) and the [PaperMod](https://github.com/adityatelange/hugo-PaperMod/) theme. It is hosted on [GitHub Pages](https://pages.github.com) and deployed using a simple [GitHub Actions](https://github.com/features/actions) [workflow](https://github.com/abey79/abey79.github.io/blob/main/.github/workflows/gh-pages.yml). Privacy-friendly and GDPR-compliant analytics services are provided by [Plausible](https://plausible.io/) (a paid service, so neither you or I are the product). 
