@@ -20,6 +20,151 @@
       <guid>https://bylr.info/articles/2022/07/06/annotated-release-notes-vpype-1.11/</guid>
       <description>This release further solidifies the block commands which were overhauled in vpype 1.9. It also introduces several changes revolving around the &amp;ldquo;plotting with paint&amp;rdquo; use-case, which typically requires the brush to be regularly dipped in a paint well. This can be achieved by inserting &amp;ldquo;dipping&amp;rdquo; patterns at regular intervals determined by the cumulative drawing distance. vpype 1.11 makes this process much easier.
 Thanks a lot to Andee Collard for his useful feedback and providing this article&amp;rsquo;s banner!</description>
+      <content:encoded><![CDATA[<p>This release further solidifies the block commands which were overhauled in <a href="/articles/2022/03/03/annotated-release-notes-vpype-1.9/"><em>vpype</em> 1.9</a>. It also introduces several changes revolving around the &ldquo;plotting with paint&rdquo; use-case, which typically requires the brush to be regularly dipped in a paint well. This can be achieved by inserting &ldquo;dipping&rdquo; patterns at regular intervals determined by the cumulative drawing distance. <em>vpype</em> 1.11 makes this process much easier.</p>
+<p>Thanks a lot to <a href="https://www.andeecollard.com/">Andee Collard</a> for his useful feedback and providing this article&rsquo;s banner!</p>
+<h2 id="painting-with-a-plotter">Painting with a plotter</h2>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Added the <code>splitdist</code> command to split layers by drawing distance (thanks to @LoicGoulefert) (#487, #501)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>The new <a href="https://vpype.readthedocs.io/en/latest/reference.html#splitdist"><code>splitdist</code></a> command, contributed by <a href="https://compotedeplot.bigcartel.com">Loïc Goulefert</a> (thanks a lot!), is the core of the paint plotting use-case. It splits each layer into newly created layers such that their respective drawing distance is each below the specified limit.</p>
+<p>This command could readily be used with a clever <a href="https://github.com/plottertools/vpype-gcode">vpype-gcode</a> profile that implements the dipping mechanism at the beginning of each layer. Alternatively, it can be combined with the <code>forlayer</code> block command to insert dipping patterns into the line work. We&rsquo;ll see an example of such a pipeline below.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Added meters (<code>m</code>) and feet (<code>ft</code>) to the supported units (#498, #508)</li>
+<li>Fixed an issue with expressions where some variable names corresponding to units (e.g. <code>m</code>) could not be used (expressions may now reuse these names) (#506)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>These are rather large units for typical plotting workflow, but come in useful for specifying the maximum drawing distance with <code>splitdist</code>.</p>
+<p>As a reminder, units are available in two contexts:</p>
+<ol>
+<li>Every time a command accepts a length-type argument or option (e.g. <code>translate 5mm 3cm</code> or <code>linemerge --tolerance 0.05mm</code>).</li>
+<li>In <a href="https://vpype.readthedocs.io/en/latest/fundamentals.html#built-in-symbols">expressions</a> (e.g. <code>forlayer translate &quot;%_i*3*cm%&quot; 0 end</code>).</li>
+</ol>
+<p>In the latter case, the existence of the unit constant precluded the use of variables with the same name. This issue worsened with the addition of <code>m</code> as this is a rather common variable name (e.g. this cookbook <a href="https://vpype.readthedocs.io/en/latest/cookbook.html#cropping-and-framing-geometries">recipe</a> uses it). To address this, they are no longer read-only and may now be overwritten. Of course, doing so renders their original value unavailable in the pipeline&rsquo;s subsequent expressions.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Fixed an issue with blocks where certain nested commands could lead totally unexpected results (#506)</li>
+<li>API: removed the faulty <code>temp_document()</code> context manager from <code>vpype_cli.State()</code> (#506)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>The improved blocks introduced in <a href="/articles/2022/03/03/annotated-release-notes-vpype-1.9/"><em>vpype</em> 1.9</a> had a major flaw which could, in some circumstances, result in erratic results. It turns out that the new <code>splitdist</code> command triggered this issue and brought it in the spotlight. This is now fixed, and the <code>vpype_cli.State.temp_document()</code> API is a casualty of this patch (luckily, it was introduced recently and I&rsquo;m pretty sure no one used it yet besides me).</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Fixed an issue with the <code>lmove</code> command where order would not be respected in certain cases such as <code>lmove all 2</code> (the content of layer 2 was placed before that of layer 1) (#506)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>This is yet another issue highlighted by to the &ldquo;plotting with paint&rdquo; workflow. When the source layers included the destination layer (as is the case for <code>lmove all 2</code>), the order of the source layers would not be respected (e.g. for a 3-layer pipeline and the<code>lmove all 2</code> command, layer 2 would end up with its original content, then layer 1, then layer 3). With this fix, the destination layer will now include the source layers' content in the correct order (e.g. in the previous example, layer 2 would end up with the content of layer 1, then layer 2, then layer 3).</p>
+<br/>
+<p>Collectively, these changes enable the &ldquo;plotting with paint&rdquo; workflow using the following pipeline:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ vpype <span style="color:#d14">\
+</span><span style="color:#d14"></span>      <span style="color:#0086b3">read</span> input.svg <span style="color:#d14">\
+</span><span style="color:#d14"></span>      forlayer <span style="color:#d14">\
+</span><span style="color:#d14"></span>        lmove %_lid% <span style="color:#099">1</span> <span style="color:#d14">\
+</span><span style="color:#d14"></span>        splitdist 1m <span style="color:#d14">\
+</span><span style="color:#d14"></span>        forlayer <span style="color:#d14">\
+</span><span style="color:#d14"></span>          lmove %_lid% <span style="color:#d14">&#34;%_lid*2%&#34;</span> <span style="color:#d14">\
+</span><span style="color:#d14"></span>          <span style="color:#0086b3">read</span> -l <span style="color:#d14">&#34;%_lid*2-1%&#34;</span> dip_%_name%.svg <span style="color:#d14">\
+</span><span style="color:#d14"></span>        end <span style="color:#d14">\
+</span><span style="color:#d14"></span>      lmove all %_lid% <span style="color:#d14">\
+</span><span style="color:#d14"></span>      name -l %_lid% %_name% <span style="color:#d14">\
+</span><span style="color:#d14"></span>      color -l %_lid% %_color% <span style="color:#d14">\
+</span><span style="color:#d14"></span>    end <span style="color:#d14">\
+</span><span style="color:#d14"></span>    write output.svg
+</code></pre></div><p>For this to work, the layers in <code>input.svg</code> must be named after their respective color and, for each such color, a file named <code>dip_COLORNAME.svg</code> must exist. For example, if <code>input.svg</code> has two layers named &ldquo;red&rdquo; and &ldquo;blue&rdquo;, then the <code>dip_red.svg</code> and <code>dip_blue.svg</code> files must exist.</p>
+<p>The following figure illustrates the results for synthetic data.</p>
+<figure class="square-corner">
+    <img loading="lazy" src="/vpype_111/paint_workflow.svg"
+         alt="(left) Input SVG with 3 layers. (middle) The three corresponding dipping pattern SVGs. (right) The output SVG with 3 layers and the visible dipping patterns interspersed within the line work."/> <figcaption>
+            <p>(<em>left</em>) Input SVG with 3 layers. (<em>middle</em>) The three corresponding dipping pattern SVGs. (<em>right</em>) The output SVG with 3 layers and the visible dipping patterns interspersed within the line work.</p>
+        </figcaption>
+</figure>
+
+<p>This pipeline is listed in a cookbook <a href="https://vpype.readthedocs.io/en/latest/cookbook.html#inserting-regular-dipping-patterns-for-plotting-with-paint">recipe</a> and will be explained in details, along with the <code>forlayer</code> block command, in a future article.</p>
+<h2 id="other-changes">Other changes</h2>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Improved the <code>linemerge</code> algorithm by making it less dependent on line order (#496)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>The <code>linemerge</code> command is implemented using a <a href="https://en.wikipedia.org/wiki/Greedy_algorithm">greedy</a> algorithm which roughly works as follows:</p>
+<ol>
+<li>Pick the first available line.</li>
+<li>Look for another line that can be appended.</li>
+<li>If found, merge both lines and look for further line to append (back to step 2). If not, save the current line, pick the next available one, and repeat (back to step 1).</li>
+</ol>
+<p>By default, <code>linemerge</code> always considers both endings of each line, possibly reversing them if this enables a merge. This is not always desirable though, which is why the <code>--no-flip</code> option exists. In this case, the algorithm would only try to <em>append</em> to the current line, without trying to <em>prepend</em> as well. This oversight led to a greater dependence on line order and, occasionally, suboptimal results, as illustrated by the figure below.</p>
+<figure>
+    <img loading="lazy" src="/vpype_111/linemerge.svg"
+         alt="(left) Initial situation. (middle) Result when both appending only. (right) Results when appending and prepending."/> <figcaption>
+            <p>(<em>left</em>) Initial situation. (<em>middle</em>) Result when both appending only. (<em>right</em>) Results when appending and prepending.</p>
+        </figcaption>
+</figure>
+
+<p>With this fix, <code>linemerge --no-flip</code> now tries to both append and prepend, leading to more consistent results.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Added <code>--keep-page-size</code> option to <code>grid</code> command (#506)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>By default, the <code>grid</code> block command sets the page size to its geometry. For example, the block <code>grid --offset 4cm 3cm 3 5 [...] end</code> sets the page size to 12x15cm. This behaviour can now be disabled with the <code>--keep-page-size</code> option.</p>
+<p>This change mainly helps for the testability of the blocks feature (in this release, I&rsquo;ve added multiple tests to minimise the risk of future regression), but I figured it could have its occasional use out there.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Added HPGL configurations for the Houston Instrument DMP-161, HP7550, Roland DXY 1xxxseries and sketchmate plotters (thanks to @jimmykl and @ithinkido) (#472, #474)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>Thanks a lot, <a href="https://linktr.ee/jimmyis">Jimmy Kirkus-Lamont</a> and <a href="https://github.com/ithinkido">@ithinkido</a>! ❤️</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Added equality operator to <code>vpype.LineCollection</code> and <code>vpype.Document</code> (#506)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>I can now check if two layers or documents have the same content and metadata using the equality operator <code>==</code>. This is immensely useful when writing tests. I have no idea why it took so long… 🤷</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Pinned Shapely to 1.8.2, which is the first release in a long time to have binaries for most platforms/Python release combination (including Apple-silicon Macs and Python 3.10) (#475)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>It was quite the roller coaster ride for <a href="https://shapely.readthedocs.io/">Shapely</a> to be properly packaged for both Python 3.10 and Apple-silicon Macs, but now this is fully sorted out. That&rsquo;s one less hassle when installing <em>vpype</em>.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Removed deprecated API (#507)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>With <a href="/articles/2022/03/03/annotated-release-notes-vpype-1.9/"><em>vpype</em> 1.9</a>, a number of APIs migrated from the <code>vpype</code> package to the <code>vpype_cli</code> package. The former APIs still worked but emitted <a href="/articles/2022/03/03/annotated-release-notes-vpype-1.9/#other-changes">deprecation warnings</a>. They are now gone forever.</p>
+]]></content:encoded>
     </item>
     
     <item>
@@ -30,6 +175,419 @@ Thanks a lot to Andee Collard for his useful feedback and providing this article
       <guid>https://bylr.info/articles/2022/05/10/api-doc-with-sphinx-autoapi/</guid>
       <description>Following a recent discussion on Twitter, I decided to take yet another deep dive in my Python projects&#39; documentation and fix once and for all the issues I had with it. I first focused on the automatically-generated API reference section and this article details the results of my finding. Specifically, I&amp;rsquo;m using vsketch&amp;rsquo;s API reference, which I recently updated, as an example (documentation source.
 This article addresses the following objectives:</description>
+      <content:encoded><![CDATA[<p>Following a recent <a href="https://twitter.com/abey79/status/1521484512596746246?s=20&amp;t=3kEAgQUDFiJDRzz77UdTgA">discussion</a> on Twitter, I decided to take yet another deep dive in my Python projects' documentation and fix once and for all the issues I had with it. I first focused on the automatically-generated API reference section and this article details the results of my finding. Specifically, I&rsquo;m using <em>vsketch</em>&rsquo;s <a href="https://vsketch.readthedocs.io/en/latest/autoapi/vsketch/index.html">API reference</a>, which I recently updated, as an example (<a href="https://github.com/abey79/vsketch/tree/master/docs">documentation source</a>.</p>
+<p>This article addresses the following objectives:</p>
+<ul>
+<li>Produce a beautiful API documentation based on the code docstrings that is both nice to look at and easy to navigate.</li>
+<li>Support for a proper table of content navigation down to each class/module&rsquo;s member.</li>
+<li>Nice looking summary tables listing modules' and classes' contents.</li>
+</ul>
+<img src="/sphinx-autoapi/example_doc.png"alt="Example of documentation generated with this article&#39;s techniques"width="80%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>This article targets an audience of FOSS maintainers who are unhappy with the state of their project&rsquo;s API documentation, and are frustrated with the process of improving it. A basic understanding of Sphinx as well as an existing documentation setup is assumed. This article basically contains everything I wish I was told when I first started on my API reference improvement journey. For the beginners, I&rsquo;ll provide pointers to help setting up a basic Sphinx.</p>
+<p>Note that although this article is structured as a tutorial, it covers tips and techniques which are likely useful for other kinds of documentation customisation.</p>
+<h2 id="basic-setup">Basic setup</h2>
+<p>As stated above, the basic steps to setup a Sphinx-based documentation project are outside the scope of the present article. I suggest reviewing the following resources to get started:</p>
+<ul>
+<li><a href="https://twitter.com/mariatta">@Mariatta</a> made a <em>brilliant</em> <a href="https://sphinx-intro-tutorial.readthedocs.io/">tutorial</a> on how to kick-start a Sphinx documentation project.</li>
+<li><a href="https://thomas-cokelaer.info">Thomas Cokelaer</a> has a very nice reStructuredText <a href="https://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html">cheat sheet</a>.</li>
+<li><a href="https://simonwillison.net">Simon Willison</a> wrote another <a href="https://simonwillison.net/2018/Aug/25/restructuredtext/">cheat sheet</a> which covers &ldquo;the subset of reStructuredText worth committing to memory&rdquo;.</li>
+<li>Obviously, Sphinx&rsquo;s <a href="https://www.sphinx-doc.org/en/master/">documentation</a> is an important resource. Although it is somewhat arid for the newcomer, I strongly suggest not giving up on it. I had multiple &ldquo;oh there it is!&rdquo; moments with it in the process of writing this article.</li>
+<li>Finally, <a href="https://readthedocs.org">Read the Docs</a> is likely the best place to host your documentation. It&rsquo;s very simple to setup and free for open source projects.</li>
+</ul>
+<p>As for the theme, my preference goes for <a href="https://pradyunsg.me">Pradyun Gedam</a>&rsquo;s <a href="https://github.com/pradyunsg/furo">Furo</a>. I&rsquo;m using it with the default configuration, so the only requirement is to enable it in your <code>conf.py</code> file:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">html_theme <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;furo&#34;</span>
+</code></pre></div><p>Note that some of the CSS provided in this article may need adjustments should you opt for a different theme.</p>
+<h2 id="autoapi-setup">Autoapi setup</h2>
+<p>After trying both autodoc/autosummary and Sphinx AutoAPI, I opted to use the latter. Here are the main reasons behind this choice:</p>
+<ul>
+<li>Autosummary does not generate TOC entries for API elements such as classes/modules and their members. This is due to a <a href="https://github.com/sphinx-doc/sphinx/issues/6316">long-standing Sphinx limitation</a>. Autoapi works around this limitation (albeit imperfectly, as we&rsquo;ll later note).</li>
+<li>Autosummary defaults to <a href="https://github.com/sphinx-doc/sphinx/issues/7912">not generating anything</a> and is in my experience frustrating to setup. In contrast, autoapi produces usable output out-of-the-box.</li>
+<li>Templates are easier to write thanks to the rich &ldquo;mapper&rdquo; objects AutoAPI provides after parsing your code (see the <a href="#autoapi-objects">AutoAPI objects</a> section below).</li>
+</ul>
+<p>Note that there are two things called &ldquo;autoapi&rdquo; floating on the Internet: the <a href="https://github.com/readthedocs/sphinx-autoapi">Sphinx AutoAPI</a> project (<a href="https://sphinx-autoapi.readthedocs.io/en/latest/">documentation</a>) is the good one. The <a href="https://autoapi.readthedocs.io">other one</a> is unmaintained and barely documented. Make sure you don&rsquo;t loose time dealing with the wrong one.</p>
+<h3 id="basics">Basics</h3>
+<p>Setting up Sphinx AutoAPI is covered in their <a href="https://sphinx-autoapi.readthedocs.io/en/latest/tutorials.html#python">documentation</a>. It boils down to the following steps.</p>
+<ol>
+<li>Install the <code>sphinx-autoapi</code> package:
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ pip install sphinx-autoapi
+</code></pre></div></li>
+<li>Add AutoAPI it to the Sphinx extension list:
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">extensions <span style="color:#000;font-weight:bold">=</span> [
+    <span style="color:#000;font-weight:bold">...</span>,
+    <span style="color:#d14">&#39;autoapi.extension&#39;</span>,
+]
+</code></pre></div></li>
+<li>List your package directories (or the directory containing them) and set basic options:
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">autoapi_dirs <span style="color:#000;font-weight:bold">=</span> [<span style="color:#d14">&#39;../mypackage&#39;</span>]
+autoapi_type <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;python&#34;</span>
+</code></pre></div></li>
+<li>Add the generated documentation to your <code>index.rst</code> toctree:
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rst" data-lang="rst">.. <span style="color:#000;font-weight:bold">toctree</span>::<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span>   <span style="color:#458;font-weight:bold">:maxdepth:</span> <span style="color:#900;font-weight:bold">3</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#999;font-weight:bold;font-style:italic">   ...
+</span><span style="color:#999;font-weight:bold;font-style:italic">   autoapi/index
+</span></code></pre></div></li>
+</ol>
+<h3 id="setting-up-templates">Setting up templates</h3>
+<p>We will customise Sphinx AutoAPI&rsquo;s default templates. The easiest is to copy Sphinx AutoAPI&rsquo;s default templates in your project to serve as a starting point.</p>
+<p>First, run the following commands (adjusting for your Python version) from your documentation directory:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir _templates
+$ mkdir _template/autoapi
+$ cp <span style="color:#008080">$VIRTUAL_ENV</span>/lib/python3.10/site-packages/autoapi/templates/index.rst _templates/autoapi/
+$ cp -r <span style="color:#008080">$VIRTUAL_ENV</span>/lib/python3.10/site-packages/autoapi/templates/python _templates/autoapi/ 
+</code></pre></div><p>Then, tell Sphinx AutoAPI of its template directory in your <code>conf.py</code> file:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">autoapi_template_dir <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;_templates/autoapi&#34;</span>
+</code></pre></div><p>A useful tip is to make a Git commit just after copying the built-in templates, such that you can track (and revert) your modifications. I&rsquo;ve used this extensively while working on my templates.</p>
+<p>At this point, I suggest spending some time to become acquainted with the built-in templates and how they are organised and implemented. If you haven&rsquo;t used it before, it is also useful to review the Jinja2 templating language <a href="https://jinja.palletsprojects.com">documentation</a>.</p>
+<h3 id="other-configuration-options">Other configuration options</h3>
+<h4 id="autoapi_options"><code>autoapi_options</code></h4>
+<p>The <code>autoapi_options</code> controls various aspect of the generated documentation, including the type of class/module members that are listed. Its default value is sensible but I still felt like customising it:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">autoapi_options <span style="color:#000;font-weight:bold">=</span> [
+    <span style="color:#d14">&#34;members&#34;</span>,
+    <span style="color:#d14">&#34;undoc-members&#34;</span>,
+    <span style="color:#d14">&#34;show-inheritance&#34;</span>,
+    <span style="color:#d14">&#34;show-module-summary&#34;</span>,
+    <span style="color:#d14">&#34;imported-members&#34;</span>,
+]
+</code></pre></div><p>In particular, I want the summary at the top of the module&rsquo;s documentation (<code>show-module-summary</code>), but we will heavily customise it. Check <a href="https://sphinx-autoapi.readthedocs.io/en/latest/reference/config.html#confval-autoapi_options">the documentation</a> for a list of available options and their descriptions.</p>
+<h4 id="autoapi_keep_files"><code>autoapi_keep_files</code></h4>
+<p>Another useful option is <code>autoapi_keep_files</code>. Sphinx-autoapi generates .rst pages for the documentation during the build process, but defaults to deleting them after completion. It&rsquo;s often useful to keep them around for inspection and debugging purposes:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">autoapi_keep_files <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">True</span>
+</code></pre></div><h4 id="autodoc_typehints"><code>autodoc_typehints</code></h4>
+<p>This is technically an autodoc setting, but Sphinx AutoAPI honours it. It controls if/where type hints are included in the documentation. The possible values are the following:</p>
+<ul>
+<li><code>&quot;signature&quot;</code>: type hints are included in the function signature, which appears first in the member&rsquo;s documentation</li>
+<li><code>&quot;description&quot;</code>: type hints are included within the function description, when the arguments are listed</li>
+<li><code>&quot;both&quot;</code>: type hints are included in both places</li>
+<li><code>&quot;none&quot;</code>: type hints are not included</li>
+</ul>
+<p>My preference goes for <code>&quot;signature&quot;</code>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">autodoc_typehints <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;signature&#34;</span>
+</code></pre></div><h3 id="autoapi-objects">AutoAPI objects</h3>
+<p>Understanding the Sphinx AutoAPI objects is key to customising templates. They are one of the major difference with respect to autodoc/autosummary.</p>
+<p>In order to generate the API documentation, the autodoc <em>loads</em> your actual code and uses Python&rsquo;s introspection capabilities to extract the required information from your module and class objects. In contrast, Sphinx AutoAPI <em>parses</em> your Python code and builds a collection of so-called &ldquo;mapper&rdquo; objects which describe your code and its structure. These objects are then passed on as context to the Jinja2 templating engine. Oddly, the documentation doesn&rsquo;t provide a reference about them, but their <a href="https://github.com/readthedocs/sphinx-autoapi/blob/master/autoapi/mappers/python/objects.py">implementation</a> is easy to read.</p>
+<p>Here is a summary of some of the attributes that are useful when writing templates:</p>
+<dl>
+<dt><code>obj.name</code></dt>
+<dd>Name of the mapped object, e.g. <code>&quot;MyClass&quot;</code> or <code>&quot;my_method&quot;</code>.</dd>
+<dt><code>obj.id</code></dt>
+<dd>Fully qualified name of the object, used for cross-referencing, e.g. <code>&quot;my_module.MyClass&quot;</code> or <code>&quot;my_module.MyClass.my_method&quot;</code>.</dd>
+<dt><code>obj.summary</code></dt>
+<dd>Summary of the object&rsquo;s docstring (i.e. the first line).</dd>
+<dt><code>obj.docstring</code></dt>
+<dd>Full docstring of the object.</dd>
+<dt><code>obj.display</code></dt>
+<dd>Indicates whether or not this object should be displayed, based on the options set in <code>conf.py</code> and the result of the <code>autoapi-skip-member</code> event (discussed later).</dd>
+<dt><code>obj.children</code></dt>
+<dd><em>(Modules and classes only)</em> List children functions, methods, attributes, etc.</dd>
+<dt><code>obj.properties</code></dt>
+<dd><em>(Functions and methods only)</em> List of properties, such as <code>&quot;classmethod&quot;</code>, <code>&quot;staticmethod&quot;</code>&quot;, <code>&quot;abstractmethod&quot;</code>, <code>&quot;property&quot;</code>, etc.</dd>
+<dt><code>obj.obj.args</code></dt>
+<dd><em>(Functions and methods only)</em> List of 4-tuples describing the function&rsquo;s arguments. The first item is the star operator if any (<code>&quot;*&quot;</code>, <code>&quot;**&quot;</code>, or <code>None</code>), the second is the argument name, the third is the argument type or <code>None</code>, and the fourth is the argument default value or <code>None</code>. This key piece of data will enable us to recreate the signatures according to our needs.</dd>
+</dl>
+<p>When working on your documentation, it is often useful to inspect the contents of these mapper objects using a debugger. This can be achieved by adding an handler for the <code>autoapi-skip-member</code> event and setting a conditional breakpoint:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">skip_member</span>(app, what, name, obj, skip, options):
+    <span style="color:#998;font-style:italic"># conditional breakpoint here</span>
+    <span style="color:#000;font-weight:bold">return</span> skip
+
+
+<span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">setup</span>(sphinx):
+    sphinx<span style="color:#000;font-weight:bold">.</span>connect(<span style="color:#d14">&#34;autoapi-skip-member&#34;</span>, skip_member)
+</code></pre></div><p>This event will be triggered for every single Python object parsed from your code. By breaking, for example, when <code>obj.name == &quot;my_module&quot;</code>, the <code>obj</code> argument and its children can be fully inspected. I use the following run configuration in my IDE for this:</p>
+<ul>
+<li>Execute module: <code>sphinx.cmd.build</code></li>
+<li>Parameters: <code>-M html . _build</code></li>
+<li>Working directory: <code>docs/</code></li>
+</ul>
+<h2 id="an-autosummary-like-macro">An <code>autosummary</code>-like macro</h2>
+<p>By default, Sphinx AutoAPI provides a summary list of classes, functions, and attributes at the top of a module&rsquo;s documentation, which is very nice. Our objective is to add a similar table at the top of each class description, to facilitate navigation. However, Sphinx AutoAPI uses its own <code>autoapisummary</code> directive, which derives from autosummary&rsquo;s <code>autosummary</code> directive. Both suffer from the following limitations:</p>
+<ul>
+<li>The way callables are rendered is hard-coded and cannot be customised via templates. In particular, if <code>autodoc_typehints</code> is set to <code>&quot;signature&quot;</code> or <code>&quot;both&quot;</code>, <code>autosummary</code> will include type hints in the summary table as well. Unfortunately, this dramatically increases the length of the signature, which is detrimental to the table layout and usability. Alternatively, signatures can be entirely removed by using the <code>:nosignatures:</code> option. However, in this case, not even parenthesis are displayed, which hides the callable nature of the function. The best compromise is to have the full signature with their arguments, but without typing annotations.</li>
+<li>Properties are listed as functions, including their signature. This hides the fact that, API-wise, they behave as data members (though it would still be useful to indicate that they are in fact properties).</li>
+<li>There is not indication that a method is abstract, static, or class-based.</li>
+</ul>
+<p>To address these shortcomings, we will create a <a href="https://jinja.palletsprojects.com">Jinja2</a> template macro to replicate and improve on <code>autosummary</code>/<code>autoapisummary</code> functionality.<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></p>
+<p>Our aim is to create tables where callable have their full – but unannotated – signature, where properties are indicated as such but rendered as attributes, and where static, class, and abstract methods are marked as such. Here is an example of this:</p>
+<img src="/sphinx-autoapi/demo_class_doc.png"alt="Example of documentation generated with this article&#39;s techniques"width="80%"style="display:block;margin-left:auto;margin-right:auto"/>
+<h3 id="basic-macro-setup">Basic macro setup</h3>
+<p>The basic insight is that a summary table can be implemented using Sphinx&rsquo;s <a href="https://docutils.sourceforge.io/docs/ref/rst/directives.html#list-table"><code>list-table</code></a>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rst" data-lang="rst">.. <span style="color:#000;font-weight:bold">list-table</span>:: Title<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span>   <span style="color:#458;font-weight:bold">:header-rows:</span> <span style="color:#900;font-weight:bold">0</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span>   <span style="color:#458;font-weight:bold">:widths:</span> <span style="color:#900;font-weight:bold">auto</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span>   
+   <span style="color:#099">*</span> - Item 1<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span>     <span style="color:#099">-</span> This is the description of the first item.<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span>   <span style="color:#099">*</span> - Name 2<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span>     - This is also a description, but this time for the second item.<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span>   <span style="color:#099">*</span> - ...<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span>     - ...<span style="color:#a61717;background-color:#e3d2d2">
+</span></code></pre></div><img src="/sphinx-autoapi/basic_table.png"alt="Example of basic table."width="60%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>Such a table can be generated with the following Jinja macro:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jinja" data-lang="jinja"><span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">macro</span> <span style="color:#008080">auto_summary</span><span style="color:#000;font-weight:bold">(</span><span style="color:#008080">objs</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#008080">title</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#39;&#39;</span><span style="color:#000;font-weight:bold">)</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+
+.. list-table:: <span style="color:#999;font-weight:bold;font-style:italic">{{</span> <span style="color:#008080">title</span> <span style="color:#999;font-weight:bold;font-style:italic">}}</span>
+   :header-rows: 0
+   :widths: auto
+
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">for</span> <span style="color:#008080">obj</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">objs</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+    * - obj.name
+      - obj.summary
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endfor</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endmacro</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+</code></pre></div><p>To test this, create a file named <code>_templates/autoapi/macros.rst</code> and add the code above. Then, make the following edits to the <code>_templates/autoapi/python/module.rst</code> file:</p>
+<ul>
+<li>At the top of the file, import <code>macros.rst</code> to make it available for use:
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jinja" data-lang="jinja"><span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">import</span> <span style="color:#d14">&#39;macros.rst&#39;</span> <span style="color:#000;font-weight:bold">as</span> <span style="color:#008080">macros</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+</code></pre></div></li>
+<li>Locate where the class summary is generated:
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jinja" data-lang="jinja">.. autoapisummary::
+
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">for</span> <span style="color:#008080">klass</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">visible_classes</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+   <span style="color:#999;font-weight:bold;font-style:italic">{{</span> <span style="color:#008080">klass.id</span> <span style="color:#999;font-weight:bold;font-style:italic">}}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endfor</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+</code></pre></div></li>
+<li>Replace the code above by a call to our macro:
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jinja" data-lang="jinja"><span style="color:#999;font-weight:bold;font-style:italic">{{</span> <span style="color:#008080">macros.auto_summary</span><span style="color:#000;font-weight:bold">(</span><span style="color:#008080">visible_classes</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#008080">title</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;Classes&#34;</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#999;font-weight:bold;font-style:italic">}}</span>
+</code></pre></div></li>
+</ul>
+<p>Here is the result I obtain with my project:</p>
+<img src="/sphinx-autoapi/basic_class_table.png"alt="Example of basic class table."width="70%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>This is a good start, but we&rsquo;re obviously far from the result we want. To start with, no cross-reference links are generated. And, had we passed functions or methods instead of classes to our macro, no signature would have been generated.</p>
+<h3 id="custom-labels">Custom labels</h3>
+<p>Before fixing our macro, we must discuss these nice looking &ldquo;prop&rdquo;, &ldquo;static&rdquo;, and &ldquo;class&rdquo; tag-like labels in the example tables above. These are implemented using a custom <a href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/roles.html">role</a> with some CSS attached to it.</p>
+<p>This StackOverflow <a href="https://stackoverflow.com/a/9707879/229511">answer</a> explains how to create a custom role and make it globally available to your documentation. Basically, just add the following to your <code>conf.py</code> file:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">rst_prolog <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;&#34;&#34;
+</span><span style="color:#d14">.. role:: summarylabel
+</span><span style="color:#d14">&#34;&#34;&#34;</span>
+</code></pre></div><p>The <code>role</code> directive creates a new role which can then be used as follows:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rst" data-lang="rst"><span style="color:#008080">:summarylabel:</span><span style="color:#008080">`My Label`</span><span style="color:#a61717;background-color:#e3d2d2">
+</span></code></pre></div><p>Sphinx generates the corresponding HTML code:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#000080">span</span> <span style="color:#008080">class</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;summarylabel&#34;</span>&gt;My label&lt;/<span style="color:#000080">span</span>&gt;
+</code></pre></div><p>Since it sets an HTML class named after the role, it&rsquo;s easy to adjust the label appearance using some custom CSS. Create a file named <code>_static/css/custom.css</code> in your documentation directory and add the following CSS:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-css" data-lang="css"><span style="color:#000080">span</span>.<span style="color:#458;font-weight:bold">summarylabel</span> {
+    <span style="color:#000;font-weight:bold">background-color</span>: <span style="color:#900;font-weight:bold">var</span>(<span style="color:#000;font-weight:bold">--</span><span style="color:#000;font-weight:bold">color</span><span style="color:#000;font-weight:bold">-</span>foreground<span style="color:#000;font-weight:bold">-</span>secondary);
+    <span style="color:#000;font-weight:bold">color</span>: <span style="color:#900;font-weight:bold">var</span>(<span style="color:#000;font-weight:bold">--</span><span style="color:#000;font-weight:bold">color</span><span style="color:#000;font-weight:bold">-</span>background<span style="color:#000;font-weight:bold">-</span>secondary);
+    <span style="color:#000;font-weight:bold">font-size</span>: <span style="color:#099">70</span><span style="color:#458;font-weight:bold">%</span>;
+    <span style="color:#000;font-weight:bold">padding-left</span>: <span style="color:#099">2</span><span style="color:#458;font-weight:bold">px</span>;
+    <span style="color:#000;font-weight:bold">padding-right</span>: <span style="color:#099">2</span><span style="color:#458;font-weight:bold">px</span>;
+    <span style="color:#000;font-weight:bold">border-radius</span>: <span style="color:#099">3</span><span style="color:#458;font-weight:bold">px</span>;
+    <span style="color:#000;font-weight:bold">vertical-align</span>: <span style="color:#099">15</span><span style="color:#458;font-weight:bold">%</span>;
+    <span style="color:#000;font-weight:bold">padding-bottom</span>: <span style="color:#099">2</span><span style="color:#458;font-weight:bold">px</span>;
+    <span style="color:#000;font-weight:bold">filter</span>: <span style="color:#0086b3">opacity</span>(<span style="color:#099">40</span><span style="color:#458;font-weight:bold">%</span>);
+}
+</code></pre></div><p>Note the use of CSS variables in order to support Furo&rsquo;s dynamic night mode feature.</p>
+<p>Finally, we must tell Sphinx about this CSS file in the <code>conf.py</code> file:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">html_css_files <span style="color:#000;font-weight:bold">=</span> [
+    <span style="color:#d14">&#34;css/custom.css&#34;</span>,
+]
+</code></pre></div><h3 id="customising-the-table-appearance">Customising the table appearance</h3>
+<p>A similar CSS approach can be used to customise the appearance of the summary table itself. By adding the <code>:class:</code> option to the <code>list-table</code> directive, we can tell Sphinx to attach an HTML class to the <code>&lt;table&gt;</code> element, which we can then customise with CSS:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rst" data-lang="rst">.. <span style="color:#000;font-weight:bold">list-table</span>:: Title<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span>   <span style="color:#458;font-weight:bold">:header-rows:</span> <span style="color:#900;font-weight:bold">0</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span>   <span style="color:#458;font-weight:bold">:widths:</span> <span style="color:#900;font-weight:bold">auto</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span>   <span style="color:#458;font-weight:bold">:class:</span> <span style="color:#900;font-weight:bold">summarytable</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span>   
+   <span style="color:#099">*</span> - ...<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span>     <span style="color:#099">-</span> ...<span style="color:#a61717;background-color:#e3d2d2">
+</span></code></pre></div><p>For my project, the only change I made to the default appearance is to force the table to span the entire width regardless of its contents. This can be done by adding the following code to our <code>custom.css</code> file:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-css" data-lang="css"><span style="color:#000080">table</span>.<span style="color:#458;font-weight:bold">summarytable</span> {
+    <span style="color:#000;font-weight:bold">width</span>: <span style="color:#099">100</span><span style="color:#458;font-weight:bold">%</span>;
+}
+</code></pre></div><h3 id="putting-it-all-together">Putting it all together</h3>
+<p>We are now ready to put everything together and improve our <code>auto_summary()</code> macro to our liking. Here is the final code for <code>macros.rst</code>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jinja" data-lang="jinja"><span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">macro</span> <span style="color:#008080">_render_item_name</span><span style="color:#000;font-weight:bold">(</span><span style="color:#008080">obj</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#008080">sig</span><span style="color:#000;font-weight:bold">=</span><span style="color:#000;font-weight:bold">False</span><span style="color:#000;font-weight:bold">)</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+:py:obj:`<span style="color:#999;font-weight:bold;font-style:italic">{{</span> <span style="color:#008080">obj.name</span> <span style="color:#999;font-weight:bold;font-style:italic">}}</span> &lt;<span style="color:#999;font-weight:bold;font-style:italic">{{</span> <span style="color:#008080">obj.id</span> <span style="color:#999;font-weight:bold;font-style:italic">}}</span>&gt;`
+     <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">if</span> <span style="color:#008080">sig</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+       \ (
+       <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">for</span> <span style="color:#008080">arg</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">obj.obj.args</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+          <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">if</span> <span style="color:#008080">arg</span><span style="color:#000;font-weight:bold">[</span><span style="color:#099">0</span><span style="color:#000;font-weight:bold">]</span> <span style="color:#999;font-weight:bold;font-style:italic">%}{{</span> <span style="color:#008080">arg</span><span style="color:#000;font-weight:bold">[</span><span style="color:#099">0</span><span style="color:#000;font-weight:bold">]|</span><span style="color:#900;font-weight:bold">replace</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#39;*&#39;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#39;\*&#39;</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#999;font-weight:bold;font-style:italic">}}{%</span> <span style="color:#000;font-weight:bold">endif</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}{{</span>  <span style="color:#008080">arg</span><span style="color:#000;font-weight:bold">[</span><span style="color:#099">1</span><span style="color:#000;font-weight:bold">]</span> -<span style="color:#999;font-weight:bold;font-style:italic">}}</span>
+          <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#0086b3">loop</span><span style="color:#008080">.last</span>  <span style="color:#999;font-weight:bold;font-style:italic">%}</span>, <span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endif</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+       <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">endfor</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+       )<span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">endif</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">endmacro</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">macro</span> <span style="color:#008080">_item</span><span style="color:#000;font-weight:bold">(</span><span style="color:#008080">obj</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#008080">sig</span><span style="color:#000;font-weight:bold">=</span><span style="color:#000;font-weight:bold">False</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#008080">label</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#39;&#39;</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+   * - <span style="color:#999;font-weight:bold;font-style:italic">{{</span> <span style="color:#008080">_render_item_name</span><span style="color:#000;font-weight:bold">(</span><span style="color:#008080">obj</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#008080">sig</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#999;font-weight:bold;font-style:italic">}}</span>
+     - <span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">if</span> <span style="color:#008080">label</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>:summarylabel:`<span style="color:#999;font-weight:bold;font-style:italic">{{</span> <span style="color:#008080">label</span> <span style="color:#999;font-weight:bold;font-style:italic">}}</span>` <span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endif</span> <span style="color:#999;font-weight:bold;font-style:italic">%}{%</span> <span style="color:#000;font-weight:bold">if</span> <span style="color:#008080">obj.summary</span> <span style="color:#999;font-weight:bold;font-style:italic">%}{{</span> <span style="color:#008080">obj.summary</span> <span style="color:#999;font-weight:bold;font-style:italic">}}{%</span> <span style="color:#000;font-weight:bold">else</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>\-<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endif</span> <span style="color:#000;font-weight:bold">+</span><span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endmacro</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">macro</span> <span style="color:#008080">auto_summary</span><span style="color:#000;font-weight:bold">(</span><span style="color:#008080">objs</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#008080">title</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#39;&#39;</span><span style="color:#000;font-weight:bold">)</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+.. list-table:: <span style="color:#999;font-weight:bold;font-style:italic">{{</span> <span style="color:#008080">title</span> <span style="color:#999;font-weight:bold;font-style:italic">}}</span>
+   :header-rows: 0
+   :widths: auto
+   :class: summarytable
+
+  <span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">for</span> <span style="color:#008080">obj</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">objs</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+    <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">set</span> <span style="color:#008080">sig</span> <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#008080">obj.type</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#000;font-weight:bold">[</span><span style="color:#d14">&#39;method&#39;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#39;function&#39;</span><span style="color:#000;font-weight:bold">]</span> <span style="color:#000;font-weight:bold">and</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#d14">&#39;property&#39;</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">obj.properties</span><span style="color:#000;font-weight:bold">)</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+
+    <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">if</span> <span style="color:#d14">&#39;property&#39;</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">obj.properties</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+      <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">set</span> <span style="color:#008080">label</span> <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#39;prop&#39;</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+    <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">elif</span> <span style="color:#d14">&#39;classmethod&#39;</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">obj.properties</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+      <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">set</span> <span style="color:#008080">label</span> <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#39;class&#39;</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+    <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">elif</span> <span style="color:#d14">&#39;abstractmethod&#39;</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">obj.properties</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+      <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">set</span> <span style="color:#008080">label</span> <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#39;abc&#39;</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+    <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">elif</span> <span style="color:#d14">&#39;staticmethod&#39;</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">obj.properties</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+      <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">set</span> <span style="color:#008080">label</span> <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#39;static&#39;</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+    <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">else</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+      <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">set</span> <span style="color:#008080">label</span> <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#39;&#39;</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+    <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">endif</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+
+    <span style="color:#999;font-weight:bold;font-style:italic">{{</span><span style="color:#000;font-weight:bold">-</span> <span style="color:#008080">_item</span><span style="color:#000;font-weight:bold">(</span><span style="color:#008080">obj</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#008080">sig</span><span style="color:#000;font-weight:bold">=</span><span style="color:#008080">sig</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#008080">label</span><span style="color:#000;font-weight:bold">=</span><span style="color:#008080">label</span><span style="color:#000;font-weight:bold">)</span> -<span style="color:#999;font-weight:bold;font-style:italic">}}</span>
+  <span style="color:#999;font-weight:bold;font-style:italic">{%</span>- <span style="color:#000;font-weight:bold">endfor</span> -<span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endmacro</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+</code></pre></div><p>The work is now split in three macros:</p>
+<dl>
+<dt><code>auto_summary()</code></dt>
+<dd>This is the &ldquo;public&rdquo; macro. It generates a table based on a list of mapper objects, with an optional title. It iterates over the list of objects, and, for each of them, determines if the signature should be generated (functions and non-property methods) and if some label should be attached. It then uses <code>_item()</code> to generate each object&rsquo;s code.</dd>
+<dt><code>_item()</code></dt>
+<dd>This helper macro generates the code for each object, prepending a label to the summary if requested.</dd>
+<dt><code>_render_item_name()</code></dt>
+<dd>This helper macro focuses on generating the properly-cross-referenced object name. If the signature is requested, it iterates over the <code>obj.obj.args</code> list to produce a full (but unannotated) list of arguments.</dd>
+</dl>
+<h2 id="improving-the-default-templates">Improving the default templates</h2>
+<p>With our <code>auto_summary()</code> macro completed, we are now ready to customise our templates, but we still have one issue to resolve before we do so.</p>
+<h3 id="categorising-objects-with-a-custom-jinja2-test">Categorising objects with a custom Jinja2 test</h3>
+<p>As we saw in the <a href="#autoapi-objects">AutoAPI objects</a> section, mapper objects representing modules or classes have a <code>children</code> attribute which lists the objects it contains. For example, a module&rsquo;s <code>children</code> attribute lists all the classes, functions and attributes defined within it.</p>
+<p>In order to categorise these children into separate sub-lists, the built-in templates heavily use the <a href="https://jinja.palletsprojects.com/en/3.1.x/templates/#jinja-filters.selectattr"><code>selectattr()</code></a> and <a href="https://jinja.palletsprojects.com/en/3.1.x/templates/#jinja-filters.rejectattr"><code>rejectattr()</code></a> filters. For example, a list of classes in a module can be obtained as follows:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jinja" data-lang="jinja"><span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">set</span> <span style="color:#008080">visible_children</span> <span style="color:#000;font-weight:bold">=</span>
+    <span style="color:#008080">module_object.children</span><span style="color:#000;font-weight:bold">|</span><span style="color:#900;font-weight:bold">selectattr</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;display&#34;</span><span style="color:#000;font-weight:bold">)|</span><span style="color:#900;font-weight:bold">rejectattr</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;imported&#34;</span><span style="color:#000;font-weight:bold">)|</span><span style="color:#900;font-weight:bold">list</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">set</span> <span style="color:#008080">visible_classes</span> <span style="color:#000;font-weight:bold">=</span>
+    <span style="color:#008080">visible_children</span><span style="color:#000;font-weight:bold">|</span><span style="color:#900;font-weight:bold">selectattr</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;type&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;equalto&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;class&#34;</span><span style="color:#000;font-weight:bold">)|</span><span style="color:#900;font-weight:bold">list</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+</code></pre></div><p>This code selects the visible (but not imported) children from <code>module_object</code>, and then further selects children which have their <code>type</code> set to <code>&quot;class&quot;</code>. In the code above, <a href="https://jinja.palletsprojects.com/en/3.1.x/templates/#jinja-tests.eq"><code>&quot;equalto&quot;</code></a> is known as a Jinja <a href="https://jinja.palletsprojects.com/en/3.1.x/templates/#tests">test</a>. There are many such <a href="https://jinja.palletsprojects.com/en/3.1.x/templates/#builtin-tests">built-in tests</a> in Jinja2.</p>
+<p>As stated before, we aim to categorise properties as attributes instead of methods. To that end, we will have to filter methods whose <code>properties</code> attribute contains <code>&quot;property&quot;</code>. Intuition dictates that the following code achieves this:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jinja" data-lang="jinja"><span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">set</span> <span style="color:#008080">property_methods</span> <span style="color:#000;font-weight:bold">=</span>
+    <span style="color:#008080">all_methods</span><span style="color:#000;font-weight:bold">|</span><span style="color:#900;font-weight:bold">selectattr</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;properties&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;contains&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;property&#34;</span><span style="color:#000;font-weight:bold">)|</span><span style="color:#900;font-weight:bold">list</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+</code></pre></div><p>The bad news is that no such <code>&quot;contains&quot;</code> test exists by default in Jinja2. The good news is that it is trivial to add one.</p>
+<p>First, the actual test must be written. Add the following code to your <code>conf.py</code> file:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">contains</span>(seq, item):
+    <span style="color:#000;font-weight:bold">return</span> item <span style="color:#000;font-weight:bold">in</span> seq
+</code></pre></div><p>Then, we just need to add this test to the Jinja <a href="https://jinja.palletsprojects.com/en/3.1.x/api/#jinja2.Environment">environment</a>. Sphinx AutoAPI provides a hook for that:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">prepare_jinja_env</span>(jinja_env) <span style="color:#000;font-weight:bold">-&gt;</span> <span style="color:#000;font-weight:bold">None</span>:
+    jinja_env<span style="color:#000;font-weight:bold">.</span>tests[<span style="color:#d14">&#34;contains&#34;</span>] <span style="color:#000;font-weight:bold">=</span> contains
+
+autoapi_prepare_jinja_env <span style="color:#000;font-weight:bold">=</span> prepare_jinja_env
+</code></pre></div><p>With this in your <code>conf.py</code> file, the template code above will work as expected.</p>
+<h3 id="updating-templates">Updating templates</h3>
+<p>We previously replaced one of <code>module.rst</code>&rsquo;s use of <code>autoapisummary</code> by our <code>auto_summary()</code> macro (see <a href="#basic-macro-setup">Basic macro setup</a>). It is now time to generalise the use of our macro. At this stage, the details of how this is done is to a large extent up to reader&rsquo;s taste. The <a href="https://github.com/abey79/vsketch/tree/master/docs/_templates/autoapi">templates</a> of <a href="https://github.com/abey79/vsketch">vsketch</a> can serve as fully-functional example and can readily be used in another projects.</p>
+<p>For the <code>module.rst</code> template, I have opted to simplify the overview&rsquo;s structure by just generating tables (without headings) for classes, functions, and attributes:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jinja" data-lang="jinja"><span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">if</span> <span style="color:#d14">&#34;show-module-summary&#34;</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">autoapi_options</span> <span style="color:#000;font-weight:bold">and</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#008080">visible_classes</span> <span style="color:#000;font-weight:bold">or</span> <span style="color:#008080">visible_functions</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">block</span> <span style="color:#008080">classes</span> <span style="color:#000;font-weight:bold">scoped</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">if</span> <span style="color:#008080">visible_classes</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{{</span> <span style="color:#008080">macros.auto_summary</span><span style="color:#000;font-weight:bold">(</span><span style="color:#008080">visible_classes</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#008080">title</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;Classes&#34;</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#999;font-weight:bold;font-style:italic">}}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endif</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endblock</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">block</span> <span style="color:#008080">functions</span> <span style="color:#000;font-weight:bold">scoped</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">if</span> <span style="color:#008080">visible_functions</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{{</span> <span style="color:#008080">macros.auto_summary</span><span style="color:#000;font-weight:bold">(</span><span style="color:#008080">visible_functions</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#008080">title</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;Functions&#34;</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#999;font-weight:bold;font-style:italic">}}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endif</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endblock</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">block</span> <span style="color:#008080">attributes</span> <span style="color:#000;font-weight:bold">scoped</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">if</span> <span style="color:#008080">visible_attributes</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{{</span> <span style="color:#008080">macros.auto_summary</span><span style="color:#000;font-weight:bold">(</span><span style="color:#008080">visible_attributes</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#008080">title</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;Attributes&#34;</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#999;font-weight:bold;font-style:italic">}}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endif</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endblock</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+<span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endif</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+</code></pre></div><p>For the <code>class.rst</code> template, I chose to rework the structure of the documentation into two <a href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-rubric">rubrics</a>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jinja" data-lang="jinja">   <span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">if</span> <span style="color:#008080">visible_methods</span> <span style="color:#000;font-weight:bold">or</span> <span style="color:#008080">visible_attributes</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+   .. rubric:: Overview
+
+   <span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">set</span> <span style="color:#008080">summary_methods</span> <span style="color:#000;font-weight:bold">=</span> <span style="color:#008080">visible_methods</span><span style="color:#000;font-weight:bold">|</span><span style="color:#900;font-weight:bold">rejectattr</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;properties&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;contains&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;property&#34;</span><span style="color:#000;font-weight:bold">)|</span><span style="color:#900;font-weight:bold">list</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+   <span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">set</span> <span style="color:#008080">summary_attributes</span> <span style="color:#000;font-weight:bold">=</span> <span style="color:#008080">visible_attributes</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#008080">visible_methods</span><span style="color:#000;font-weight:bold">|</span><span style="color:#900;font-weight:bold">selectattr</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;properties&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;contains&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;property&#34;</span><span style="color:#000;font-weight:bold">)|</span><span style="color:#900;font-weight:bold">list</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+   
+   <span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">if</span> <span style="color:#008080">summary_attributes</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+   <span style="color:#999;font-weight:bold;font-style:italic">{{</span> <span style="color:#008080">macros.auto_summary</span><span style="color:#000;font-weight:bold">(</span><span style="color:#008080">summary_attributes</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#008080">title</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;Attributes&#34;</span><span style="color:#000;font-weight:bold">)|</span><span style="color:#900;font-weight:bold">indent</span><span style="color:#000;font-weight:bold">(</span><span style="color:#099">3</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#999;font-weight:bold;font-style:italic">}}</span>
+   <span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endif</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+
+   <span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">if</span> <span style="color:#008080">summary_methods</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+   <span style="color:#999;font-weight:bold;font-style:italic">{{</span> <span style="color:#008080">macros.auto_summary</span><span style="color:#000;font-weight:bold">(</span><span style="color:#008080">summary_methods</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#008080">title</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;Methods&#34;</span><span style="color:#000;font-weight:bold">)|</span><span style="color:#900;font-weight:bold">indent</span><span style="color:#000;font-weight:bold">(</span><span style="color:#099">3</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#999;font-weight:bold;font-style:italic">}}</span>
+   <span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endif</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+
+   .. rubric:: Members
+
+   <span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">for</span> <span style="color:#008080">attribute</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">visible_attributes</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+   <span style="color:#999;font-weight:bold;font-style:italic">{{</span> <span style="color:#008080">attribute.render</span><span style="color:#000;font-weight:bold">()|</span><span style="color:#900;font-weight:bold">indent</span><span style="color:#000;font-weight:bold">(</span><span style="color:#099">3</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#999;font-weight:bold;font-style:italic">}}</span>
+   <span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endfor</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+   <span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">for</span> <span style="color:#008080">method</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">visible_methods</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+   <span style="color:#999;font-weight:bold;font-style:italic">{{</span> <span style="color:#008080">method.render</span><span style="color:#000;font-weight:bold">()|</span><span style="color:#900;font-weight:bold">indent</span><span style="color:#000;font-weight:bold">(</span><span style="color:#099">3</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#999;font-weight:bold;font-style:italic">}}</span>
+   <span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endfor</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+   <span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">endif</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+</code></pre></div><p>Note the use of the custom <code>&quot;contains&quot;</code> Jinja2 test we implemented earlier.</p>
+<h3 id="hiding-submodules">Hiding submodules</h3>
+<p>Sphinx AutoAPI include all subpackages and submodules recursively, unless those are marked as private by prefixing their name with an underscore. In my packages' <code>__init__.py</code> file, I carefully import from submodules the objects which are meant to be public, but haven&rsquo;t necessarily marked the submodules as private. Sphinx AutoAPI has no option to control whether or not to add them (I <a href="https://github.com/readthedocs/sphinx-autoapi/issues/339">suggested</a> adding one), so I had to filter them out manually. This is done with the <code>autoapi-skip-member</code> event handler we mentioned earlier:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">skip_member</span>(app, what, name, obj, skip, options):
+    <span style="color:#998;font-style:italic"># skip submodules</span>
+    <span style="color:#000;font-weight:bold">if</span> what <span style="color:#000;font-weight:bold">==</span> <span style="color:#d14">&#34;module&#34;</span>:
+        skip <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">True</span>
+    <span style="color:#000;font-weight:bold">return</span> skip
+
+<span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">setup</span>(sphinx):
+    sphinx<span style="color:#000;font-weight:bold">.</span>connect(<span style="color:#d14">&#34;autoapi-skip-member&#34;</span>, skip_member)
+</code></pre></div><h3 id="hiding-members">Hiding members</h3>
+<p>Likewise, it may happen that you want to hide specific members from the documentation without marking them as private. Again, the <code>autoapi-skip-member</code> event handler can do that. The following example is based from <a href="https://github.com/abey79/vsketch/blob/0d937c851ac528bf182d0b71eb42ead525848c60/docs/conf.py#L116">actual code</a> in <a href="https://github.com/abey79/vsketch"><em>vsketch</em></a>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">skip_member</span>(app, what, name, obj, skip, options):
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#d14">&#34;vsketch.SketchClass&#34;</span> <span style="color:#000;font-weight:bold">in</span> name:
+        <span style="color:#000;font-weight:bold">if</span> obj<span style="color:#000;font-weight:bold">.</span>name <span style="color:#000;font-weight:bold">in</span> [
+            <span style="color:#d14">&#34;vsk&#34;</span>,
+            <span style="color:#d14">&#34;param_set&#34;</span>,
+            <span style="color:#d14">&#34;execute_draw&#34;</span>,
+            <span style="color:#d14">&#34;ensure_finalized&#34;</span>,
+            <span style="color:#d14">&#34;execute&#34;</span>,
+            <span style="color:#d14">&#34;get_params&#34;</span>,
+            <span style="color:#d14">&#34;set_param_set&#34;</span>,
+        ]:
+            skip <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">True</span>
+    <span style="color:#000;font-weight:bold">return</span> skip
+</code></pre></div><p>Note that <code>name</code> is the fully qualified name of the object, so the <code>vsk</code> member has <code>name</code> set to <code>vsketch.SketchClass.vsk</code>. In contrast, <code>obj.name</code> is just the base name.</p>
+<p>Also, for this to work as expected for modules, I had to change the following line in <code>module.rst</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jinja" data-lang="jinja"><span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">set</span> <span style="color:#008080">visible_children</span> <span style="color:#000;font-weight:bold">=</span> <span style="color:#008080">obj.children</span><span style="color:#000;font-weight:bold">|</span><span style="color:#900;font-weight:bold">selectattr</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;short_name&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;in&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#008080">obj.all</span><span style="color:#000;font-weight:bold">)|</span><span style="color:#900;font-weight:bold">list</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+</code></pre></div><p>into</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jinja" data-lang="jinja"><span style="color:#999;font-weight:bold;font-style:italic">{%</span> <span style="color:#000;font-weight:bold">set</span> <span style="color:#008080">visible_children</span> <span style="color:#000;font-weight:bold">=</span> <span style="color:#008080">obj.children</span><span style="color:#000;font-weight:bold">|</span><span style="color:#900;font-weight:bold">selectattr</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;display&#34;</span><span style="color:#000;font-weight:bold">)|</span><span style="color:#900;font-weight:bold">selectattr</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;short_name&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;in&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#008080">obj.all</span><span style="color:#000;font-weight:bold">)|</span><span style="color:#900;font-weight:bold">list</span> <span style="color:#999;font-weight:bold;font-style:italic">%}</span>
+</code></pre></div><p>Without this modification, objects marked as skipped would show up in the summary tables.</p>
+<h3 id="ordering">Ordering</h3>
+<p>By default, Sphinx AutoAPI generates the documentation in the same order as the code. This can be <a href="https://sphinx-autoapi.readthedocs.io/en/latest/reference/config.html?highlight=ordering#confval-autoapi_member_order">changed</a> to alphabetical order, I like being in control from the code.</p>
+<p>In <a href="https://github.com/abey79/vsketch"><em>vsketch</em></a>, the top level content is determined by the imports in my package&rsquo;s <code>__init__.py</code> file, so the <code>import</code> statements themself matter. Since I&rsquo;m using <a href="https://pycqa.github.io/isort/">isort</a>, I had to short-circuit it in this particular case:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#998;font-style:italic"># vsketch/__init__.py</span>
+
+<span style="color:#998;font-style:italic"># isort: skip_file</span>
+
+<span style="color:#998;font-style:italic"># Ordered for the documentation</span>
+<span style="color:#000;font-weight:bold">from</span> <span style="color:#555">.vsketch</span> <span style="color:#000;font-weight:bold">import</span> Vsketch
+<span style="color:#000;font-weight:bold">from</span> <span style="color:#555">.shape</span> <span style="color:#000;font-weight:bold">import</span> Shape
+<span style="color:#000;font-weight:bold">from</span> <span style="color:#555">.sketch_class</span> <span style="color:#000;font-weight:bold">import</span> SketchClass, Param, ParamType
+
+<span style="color:#000;font-weight:bold">from</span> <span style="color:#555">.easing</span> <span style="color:#000;font-weight:bold">import</span> EASING_FUNCTIONS
+<span style="color:#000;font-weight:bold">from</span> <span style="color:#555">.utils</span> <span style="color:#000;font-weight:bold">import</span> working_directory
+</code></pre></div><h2 id="conclusion">Conclusion</h2>
+<p>Well, this ended up being much longer than anticipated 😅 – if you made it this far, congratulations! 🎉</p>
+<p>Here is what we covered:</p>
+<ul>
+<li>We built on a basic Sphinx project and added AutoAPI to generate an API reference documentation.</li>
+<li>We created custom templates based on the built-in templates provided by AutoAPI.</li>
+<li>We reviewed the mapper objects created by AutoAPI to described our code.</li>
+<li>We learned how to use a debugger to easily inspect these objects.</li>
+<li>We crafted an <code>autosummary</code>-like macro named <code>auto_summary()</code> to build beautiful summary tables.</li>
+<li>We customised these tables with custom CSS.</li>
+<li>We used a custom Sphinx role and CSS to create tag-like labels to be used in the summary tables.</li>
+<li>We learned of Jinja2&rsquo;s tests and created a custom one.</li>
+<li>We controlled the visibility of submodules and members using a <code>autoapi-skip-member</code> event handler.</li>
+<li>We learned how to control ordering from our code.</li>
+</ul>
+<p>Like any software project, improving the documentation is a never-ending endeavour. As it turns out, there is one remaining issue that has been bugging me and is yet unresolved. Due to a limitation in Sphinx, AutoAPI has a tendency to mangle the TOC ordering, especially when section headings are emitted from the templates. Check these <a href="https://github.com/readthedocs/sphinx-autoapi/issues/283">two</a> <a href="https://github.com/sphinx-doc/sphinx/issues/6316#issuecomment-1066195555">issues</a> for more information. Hopefully they&rsquo;ll get solved in the future.</p>
+<p>I shall conclude by stating that, by all means, I do not consider myself a Sphinx expert — much to the contrary. I <em>did</em> spend a lot of time improving my API documentation, and figured it would be wasteful not to share my findings, especially given the relative scarcity of information on advanced Sphinx usage patterns. As a result, it is rather likely that I made mistakes and sub-optimal choices. If so, please do provide feedback, and I&rsquo;ll update this article to improve it.</p>
+<p><em>Edit: updated title and intro to clarify the nature of the API discussed, i.e. Python API (2022-05-11).</em></p>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p>Ideally, these shortcomings would be addressed using an extension and a custom directive, or even by contributing the improvement back to the Sphinx or AutoAPI projects. This is sadly beyond my skills. Also, the template method is anyway useful for highly specific requirements where writing an extension wouldn&rsquo;t be warranted.&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+]]></content:encoded>
     </item>
     
     <item>
@@ -41,6 +599,18 @@ This article addresses the following objectives:</description>
       <description>Hatch fills or pixel art plotting requires a rather precise estimate of your particular pen/paper combo&amp;rsquo;s stroke width.
 For example, this test pixel art plot would benefit from a slightly thinner pitch to avoid the visible overlap between neighbouring lines:
 There is no way around experience to find the optimal pitch. I&amp;rsquo;ve created the fill_test sketch to create custom charts with test patterns precisely tuned to the pen of interest. There is indeed no point to testing a rotring isograph .</description>
+      <content:encoded><![CDATA[<p>Hatch fills or <a href="https://github.com/abey79/vpype-pixelart">pixel art</a> plotting requires a rather precise estimate of your particular pen/paper combo&rsquo;s stroke width.</p>
+<p>For example, this test pixel art plot would benefit from a slightly thinner pitch to avoid the visible overlap between neighbouring lines:</p>
+<img src="/sketch-fill-test/obama.jpg"alt="plotted obama pixelart with visibly overlap between neighbouring lines"width="450px"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>There is no way around experience to find the optimal pitch. I&rsquo;ve created the <a href="https://github.com/abey79/sketches/tree/master/fill_test"><code>fill_test</code></a> sketch to create custom charts with test patterns precisely tuned to the pen of interest. There is indeed no point to testing a rotring isograph .35mm pen with a generic 0.1mm to 1.0mm chart.</p>
+<p>Here is how the UI looks:</p>
+<img src="/sketch-fill-test/ui.png"alt="UI of a fill test pattern generator sketch made with vsketch"width="650px"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>Beyond the general layout options (page size, grid size, etc.), the <code>Smallest Width</code> and <code>Width Increment</code> parameters enable a fine-grained exploration of pitches around the nominal pen size.</p>
+<p>Here is an example with a rotring isograph .35mm in my notebook, which has a slight propensity for ink soaking. For this combo, fills with .4mm pitch yield the best results:</p>
+<img src="/sketch-fill-test/example.jpg"alt="example of plotted fill test patterns"width="450px"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>To use the sketch, download or clone my <a href="https://github.com/abey79/sketches">sketches</a> repository and execute the sketch using your existing <a href="https://github.com/abey79/vsketch"><em>vsketch</em></a> installation:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vsk run path/to/sketchs/fill_test
+</code></pre></div>]]></content:encoded>
     </item>
     
     <item>
@@ -51,6 +621,65 @@ There is no way around experience to find the optimal pitch. I&amp;rsquo;ve crea
       <guid>https://bylr.info/articles/2022/04/13/grid-layout/</guid>
       <description>The problem Several generative art algorithms, such as Truchet tiles, use a regular grid of square cells. For example, check this interactive demo from the Generative Design book or these few pieces of mine.
 Now, let&amp;rsquo;s say you want to generate an iteration of your algorithm for printing or plotting such that all margins around the grid are the same for the given paper size. You can of course adjust the number of cell rows and columns, but how should you size the cell such as to achieve uniform margins?</description>
+      <content:encoded><![CDATA[<h2 id="the-problem">The problem</h2>
+<p>Several generative art algorithms, such as <a href="https://en.wikipedia.org/wiki/Truchet_tiles">Truchet tiles</a>, use a regular grid of square cells. For example, check this <a href="http://www.generative-gestaltung.de/2/sketches/?01_P/P_2_3_6_01">interactive demo</a> from the <a href="http://www.generative-gestaltung.de/2/">Generative Design</a> book or <a href="https://github.com/abey79/vpype-explorations#covid-in-complex-module">these</a> <a href="https://twitter.com/abey79/status/1251148503176237057?s=20&amp;t=zJlPTdagH-8hVnEKHSLOYw">few</a> <a href="https://github.com/abey79/sketches/blob/master/README.md#liquid_neon">pieces</a> of mine.</p>
+<p>Now, let&rsquo;s say you want to generate an iteration of your algorithm for printing or plotting such that all margins around the grid are the same for the given paper size. You can of course adjust the number of cell rows and columns, but how should you size the cell such as to achieve uniform margins?</p>
+<p>The image above illustrates the problem. For a given page of size $W \times H$ and a regular grid of $N \times M$ cells, what should be the cell size $s$ to achieve uniform margins $m$ around the grid? What is then the value of $m$?</p>
+<h2 id="the-solution">The solution</h2>
+<p>This is easy to solve with a bit of math. Here is the system of two equations that must be solved:</p>
+<span>
+  \[\begin{cases}
+2 \cdot m &#43; N \cdot s = W \\
+2 \cdot m &#43; M \cdot s = H
+\end{cases}\]
+</span>
+<p>with all parameters ($N$, $M$, $W$, $H$) and the cell size $s$ being strictly positive.</p>
+<p>Solving this for $m$ and $s$ is no rocket science but <a href="https://www.wolframalpha.com">Wolfram Alpha</a> can <a href="https://www.wolframalpha.com/input?i=solve+%7B2*m+%2B+N*s+%3D+W%2C+2*m+%2B+M*s+%3D+H%2C+W%3E0%2C+H%3E0%2C+M%3E0%2C+N%3E0%2C+s%3E0%7D+for+m+and+s+over+the+reals">do the job for you</a> if your high school math is rusty!</p>
+<img src="/grid-layout/wolfram.png"alt="equation solved by Wolfram Alpha"width="70%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>We have the following solutions:</p>
+<span>
+  \[\begin{cases}
+\displaystyle s = \frac{H - 2 m}{N}, \quad m &lt; \frac{H}{2} &amp; \footnotesize M = N, \; W = H \\
+\\
+\displaystyle s = \frac{H-W}{M-N}, \quad m = \frac{M W - H N}{2(M - N)} &amp; \footnotesize N&lt;M, \; W&lt;H \quad \textrm{or} \quad  N&gt;M, \; W&gt;H
+\end{cases}\]
+</span>
+<p>The first solution corresponds to the special case of a square page size. In this case, the grid must be square ($N=M$) and the margins may have an arbitrary value, with the cell size varying accordingly. This is not very surprising.</p>
+<p>The second solution is where things become interesting. As intuition dictates, it is valid <em>only</em> if the grid orientation (portrait or landscape) matches the paper orientation. If so, uniform margins is achieved by choosing a cell size of $s = \frac{H-W}{M-N}$.</p>
+<p>Note that the resulting margin $m$ may, depending on the parameters, be negative. In this case, the grid <em>overflows</em> all around the page by a constant distance. This making plotting/printing your piece inconvenient, you will have to adjust $N$ and/or $M$ to reach a positive margin value.</p>
+<h2 id="the-demo">The demo</h2>
+<p>I made a <a href="https://github.com/abey79/sketches/tree/master/centred_grid">demonstration sketch</a> made with <a href="https://github.com/abey79/vsketch"><em>vsketch</em></a>. Here is how it looks:</p>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/4nlGM2hcV9o" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+<br/>
+<p>This is a simplified version of the code which can be used as a starting point for your next grid-based design:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">import</span> <span style="color:#555">itertools</span>
+<span style="color:#000;font-weight:bold">import</span> <span style="color:#555">vsketch</span>
+
+<span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">MySketch</span>(vsketch<span style="color:#000;font-weight:bold">.</span>SketchClass):
+    N <span style="color:#000;font-weight:bold">=</span> vsketch<span style="color:#000;font-weight:bold">.</span>Param(<span style="color:#099">5</span>, <span style="color:#099">1</span>)
+    M <span style="color:#000;font-weight:bold">=</span> vsketch<span style="color:#000;font-weight:bold">.</span>Param(<span style="color:#099">7</span>, <span style="color:#099">1</span>)
+
+    <span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">draw</span>(<span style="color:#999">self</span>, vsk: vsketch<span style="color:#000;font-weight:bold">.</span>Vsketch) <span style="color:#000;font-weight:bold">-&gt;</span> <span style="color:#000;font-weight:bold">None</span>:
+        vsk<span style="color:#000;font-weight:bold">.</span>size(<span style="color:#d14">&#34;a4&#34;</span>, landscape<span style="color:#000;font-weight:bold">=</span><span style="color:#000;font-weight:bold">False</span>, center<span style="color:#000;font-weight:bold">=</span><span style="color:#000;font-weight:bold">False</span>)   <span style="color:#998;font-style:italic"># disable auto-centering</span>
+
+        cell_size <span style="color:#000;font-weight:bold">=</span> (vsk<span style="color:#000;font-weight:bold">.</span>height <span style="color:#000;font-weight:bold">-</span> vsk<span style="color:#000;font-weight:bold">.</span>width) <span style="color:#000;font-weight:bold">/</span> (<span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>M <span style="color:#000;font-weight:bold">-</span> <span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>N)
+        margin <span style="color:#000;font-weight:bold">=</span> (<span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>M <span style="color:#000;font-weight:bold">*</span> vsk<span style="color:#000;font-weight:bold">.</span>width <span style="color:#000;font-weight:bold">-</span> <span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>N <span style="color:#000;font-weight:bold">*</span> vsk<span style="color:#000;font-weight:bold">.</span>height) <span style="color:#000;font-weight:bold">/</span> <span style="color:#099">2</span> <span style="color:#000;font-weight:bold">/</span> (<span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>M <span style="color:#000;font-weight:bold">-</span> <span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>N)
+        
+        <span style="color:#000;font-weight:bold">if</span> cell_size <span style="color:#000;font-weight:bold">&gt;</span> <span style="color:#099">0</span>:
+            <span style="color:#998;font-style:italic"># account for the computed margin</span>
+            vsk<span style="color:#000;font-weight:bold">.</span>translate(margin, margin)
+            
+            <span style="color:#998;font-style:italic"># draw the grid</span>
+            <span style="color:#000;font-weight:bold">for</span> i, j <span style="color:#000;font-weight:bold">in</span> itertools<span style="color:#000;font-weight:bold">.</span>product(<span style="color:#0086b3">range</span>(<span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>N <span style="color:#000;font-weight:bold">+</span> <span style="color:#099">1</span>), <span style="color:#0086b3">range</span>(<span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>M <span style="color:#000;font-weight:bold">+</span> <span style="color:#099">1</span>)):
+                vsk<span style="color:#000;font-weight:bold">.</span>point(i <span style="color:#000;font-weight:bold">*</span> cell_size, j <span style="color:#000;font-weight:bold">*</span> cell_size)
+        <span style="color:#000;font-weight:bold">else</span>:
+            <span style="color:#998;font-style:italic"># ERROR: N and M values must be adjusted!</span>
+            <span style="color:#000;font-weight:bold">pass</span>
+</code></pre></div>]]></content:encoded>
     </item>
     
     <item>
@@ -62,6 +691,213 @@ Now, let&amp;rsquo;s say you want to generate an iteration of your algorithm for
       <description>I originally intended vpype 1.10 to be a &amp;lsquo;quick-and-dirty&amp;rsquo;, bug-fix-only release but it ended up being quite substantial, so let&amp;rsquo;s dive in.
 New features and improvements   Improved support for layer pen width and opacity in the viewer (#448)
  The &amp;ldquo;Pen Width&amp;rdquo; and &amp;ldquo;Pen Opacity&amp;rdquo; menus are now named &amp;ldquo;Default Pen Width&amp;rdquo; and &amp;ldquo;Default Pen Opacity&amp;rdquo;. The layer opacity is now used for display by default. It can be overridden by the default pen opacity by checking the &amp;ldquo;Override&amp;rdquo; item from the &amp;ldquo;Default Pen Opacity&amp;rdquo; menu.</description>
+      <content:encoded><![CDATA[<p>I originally intended <a href="https://github.com/abey79/vpype/releases/tag/1.10.0"><em>vpype</em> 1.10</a> to be a &lsquo;quick-and-dirty&rsquo;, bug-fix-only release but it ended up being quite substantial, so let&rsquo;s dive in.</p>
+<h2 id="new-features-and-improvements">New features and improvements</h2>
+
+<blockquote class="extract">
+  <p><ul>
+<li>
+<p>Improved support for layer pen width and opacity in the viewer (#448)</p>
+<ul>
+<li>The &ldquo;Pen Width&rdquo; and &ldquo;Pen Opacity&rdquo; menus are now named &ldquo;Default Pen Width&rdquo; and &ldquo;Default Pen Opacity&rdquo;.</li>
+<li>The layer opacity is now used for display by default. It can be overridden by the default pen opacity by checking the &ldquo;Override&rdquo; item from the &ldquo;Default Pen Opacity&rdquo; menu.</li>
+<li>The layer pen width is now used for display by default as well. Likewise, it can be overridden by checking the &ldquo;Override&rdquo; item from the &ldquo;Default Pen Width&rdquo; menu.</li>
+</ul>
+</li>
+</ul>
+</p>
+</blockquote>
+
+<p>This alone is reason to upgrade, and, if we&rsquo;re being honest, it should have been done in the previous release. The display logic of the viewer is now as follows:</p>
+<ul>
+<li>By default, honor the layer&rsquo;s pen width and opacity if present.</li>
+<li>If pen width and/or opacity is not set, revert to the value set in the menu (0.3mm / 80% by default).</li>
+<li>Either or both of the displayed pen width and opacity can be forced to the value in the menu using the new &ldquo;Override&rdquo; menu item.</li>
+</ul>
+<p>It is worth noting that opacity is not a standalone layer property, but is part of its RGBA color property (<code>vp_color</code>). Weirdly, <em>vpype</em> 1.9&rsquo;s viewer would honor the base color (RGB), but not its alpha chanel. (See next feature, though.)</p>
+<p>By the way, this article&rsquo;s cover image is a screenshot of the viewer made with this command:</p>
+<img src="/vpype_110/demo_cmd.png"alt="vpype  repeat 100  circle --layer %_i&#43;1% %_i*mm% 0 1cm  color --layer %_i&#43;1% red  alpha --layer %_i&#43;1% %(_i&#43;1)*.7/_n%  end  repeat 50  circle --layer %_i&#43;101% %2*_i*mm% 3cm 1cm  color --layer %_i&#43;101% blue  penwidth --layer %_i&#43;101% %(0.05&#43;_i/100)*2.5*mm%  end  layout --fit-to-margins 1cm --landscape 21x10cm  show"width="85%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>(Yes, this is a properly syntax-highlighted <em>vpype</em> command made with a custom script and <a href="https://github.com/Textualize/rich">Rich</a>&rsquo;s new <a href="https://twitter.com/willmcgugan/status/1510621023678476291?s=20&amp;t=KegUSS_vGKzzG8GzoFsoFQ">SVG export</a>. This is very preliminary, but, in time, something to improve on and deploy more widely in the doc and elsewhere.)</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Added the <code>alpha</code> command to set layer opacity without changing the base color (#447, #451)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>While working on the viewer improvements, I realized how inconvenient it was to set an arbitrary opacity value. Using CSS color names (e.g. <code>color red</code>) always sets opacity to 100% and there is no way around the hex notation for a custom value (e.g. <code>color #ff00007f</code> or <code>color #f007</code>). The new <code>alpha</code> command fills that gap: <code>color red  alpha 0.5</code>.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Added HPGL configuration for the Calcomp Artisan plotter (thanks to Andee Collard and @ithinkido) (#418)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>Good news for Calcomp Artisan&rsquo;s owners! Let this be a reminder that I welcome this kind of contribution. Though I&rsquo;d like to, I can&rsquo;t own every single type of vintage plotter! 😅</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>
+<p>The <code>read</code> command now better handles SVGs with missing <code>width</code> or <code>height</code> attributes (#446)</p>
+<p>When the <code>width</code> or <code>height</code> attribute is missing or expressed as percent, the <code>read</code> command now attempts to use the <code>viewBox</code> attribute to set the page size, defaulting to 1000x1000px if missing. This behavior can be overridden with the <code>--display-size</code> and the <code>--display-landscape</code> parameters.</p>
+</li>
+</ul>
+</p>
+</blockquote>
+
+<p>I recently came across a SVG with a <code>viewBox</code> defined but no <code>width</code>/<code>height</code> attributes:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-svg" data-lang="svg"><span style="color:#000080">&lt;svg</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;http://www.w3.org/2000/svg&#34;</span> <span style="color:#008080">viewBox=</span><span style="color:#d14">&#34;0 0 1191.26 1684.49&#34;</span><span style="color:#000080">&gt;</span>...<span style="color:#000080">&lt;/svg&gt;</span>
+</code></pre></div><p>In such an instance, using the <code>read</code> command used to default to an A4 page size, while the <code>vpype.read_svg()</code> API (and friends) would default to a 1000x1000px page size. This is both inconsistent and missing the opportunity to fallback on the <code>viewBox</code>. <em>vpype</em> now fully delegates this fallback logic to <a href="https://github.com/meerk40t/svgelements"><code>svgelements</code></a>, which does a good job at making the most of the available information. Also, if everything is missing (or <code>width</code>/<code>height</code> are expressed in percents), <em>vpype</em> consistently falls back to 1000x1000px.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Added the <code>--dont-set-date</code> option to the <code>write</code> command (#442)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>This one is a bit niche. <em>vpype</em> adds some metadata to the SVG, including the date and time at which it was generated (note the <code>&lt;dc:date&gt;</code> tag):</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ vpype line 1cm 1cm 5cm 3cm layout a6 write -f svg -
+&lt;?xml <span style="color:#008080">version</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;1.0&#34;</span> <span style="color:#008080">encoding</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;utf-8&#34;</span> ?&gt;
+&lt;svg <span style="color:#008080">xmlns</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;http://www.w3.org/2000/svg&#34;</span> xmlns:cc<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;http://creativecommons.org/ns&#34;</span> xmlns:dc<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;http://purl.org/dc/elements/1.1/&#34;</span> xmlns:ev<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;http://www.w3.org/2001/xml-events&#34;</span> xmlns:inkscape<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;http://www.inkscape.org/namespaces/inkscape&#34;</span> xmlns:rdf<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;http://www.w3.org/1999/02/22-rdf-syntax-ns&#34;</span> xmlns:sodipodi<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd&#34;</span> xmlns:xlink<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;http://www.w3.org/1999/xlink&#34;</span> <span style="color:#008080">baseProfile</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;tiny&#34;</span> <span style="color:#008080">height</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;14.8cm&#34;</span> <span style="color:#008080">version</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;1.2&#34;</span> <span style="color:#008080">viewBox</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;0 0 396.85039370078744 559.3700787401575&#34;</span> <span style="color:#008080">width</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;10.5cm&#34;</span>&gt;
+  &lt;metadata&gt;
+    &lt;rdf:RDF&gt;
+      &lt;cc:Work&gt;
+        &lt;dc:format&gt;image/svg+xml&lt;/dc:format&gt;
+        &lt;dc:source&gt;vpype line 1cm 1cm 5cm 3cm layout a6 write -f svg -
+&lt;/dc:source&gt;
+        &lt;dc:date&gt;2022-04-07T10:15:00.532842&lt;/dc:date&gt;
+      &lt;/cc:Work&gt;
+    &lt;/rdf:RDF&gt;
+  &lt;/metadata&gt;
+  &lt;defs/&gt;
+  &lt;g <span style="color:#008080">fill</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;none&#34;</span> <span style="color:#008080">id</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;layer1&#34;</span> inkscape:groupmode<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;layer&#34;</span> inkscape:label<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#008080">stroke</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;#0000ff&#34;</span> <span style="color:#008080">style</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;display:inline&#34;</span>&gt;
+    &lt;line <span style="color:#008080">x1</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;122.8346&#34;</span> <span style="color:#008080">x2</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;274.0157&#34;</span> <span style="color:#008080">y1</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;241.8898&#34;</span> <span style="color:#008080">y2</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;317.4803&#34;</span>/&gt;
+  &lt;/g&gt;
+&lt;/svg&gt;
+</code></pre></div><p>This is all well and good until you automate the generation of SVGs under a version control system, which is what I did for <a href="https://github.com/abey79/vpype-perspective">vpype-perspective</a>&rsquo;s documentation figures. A <a href="https://pydoit.org">PyDoIt</a> <a href="https://github.com/abey79/vpype-perspective/blob/main/examples/dodo.py"><code>dodo.py</code></a> files converts any <code>.vpy</code> file it finds into corresponding SVGs – basically a Python-powered, overcharged <code>Makefile</code>. (This is a rather neat process which, by the way, should get its own article someday.) In this kind of setup, having a ever-changing date in the SVG yields many unwanted VCS diffs which can now be avoided using this option.</p>
+<h2 id="bug-fixes">Bug fixes</h2>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Fixed an issue with <code>forlayer</code> where the <code>_n</code> variable was improperly set (#443)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>One word: inexcusable 🙄</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Fixed an issue with <code>write</code> where layer opacity was included in the <code>stroke</code> attribute instead of using <code>stroke-opacity</code>, which, although compliant, was not compatible with Inkscape (#429)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>This one is <a href="https://gitlab.com/inkscape/inbox/-/issues/1195">Inkscape</a>&rsquo;s <a href="https://gitlab.com/inkscape/inbox/-/issues/1195">fault</a>. Using <code>stroke-opacity</code> is &ldquo;more compatible&rdquo; anyways, so it&rsquo;s a good move regardless.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Fixed an issue with <code>vpype --help</code> where commands from plug-ins would not be listed (#444)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>I ran into an issue with <a href="https://click.palletsprojects.com">Click</a> where a sub-command plug-in using APIs from the top-level command&rsquo;s package (a scheme widely used by <em>vpype</em> and its plug-ins) would fail because of circular imports. The workaround I used in <em>vpype</em> 1.9 meant that plug-ins were no longer listed in <code>vpype --help</code>. This is fixed now, but this may not be the end of the story. I tried – and failed – to reproduce the original issue in a minimal demo project and I&rsquo;ll have to further dig into this someday.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Fixed a minor issue where plug-ins would be reloaded each time <code>vpype_cli.execute()</code> is called (#444)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>By &ldquo;minor&rdquo;, I mean that this amounted to a tiny performance hit for Python scripts using <em>vpype</em>&rsquo;s <a href="https://vpype.readthedocs.io/en/latest/api/vpype_cli.html#vpype_cli.execute"><code>execute()</code></a> API multiple times.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Fixed a rendering inconsistency in the viewer where the ruler width could vary by one pixel depending on the OpenGL driver/GPU/OS combination (#448)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>The ruler of <em>vpype</em>&rsquo;s viewer is supposed to be 20px wide, but it turns out that either of the horizontal or the vertical one was 21px wide instead. Which one? It depends on the platform and my Intel/AMD- and M1-based laptops disagreed on the matter! 😲</p>
+<img src="/vpype_110/bad_rulers.gif"alt="animation of a rendering discrepancy"width="50%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>It took me a while to discover that this is due to drawing lines at a 0.5px offset with respect to the pixel grid, leading to unpredictable rounding behavior. This is basically what happens when drawing horizontal or vertical lines with integer coordinates, and I <a href="/articles/2022/04/05/til-aligning-horizontal-or-vertical-lines-to-the-pixel-grid-with-opengl/">wrote about it</a> a few days ago.</p>
+<p>You&rsquo;d think that not one soul would care about this, but some of my tests are based on comparing newly rendered images of the viewer with previously-generated reference images, and those tests would fail on my new M1 Mac.</p>
+<h2 id="api-changes">API changes</h2>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Added <code>vpype_cli.FloatType()</code>, <code>vpype_cli.IntRangeType()</code>, <code>vpype_cli.FloatRangeType()</code>, and <code>vpype_cli.ChoiceType()</code> (#430, #447)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>These <code>Click</code> types provide support for <a href="https://vpype.readthedocs.io/en/latest/fundamentals.html#property-substitution">property</a> and <a href="https://vpype.readthedocs.io/en/latest/fundamentals.html#expression-substitution">expression substitution</a>. They were missing from <em>vpype</em> 1.9 because they aren&rsquo;t needed internally. Plug-ins, however, wanted them, including <a href="https://github.com/serycjon/vpype-flow-imager">flow imager</a> and my new <a href="https://github.com/abey79/vpype-perspective">vpype-perspective</a>.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Changed <code>vpype.Document.add_to_sources()</code> to also modify the <code>vp_source</code> property (#431)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>This will simplify the code needed to handle sources in plug-ins.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Changed the parameter name of both <code>vpype_viewer.Engine()</code> and <code>vpype_viewer.render_image()</code> from <code>pen_width</code> and <code>pen_opacity</code> to <code>default_pen_width</code> and <code>default_pen_opacity</code> (breaking change) (#448)</li>
+<li>Added <code>override_pen_width</code> and <code>override_pen_opacity</code> boolean parameters to both <code>vpype_viewer.Engine()</code> and <code>vpype_viewer.render_image()</code> (#448)</li>
+<li>Added a <code>set_date:bool = True</code> argument to <code>vpype.write_svg()</code> (#442)</li>
+<li>Changed the default value of <code>default_width</code> and <code>default_height</code> arguments of <code>vpype.read_svg()</code> (and friends) to <code>None</code> to allow <code>svgelement</code> better handle missing <code>width</code>/<code>height</code> attributes (#446)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>These are the API counterparts of some of the changes described before.</p>
+<h2 id="other-changes">Other changes</h2>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Added support for Python 3.10 and dropped support for Python 3.7 (#417)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>Walruses <a href="https://github.com/abey79/vpype/blob/0e01b45f6e8cef0352cd369a215aeaaeade97b48/vpype/model.py#L620">have appeared</a> already! 🦭</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Updated code base with modern typing syntax (using <a href="https://github.com/asottile/pyupgrade">pyupgrade</a>) (#427)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>I was this year old when I learned that you can use modern <a href="https://docs.python.org/3/library/typing.html">typing</a> syntax (such as <code>list[int] | None</code>) with older Python versions thanks to this statement:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">from</span> <span style="color:#555">__future__</span> <span style="color:#000;font-weight:bold">import</span> annotations
+</code></pre></div><p>I swiftly ran <a href="https://github.com/asottile/pyupgrade">pyupgrade</a> on the entire code base to bring it up to date.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Updated the <a href="https://vpype.readthedocs.io/en/latest/">documentation</a> template (#428)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>It looks cleaner now IMO, though there is still a <a href="https://github.com/abey79/vpype/issues/400">whole lot</a> that could be improved.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Updated installation instructions to use pipx (#428)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>I have yet to get over how long it took me to realize this! 😳 I&rsquo;m sorry for everyone who has struggled with virtual environments to install <em>vpype</em>!</p>
+]]></content:encoded>
     </item>
     
     <item>
@@ -72,6 +908,18 @@ New features and improvements   Improved support for layer pen width and opacity
       <guid>https://bylr.info/articles/2022/04/05/til-aligning-horizontal-or-vertical-lines-to-the-pixel-grid-with-opengl/</guid>
       <description>When I started using my new M1 Max MacBook Pro in December, a bunch of vpype&amp;rsquo;s tests started to fail. The failing tests were all image-based: an image is rendered and then compared to a previously-generated, reference image. This process is made easy thanks to this Pytest fixture.
 In this case, the reference images were generated long ago on my previous, Intel/AMD-based MacBook Pro. This GIF highlights the discrepancy I&amp;rsquo;d get with images generated on my new computer (notice how the ruler&amp;rsquo;s thickness varies):</description>
+      <content:encoded><![CDATA[<p>When I started using my new M1 Max MacBook Pro in December, a bunch of <a href="https://github.com/abey79/vpype"><em>vpype</em></a>&rsquo;s tests started to fail. The failing tests were all image-based: an image is rendered and then compared to a previously-generated, reference image. This process is made easy thanks to <a href="https://github.com/abey79/vpype/blob/cd95e2da1940171e33ed0001255b763fa0d5f082/tests/conftest.py#L96">this Pytest fixture</a>.</p>
+<p>In this case, the reference images were generated long ago on my previous, Intel/AMD-based MacBook Pro. This GIF highlights the discrepancy I&rsquo;d get with images generated on my new computer (notice how the ruler&rsquo;s thickness varies):</p>
+<img src="/til-pixel-grid/m1_render.gif"alt="animated gif highlighting rendering discrepancy with horizontal and vertical lines"width="650px"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>As I&rsquo;m currently working on this viewer again, I finally spent two days tracking this issue – and finally found its cause.</p>
+<p>Without giving it a thought, I first used integer coordinates for those ruler lines. However, coordinates refer to pixel <em>boundaries</em> – not pixel <em>centres</em>. This means than an horizontal line with integer coordinates (e.g. <code>[(2, 2), (7, 2)]</code>) sits halfway between two consecutive rows of pixel:</p>
+<img src="/til-pixel-grid/pixel_grid.png"alt="schematic of a line not aligned with the pixel grid"width="500px"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>Which of the 2nd or 3rd row of pixel eventually gets drawn is up to a coin toss – or rather the rounding strategy of your particular OpenGL driver/GPU/OS combination.</p>
+<p>By offsetting the coordinates by half a pixel (e.g. <code>[(2, 2.5), (7, 2.5)]</code>), one can force the line on a specific pixel row and avoid any rounding:</p>
+<img src="/til-pixel-grid/pixel_grid_aligned.png"alt="schematic of a line aligned with the pixel grid"width="500px"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>This makes the rendering more predictable across platforms.</p>
+<p>Ultimately, the fix was very simple (I just changed the ruler thickness from <code>20</code> to <code>19.5</code>), but figuring it out was tricky (<a href="https://ptb.discord.com/channels/550302843777712148/811289127609827358/960561872774500412">relevant discussions</a> on <a href="https://github.com/moderngl/moderngl">ModernGL</a>&rsquo;s Discord server). Hopefully I wont forget about it after writing this TIL.</p>
+]]></content:encoded>
     </item>
     
     <item>
@@ -81,6 +929,420 @@ In this case, the reference images were generated long ago on my previous, Intel
       
       <guid>https://bylr.info/articles/2022/03/03/annotated-release-notes-vpype-1.9/</guid>
       <description>vpype \ text -l1 -p 0 3.5cm &#34;Custom layer name/color/pen width&#34; \ text -l2 -p 5cm 4.5cm -s 24 &#34;Properties&#34; \ text -l2 -p 2cm 5.5cm -s 20 &#34;Expressions&#34; \ text -l1 -p 6cm 6.5cm -s 24 &#34;Better/new block processors&#34; \ text -l2 -p 3cm 8cm &#34;...and much more!&#34; \ layout -m 0.3cm -l 10x3.5cm \ penwidth -l2 0.5mm \ color -l2 &#34;%Color(226,200,0)%&#34; \ color -l1 &#34;%Color(3,118,207)%&#34; \ color -l1 blue \ show -- vpype 1.</description>
+      <content:encoded><![CDATA[<!--
+<img src="/vpype_19/banner_ua.png"width="60%"style="display:block;margin-left:auto;margin-right:auto"/>
+
+vpype \
+text -l1 -p 0 3.5cm "Custom layer name/color/pen width" \
+text -l2 -p 5cm 4.5cm -s 24 "Properties" \
+text -l2 -p 2cm 5.5cm -s 20 "Expressions" \
+text -l1 -p 6cm 6.5cm -s 24 "Better/new block processors" \
+text -l2 -p 3cm 8cm "...and much more!" \
+layout -m 0.3cm -l 10x3.5cm \
+penwidth -l2 0.5mm \
+color -l2 "%Color(226,200,0)%" \
+color -l1 "%Color(3,118,207)%" \
+color -l1 blue \
+show
+-->
+<p><a href="https://github.com/abey79/vpype"><em>vpype</em></a> 1.9 is finally out! 🎉</p>
+<p>I recently stumbled upon a <a href="https://simonwillison.net/2022/Jan/31/release-notes/">post</a> by <a href="https://twitter.com/simonw">Simon Willison</a> where he promotes the idea of <em>annotated release notes</em>. As it turns out, this release is, by any metric I can think of, the biggest and most transformative so far. The associated <a href="https://github.com/abey79/vpype/blob/master/CHANGELOG.md#19">change log</a> is consequently rather unwieldy and calls, you guessed it 💡, for the present annotated release notes.</p>
+<p>(Note: although the <a href="https://github.com/abey79/vpype/blob/master/CHANGELOG.md#19">original release notes</a> are extensively quoted in this article, I reshuffled and shortened the original material. Make sure to check the base material for an authoritative list of change.)</p>
+<h2 id="properties">Properties</h2>
+<h3 id="basics">Basics</h3>
+
+<blockquote class="extract">
+  <p><ul>
+<li>
+<p>Added support for global and per-layer <a href="(https://vpype.readthedocs.io/en/latest/fundamentals.html#properties)">properties</a> (#359)</p>
+<p>This feature introduces metadata to the pipeline in the form of properties which may either be attached to specific layers (layer property) or all of them (global property). Properties are identified by a name and may be of arbitrary type (e.g. integer, floating point, color, etc.). A number of <a href="https://vpype.readthedocs.io/en/latest/fundamentals.html#system-properties">system properties</a> with a specific name (prefixed with <code>vp_</code>) and type are introduced to support some of the new features.</p>
+</li>
+</ul>
+</p>
+</blockquote>
+
+<p>Metadata is data which says something about other data, and <em>vpype</em> lacked such a thing. Until now, what was passed from one command to the next consisted <em>exclusively</em> of paths sorted into layers, without any context such as what the color of these paths might be. One command could &ldquo;know&rdquo; about something (e.g. <code>read</code> knows, from the SVG, the color of a layer), but it could not &ldquo;tell&rdquo; the next command(s) about it.</p>
+<p>This is no more, thanks to properties. They offer a generic mechanism to attach data to pipeline and layers. They are the backbone of several features introduced today, and lay the ground for future features within <em>vpype</em> or in plug-ins.</p>
+<h3 id="layer-color-pen-width-and-name">Layer color, pen width, and name</h3>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Layer color, pen width, and name are now customizable (#359, #376, #389)
+<ul>
+<li>The <code>read</code> commands now sets layer color, pen width, and name based on the input SVG if possible.</li>
+<li>The new <code>color</code>, <code>penwdith</code>, and <code>name</code> commands can be used to modify layer color, pen width, and name.</li>
+<li>The new <code>pens</code> command can apply a predefined or custom scheme on multiple layers at once. Two common schemes are built-in: <code>rgb</code> and <code>cmyk</code>. <a href="https://vpype.readthedocs.io/en/latest/cookbook.html#creating-a-custom-pen-configuration">Custom schemes</a> can be defined in the configuration file.</li>
+<li>The <code>show</code> and <code>write</code> commands now take into account these layer properties.</li>
+</ul>
+</li>
+</ul>
+</p>
+</blockquote>
+
+<p>Supporting arbitrary layer colors, pen widths, and names, has long been amongst the most requested features. Well, thanks to properties, here they are. It happens automagically when using <code>read</code>, and the new commands can further customise these values:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ vpype <span style="color:#d14">\
+</span><span style="color:#d14"></span>    rect --layer <span style="color:#099">1</span> <span style="color:#099">0</span> <span style="color:#099">0</span> 5cm 5cm <span style="color:#d14">\
+</span><span style="color:#d14"></span>    color --layer <span style="color:#099">1</span> purple <span style="color:#d14">\
+</span><span style="color:#d14"></span>    penwidth --layer <span style="color:#099">1</span> 0.5mm <span style="color:#d14">\
+</span><span style="color:#d14"></span>    circle --layer <span style="color:#099">2</span> 4cm 4cm 2cm <span style="color:#d14">\
+</span><span style="color:#d14"></span>    color --layer <span style="color:#099">2</span> orange <span style="color:#d14">\
+</span><span style="color:#d14"></span>    penwidth --layer <span style="color:#099">2</span> 5mm <span style="color:#d14">\
+</span><span style="color:#d14"></span>    show
+</code></pre></div><img src="/vpype_19/color_penwidth.png"width="40%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>The new, high-level <code>color</code>, <code>penwidth</code>, and <code>name</code> commands are simple wrappers which change the value of specific <a href="https://vpype.readthedocs.io/en/latest/fundamentals.html#system-properties">system properties</a> (i.e. <code>vp_color</code>, <code>vp_pen_width</code>, resp. <code>vp_name</code>):</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"><span style="color:#555">$ </span>vpype random name <span style="color:#d14">&#34;hello&#34;</span> color purple penwidth 0.1mm proplist --layer <span style="color:#099">1</span>
+<span style="color:#888">listing 3 properties for layer 1
+</span><span style="color:#888">  vp_color: (color) #800080
+</span><span style="color:#888">  vp_name: (str) hello
+</span><span style="color:#888">  vp_pen_width: (float) 0.37795275590551186
+</span></code></pre></div><p>System properties differ from &ldquo;regular&rdquo; properties only in the sense that they have special meaning to <em>vpype</em>. By convention, their name is prefixed with <code>vp_</code>.</p>
+<p>Special mention for the new <code>pens</code> command, which is short for <em>here is the set of pens I intend to use for this plot</em>. It sets in bulk layer colors, pen widths and/or names all at once, based on a built-in or <a href="https://vpype.readthedocs.io/en/latest/cookbook.html#creating-a-custom-pen-configuration">custom</a> configuration. For example, this produces a CMYK SVG using the <a href="https://github.com/serycjon/vpype-flow-imager">flow imager</a> plug-in:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vpype <span style="color:#d14">\
+</span><span style="color:#d14"></span>    flow_img <span style="color:#000;font-weight:bold">[</span>...<span style="color:#000;font-weight:bold">]</span> --cmyk input.jpg <span style="color:#d14">\
+</span><span style="color:#d14"></span>    pens cmyk <span style="color:#d14">\
+</span><span style="color:#d14"></span>    write output.svg
+</code></pre></div>
+<blockquote class="extract">
+  <p><ul>
+<li>
+<p>Introduced new commands for low-level inspection and modification of properties (#359)</p>
+<ul>
+<li><code>propget</code>: gets the value of a given global or layer property</li>
+<li><code>proplist</code>: lists all global and/or layer properties and their value</li>
+<li><code>propset</code>: sets the value of a given global or layer property</li>
+<li><code>propdel</code>: deletes a given global or layer property</li>
+<li><code>propclear</code>: removes all global and/or layer properties</li>
+</ul>
+</li>
+</ul>
+</p>
+</blockquote>
+
+<p>These are low-level commands to interact with properties. Although they have limited use in real-world workflows, they come in handy when learning about properties or crafting complex pipelines.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>
+<p>Updated layer operation commands to handle properties (#359)</p>
+<ul>
+<li>When a single source layer is specified and <code>--prob</code> is not used, the <code>lcopy</code> and <code>lmove</code> commands now copy the source layer&rsquo;s properties to the destination layer (possibly overwriting existing properties).</li>
+<li>When <code>--prob</code> is not used, the <code>lswap</code> command now swaps the layer properties as well.</li>
+<li>These behaviors can be disabled with the <code>--no-prop</code> option.</li>
+</ul>
+</li>
+</ul>
+</p>
+</blockquote>
+
+<p>With properties, some of the layer manipulation commands became somewhat ambiguous. For example, what happens with properties when using <code>lmove all 1</code> (merges all layers into layer one) or <code>move --prob 0.5 1 2</code> (picks geometries from layer 1 with a 50% probability and moves them to layer 2)?</p>
+<p>I opted for a strategy where layer properties are affected <em>only</em> for unambiguous cases. This is basically when a single layer is moved/copied and when probabilistic behaviour is not used at all. In all other cases, the layer properties are left unchanged.</p>
+<h3 id="from-svg-attributes-to-properties">From SVG attributes to properties</h3>
+
+<blockquote class="extract">
+  <p><ul>
+<li>
+<p>Added the <code>--attr</code> option to the <code>read</code> command to (optionally) sort geometries by attributes (e.g. stroke color, stroke width, etc.) instead of by SVG layer (#378, #389)</p>
+</li>
+<li>
+<p>The <code>read</code> and <code>write</code> commands now preserve a sub-set of SVG attributes (experimental) (#359, #389)</p>
+<p>The <code>read</code> command identifies SVG attributes (e.g. <code>stroke-dasharray</code>) which are common in all geometries within each layer. These attributes are saved as layer properties with their name prefixed with <code>svg_</code> (e.g. <code>svg_stroke-dasharray</code>). The <code>write</code> command can optionally restore these attributes in the output SVG using the <code>--restore-attribs</code> option.</p>
+</li>
+</ul>
+</p>
+</blockquote>
+
+<p>As noted, the <code>read</code> command now tries to extract SVG attributes and store them as layer properties. There are two motivations for that. First, it enables the <code>write</code> command to optionally restore these attributes in the output file, in order to achieve a higher degree of fidelity. (This feature is experimental and opt-in for the time being.) Second, it enables future features or plug-ins to do neat things such as generating hatch fills when <code>fill</code> is set to a color, or cutting paths in bits to emulate <code>stroke-dasharray</code> if defined.</p>
+<p>Now, since properties are only available at the layer level (or globally), <code>read</code> discards SVG attributes that are not shared amongst <em>every</em> paths within a given layer. Let&rsquo;s take an example:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-svg" data-lang="svg"><span style="color:#000080">&lt;svg</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;http://www.w3.org/2000/svg&#34;</span> <span style="color:#008080">width=</span><span style="color:#d14">&#34;650&#34;</span> <span style="color:#008080">height=</span><span style="color:#d14">&#34;650&#34;</span><span style="color:#000080">&gt;</span>
+    <span style="color:#000080">&lt;circle</span> <span style="color:#008080">cx=</span><span style="color:#d14">&#34;150&#34;</span> <span style="color:#008080">cy=</span><span style="color:#d14">&#34;150&#34;</span> <span style="color:#008080">r=</span><span style="color:#d14">&#34;100&#34;</span> <span style="color:#008080">stroke=</span><span style="color:#d14">&#34;red&#34;</span> <span style="color:#008080">stroke-width=</span><span style="color:#d14">&#34;0.5mm&#34;</span> <span style="color:#008080">fill=</span><span style="color:#d14">&#34;green&#34;</span> <span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;rect</span> <span style="color:#008080">x=</span><span style="color:#d14">&#34;400&#34;</span> <span style="color:#008080">y=</span><span style="color:#d14">&#34;200&#34;</span> <span style="color:#008080">width=</span><span style="color:#d14">&#34;200&#34;</span> <span style="color:#008080">height=</span><span style="color:#d14">&#34;400&#34;</span> <span style="color:#008080">stroke=</span><span style="color:#d14">&#34;blue&#34;</span> <span style="color:#008080">stroke-width=</span><span style="color:#d14">&#34;0.5mm&#34;</span> <span style="color:#008080">fill=</span><span style="color:#d14">&#34;green&#34;</span> <span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;path</span> <span style="color:#008080">d=</span><span style="color:#d14">&#34;M250,600 l-200,0 l0,-200 z&#34;</span> <span style="color:#008080">stroke=</span><span style="color:#d14">&#34;blue&#34;</span> <span style="color:#008080">stroke-width=</span><span style="color:#d14">&#34;0.1mm&#34;</span> <span style="color:#008080">fill=</span><span style="color:#d14">&#34;green&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="color:#000080">&lt;/svg&gt;</span>
+</code></pre></div><p>This SVG only contains top-level elements, which <em>vpype</em> loads in layer 1 by default. The <code>fill</code> property is common to all paths and thus stored as a layer property, but the <code>stroke</code> and <code>stroke-width</code> attributes are heterogeneous and thus discarded. As a result, the <code>show</code> command uses the default color and pen width.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"><span style="color:#555">$ </span>vpype <span style="color:#0086b3">read</span> example.svg proplist --layer <span style="color:#099">1</span> show
+<span style="color:#888">listing 1 properties for layer 1
+</span><span style="color:#888">  svg_fill: (str) green
+</span></code></pre></div><img src="/vpype_19/read_example.png"width="40%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>To address this issue, the <code>read</code> command has now the option to create layers based on SVG attributes instead of structure:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"><span style="color:#555">$ </span>vpype <span style="color:#0086b3">read</span> --attr stroke --attr stroke-width example.svg proplist --layer all show
+<span style="color:#888">listing 5 properties for layer 1
+</span><span style="color:#888">  svg_fill: (str) green
+</span><span style="color:#888">  svg_stroke: (str) red
+</span><span style="color:#888">  svg_stroke-width: (str) 0.5mm
+</span><span style="color:#888">  vp_color: (color) #ff0000
+</span><span style="color:#888">  vp_pen_width: (float) 1.8897648
+</span><span style="color:#888">listing 5 properties for layer 2
+</span><span style="color:#888">  svg_fill: (str) green
+</span><span style="color:#888">  svg_stroke: (str) blue
+</span><span style="color:#888">  svg_stroke-width: (str) 0.5mm
+</span><span style="color:#888">  vp_color: (color) #0000ff
+</span><span style="color:#888">  vp_pen_width: (float) 1.8897648
+</span><span style="color:#888">listing 5 properties for layer 3
+</span><span style="color:#888">  svg_fill: (str) green
+</span><span style="color:#888">  svg_stroke: (str) blue
+</span><span style="color:#888">  svg_stroke-width: (str) 0.1mm
+</span><span style="color:#888">  vp_color: (color) #0000ff
+</span><span style="color:#888">  vp_pen_width: (float) 0.37795296000000006
+</span></code></pre></div><img src="/vpype_19/read_attr_example.png"width="40%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>In this case, <code>read</code> creates one layer per unique combination of <code>stroke</code> and <code>stroke-width</code> attribute, resulting in a total of three layers, each assigned with the correct properties, and correctly displayed by <code>show</code>.</p>
+<h3 id="source-files">Source files</h3>
+
+<blockquote class="extract">
+  <p><ul>
+<li>The <code>read</code> command now records the source SVG paths in the <code>vp_source</code> and <code>vp_sources</code> system properties (see the <a href="https://vpype.readthedocs.io/en/latest/fundamentals.html#system-properties">documentation</a>) (#397, #406, #408)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>The idea of the <code>vp_source</code> and <code>vp_sources</code> properties is to keep track of the files from which the content of the pipeline originates from. The <code>vp_source</code> property is a single path, which is overwritten by the last command importing from a file. The <code>vp_sources</code> property is a <a href="https://docs.python.org/3/tutorial/datastructures.html#sets">set</a> of <em>all</em> source files encountered so far. Both properties are <a href="https://docs.python.org/3/library/pathlib.html"><code>pathlib.Path</code></a> instances.</p>
+<p>This is, for example, what happens when using <code>read</code> twice:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"><span style="color:#555">$ </span>vpype <span style="color:#0086b3">read</span> machine_typography_01_3.svg <span style="color:#0086b3">read</span> machine_typography_02_3.svg proplist -g
+<span style="color:#888">listing 5 global properties
+</span><span style="color:#888">  svg_fill: (str) black
+</span><span style="color:#888">  svg_stroke: (str) none
+</span><span style="color:#888">  vp_page_size: (tuple) (396.850608, 559.3703808000001)
+</span><span style="color:#888">  vp_source: (PosixPath) /private/tmp/MT/machine_typography_02_3.svg
+</span><span style="color:#888">  vp_sources: (set) {PosixPath(&#39;/private/tmp/MT/machine_typography_01_3.svg&#39;), PosixPath(&#39;/private/tmp/MT/machine_typography_02_3.svg&#39;)}
+</span></code></pre></div><p>Here, <code>vp_source</code> points to the file read by the last <code>read</code> command, but <code>vp_sources</code> contains all two source files.</p>
+<p>Currently, <code>read</code> is the only command which sets these variables, but the idea is that any command involved with reading a file (SVG or otherwise) should set these properties, including plug-ins such as <a href="https://github.com/plottertools/hatched">hatched</a>, <a href="https://github.com/serycjon/vpype-flow-imager">flow imager</a>, or <a href="https://github.com/EmbroidePy/vpype-embroidery">vpype-embroidery</a>.</p>
+<p>One of the most common use case is to name the output file after the input file:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"><span style="color:#555">$ </span>vpype flow_img <span style="color:#000;font-weight:bold">[</span>...<span style="color:#000;font-weight:bold">]</span> my_image.png write <span style="color:#d14">&#34;{vp_name.stem}_converted.svg&#34;</span>
+</code></pre></div><p>Note the use of a property substitution pattern, which brings us to the next topic.</p>
+<h3 id="property-substitution">Property substitution</h3>
+
+<blockquote class="extract">
+  <p><ul>
+<li>
+<p>Added <a href="https://vpype.readthedocs.io/en/latest/fundamentals.html#property-substitution">property substitution</a> to CLI user input (#395)</p>
+<p>The input provided to most commands' arguments and options may now contain substitution patterns which will be replaced by the corresponding property value. Property substitution patterns are marked with curly braces (e.g. <code>{property_name}</code>) and support the same formatting capabilities as the Python&rsquo;s <a href="https://docs.python.org/3/library/string.html#formatstrings"><code>format()</code> function</a>.</p>
+</li>
+</ul>
+</p>
+</blockquote>
+
+<p>This is where things start becoming &ldquo;meta&rdquo;! 🤯</p>
+<p>As shown in the previous example, the value of a property may now be used anywhere as input using property substitution patterns.</p>
+<p>Here is another example where the full path of the input file is drawn and displayed:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"><span style="color:#555">$ </span>vpype <span style="color:#0086b3">read</span> example.svg text -p 0.5cm 0.5cm <span style="color:#d14">&#34;{vp_source}&#34;</span> show
+</code></pre></div><img src="/vpype_19/prop_subst.png"width="40%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>Again, <code>vp_source</code> is a <a href="https://docs.python.org/3/library/pathlib.html"><code>pathlib.Path</code></a> instance, so <code>{vp_source.name}</code> (file name) or <code>{vp_source.stem}</code> (file name without extension) could be used instead.</p>
+<p>Multiple substitution patterns can be combined and mixed with regular text. For example, this creates an output file in the same directory as, and named after, the input file:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vpype <span style="color:#0086b3">read</span> example.svg linesort <span style="color:#d14">\
+</span><span style="color:#d14"></span>    write <span style="color:#d14">&#34;{vp_source.parent}/{vp_source.stem}_optimised.svg&#34;</span>
+</code></pre></div><p>Of course, when using <em>vpype</em> interactively, it&rsquo;s easier to simply spell out the output file name. Instead, this kind of mechanism makes it considerably easier to write generic, reusable <a href="https://vpype.readthedocs.io/en/latest/cookbook.html#wrapping-a-vpype-pipeline-in-a-shell-script">shell scripts</a>.</p>
+<p>Note that, since property substitution internally relies on Python&rsquo;s <a href="https://docs.python.org/3/library/string.html#formatstrings"><code>str.format()</code></a> function, the number formatting mini-language is available as well (e.g. <code>{vp_pen_width:.02f}</code>). See the <a href="https://vpype.readthedocs.io/en/latest/fundamentals.html#property-substitution">documentation</a> for some examples.</p>
+<p>Now, taking a step back, this feature is neat indeed, but its usefulness turns out to be limited in many non-trivial, real-world scenarios. I had hoped it would unlock several workflows I had in mind, but it just did not - or not elegantly enough. So much so that I even considered dropping the feature altogether.</p>
+<p>This was a bit frustrating, to say the least. And ultimately lead to what is the next big chapter of this release.</p>
+<h2 id="expressions">Expressions</h2>
+
+<blockquote class="extract">
+  <p><ul>
+<li>
+<p>Added <a href="https://vpype.readthedocs.io/en/latest/fundamentals.html#expression-substitution">expression substitution</a> to CLI user input (#397)</p>
+<p>The input provided to most command&rsquo;s arguments and options may now contain expression patterns which are evaluated before the command is executed. Expression patterns are marked with the percent symbol <code>%</code> (e.g. <code>%3+4%</code>) and support a large subset of the Python language. <a href="https://vpype.readthedocs.io/en/latest/cookbook.html#load-multiple-files-merging-their-layers-by-name">A</a> <a href="https://vpype.readthedocs.io/en/latest/cookbook.html#cropping-and-framing-geometries">lot</a> <a href="https://vpype.readthedocs.io/en/latest/cookbook.html#laying-out-multiple-svgs-on-a-grid">of</a> <a href="https://vpype.readthedocs.io/en/latest/cookbook.html#create-interactive-scripts-with-input">examples</a> were added in the <a href="https://vpype.readthedocs.io/en/latest/cookbook.html">cookbook</a>.</p>
+</li>
+</ul>
+</p>
+</blockquote>
+
+<p>This is possibly the most transformative feature brought to <em>vpype</em> since its inception: anything between pairs of <code>%</code> characters is now evaluated as (a sub-set of) Python code, and the result is substituted in the input before it reaches the actual command. The documentation has been updated with a whole new <a href="https://vpype.readthedocs.io/en/latest/fundamentals.html#expression-substitution">section</a> about expressions (which I&rsquo;m not going to repeat here), and the <a href="https://vpype.readthedocs.io/en/latest/cookbook.html">cookbook</a> has plenty of examples making use of them. Do check them out for a taste of what expressions are capable of!</p>
+<p>This feature blurs the lines between a mere CLI tool and a programming language. This begs the question of why not using a programming language in the first place, a point <a href="https://ptb.discord.com/channels/499297341472505858/748589023731122277/939168445759631411">raised</a> by fellow Python dev and <a href="https://github.com/serycjon/vpype-flow-imager">flow imager</a> author <a href="https://github.com/serycjon">Jonas Serych</a>. <em>vpype</em> even offers a proper <a href="https://vpype.readthedocs.io/en/latest/api.html">API</a> for that!</p>
+<p>Here are my thoughts about this:</p>
+<ul>
+<li>Users of <em>vpype</em> are often not Python developers &ndash; or developers at all. Expressions build on existing <em>vpype</em> knowledge and bring, at least through examples and recipes that can be copy/pasted/customized, tiny bits of programs which are readily useful, without the need to learn much of the Python syntax and ecosystem.</li>
+<li>For many real-world cases (see the examples linked in the release notes), the resulting one-liners are more compact than the equivalent in proper code - even Python, even with <em>vpype</em> API. (Arbitrarily complex pipelines can of course be conceivably crafted as counter-examples, but this is besides the point.)</li>
+</ul>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Added the <code>eval</code> command as placeholder for executing expressions (#397)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>Though expressions can be used in any command&rsquo;s input, some &ldquo;space&rdquo; dedicated to them in the pipeline can be useful. Typical cases include variable initialization or <a href="https://vpype.readthedocs.io/en/latest/cookbook.html#create-interactive-scripts-with-input">querying the user</a> for some parameter with the <code>input()</code> function. Several examples shown or linked below make use of this.</p>
+<h2 id="block-processors">Block processors</h2>
+
+<blockquote class="extract">
+  <p><ul>
+<li>
+<p>Improved block processors (#395, #397)</p>
+<ul>
+<li>Simplified and improved the infrastructure underlying block processors for better extensibility.</li>
+<li>The <code>begin</code> marker is now optional and implied whenever a block processor command is encountered. <em>Note</em>: the <code>end</code> marker must always be used to mark the end of a block.</li>
+<li>Commands inside the block now have access to the current layer structure and its metadata.</li>
+</ul>
+</li>
+</ul>
+</p>
+</blockquote>
+
+<p>Block processors hardly got any love since the first release of <em>vpype</em> and, as far as I can tell, weren&rsquo;t used much - if at all - due to their limitations. Properties and expressions completely reverse this situation and block processors are now where the magic happens. The changes above lay the ground work for this.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>
+<p>Improved the <code>grid</code> block processor (#397)</p>
+<ul>
+<li>The page size is now updated according to the grid size.</li>
+<li>The command now sets expression variables for use in the nested pipeline.</li>
+<li>Cells are now first iterated along rows instead of columns.</li>
+</ul>
+</li>
+<li>
+<p>The <code>repeat</code> block processor now sets expression variables for use in the nested pipeline (#397)</p>
+</li>
+<li>
+<p>Added <code>forfile</code> block processor to iterate over a list of file (#397)</p>
+</li>
+<li>
+<p>Added <code>forlayer</code> block processor to iterate over the existing layers (#397)</p>
+</li>
+<li>
+<p>The <code>read</code> command now will ignore a missing file if <code>--no-fail</code> parameter is used (#397)</p>
+</li>
+<li>
+<p>Changed the initial default target layer to 1 (#395)</p>
+<p>Previously, the first generator command of the pipeline would default to create a new layer if the <code>--layer</code> option was not provided. This could lead to unexpected behaviour in several situation. The target layer is now layer 1. For subsequent generators, the existing behaviour of using the previous generator target layer as default remains.</p>
+</li>
+</ul>
+</p>
+</blockquote>
+
+<p>That&rsquo;s two new block processor commands, and another two finally coming to life, plus a few changes to make them work better with real-world workflows.</p>
+<p>One of the key changes is that block processors now set temporary expression variables (prefixed with <code>_</code>) that can be used in the nested pipeline. They are listed in each command&rsquo;s help text:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"><span style="color:#555">$ </span>vpype grid --help
+<span style="color:#888">Usage: vpype grid [OPTIONS] NX NY
+</span><span style="color:#888"></span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#888">  Creates a NX by NY grid of geometry
+</span><span style="color:#888"></span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#888">  [...]
+</span><span style="color:#888"></span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#888">  The following variables are set by `grid` and available for expressions:
+</span><span style="color:#888"></span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#888">      _nx: number of columns (NX)
+</span><span style="color:#888">      _ny: number of rows (NY)
+</span><span style="color:#888">      _n: total number of cells (NX*NY)
+</span><span style="color:#888">      _x: current column (0 to NX-1)
+</span><span style="color:#888">      _y: current row (0 to NY-1)
+</span><span style="color:#888">      _i: current cell (0 to _n-1)
+</span><span style="color:#888">  
+</span><span style="color:#888">  [...]
+</span></code></pre></div><p>Another novelty is the introduction of two new block processor commands:</p>
+<ul>
+<li>The <code>forfile</code> command accepts a pathname pattern (e.g. <code>*.svg</code>) and executes the nested pipeline for each of the paths it expends into. It makes things like <a href="https://vpype.readthedocs.io/en/latest/cookbook.html#batch-processing-multiple-svgs-with-forfile">batch processing files</a>, <a href="https://vpype.readthedocs.io/en/latest/cookbook.html#merge-multiple-svgs-into-a-multilayer-file">merging multiple SVGs into a multilayer file</a>, or <a href="https://vpype.readthedocs.io/en/latest/cookbook.html#laying-out-multiple-svgs-on-a-grid">laying out multiple files on a grid</a> a breeze.</li>
+<li>The <code>forlayer</code> command executes the nested pipeline for each of the exising layers, which is useful, e.g., to <a href="https://vpype.readthedocs.io/en/latest/cookbook.html#saving-each-layer-as-a-separate-file">export one file per layer</a>.</li>
+</ul>
+<p>Checks the related <a href="https://vpype.readthedocs.io/en/latest/fundamentals.html#blocks">documentation</a> for more details.</p>
+<p>This example, taken from the <a href="https://vpype.readthedocs.io/en/latest/cookbook.html#laying-out-multiple-svgs-on-a-grid">grid layout recipe</a>, demonstrates best what <em>vpype</em> 1.9 is about:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vpype <span style="color:#d14">\
+</span><span style="color:#d14"></span>   <span style="color:#0086b3">eval</span> <span style="color:#d14">&#34;files=glob(&#39;*.svg&#39;)&#34;</span> <span style="color:#d14">\
+</span><span style="color:#d14"></span>   <span style="color:#0086b3">eval</span> <span style="color:#d14">&#34;cols=6; rows=ceil(len(files)/cols)&#34;</span> <span style="color:#d14">\
+</span><span style="color:#d14"></span>   <span style="color:#0086b3">eval</span> <span style="color:#d14">&#34;names={};n=100&#34;</span> <span style="color:#d14">\
+</span><span style="color:#d14"></span>   grid -o 10cm 15cm <span style="color:#d14">&#34;%cols%&#34;</span> <span style="color:#d14">&#34;%rows%&#34;</span> <span style="color:#d14">\
+</span><span style="color:#d14"></span>       <span style="color:#0086b3">read</span> --no-fail <span style="color:#d14">&#34;%files[_i] if _i &lt; len(files) else &#39;&#39;%&#34;</span> <span style="color:#d14">\
+</span><span style="color:#d14"></span>       layout -m 0.5cm 10x15cm <span style="color:#d14">\
+</span><span style="color:#d14"></span>       forlayer <span style="color:#d14">\
+</span><span style="color:#d14"></span>           <span style="color:#0086b3">eval</span> <span style="color:#d14">&#34;%if _name not in names: names[_name] = n; n = n+1%&#34;</span> <span style="color:#d14">\
+</span><span style="color:#d14"></span>           lmove %_lid% <span style="color:#d14">&#34;%names[_name]%&#34;</span> <span style="color:#d14">\
+</span><span style="color:#d14"></span>       end <span style="color:#d14">\
+</span><span style="color:#d14"></span>   end <span style="color:#d14">\
+</span><span style="color:#d14"></span>   write combined.svg
+</code></pre></div><p>It creates a grid layout from multiple SVG files, combining layers using their name (e.g. all &ldquo;yellow&rdquo; layers in input files are merged in a single &ldquo;yellow&rdquo; layer in the output file). Check the <a href="https://vpype.readthedocs.io/en/latest/cookbook.html#laying-out-multiple-svgs-on-a-grid">recipe</a> for a detailed explanation.</p>
+<p>This pipeline has it all:</p>
+<ul>
+<li>extensive use of expressions,</li>
+<li>two nested blocks, using their expression variables (prefixed with <code>_</code>),</li>
+<li>use of properties (via the <code>_name</code> variable set by <code>forlayer</code>, which contains the current layer&rsquo;s <code>vp_name</code> property).</li>
+</ul>
+<p>Here is how it looks when run on my <a href="https://github.com/abey79/sketches#machine_typography">Machine Typography</a> #ptpx project:</p>
+<img src="/vpype_19/machine_typography.png"width="60%"style="display:block;margin-left:auto;margin-right:auto"/>
+<h2 id="other-changes">Other changes</h2>
+
+<blockquote class="extract">
+  <p><strong>Note</strong>: This is the last version of <em>vpype</em> to support Python 3.7.</p>
+</blockquote>
+
+<p>It&rsquo;s the year of the <a href="https://realpython.com/python-walrus-operator/">walrus</a> for <em>vpype</em>! 🦭</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Added <code>pagerotate</code> command, to rotate the page layout (including geometries) by 90 degrees (#404)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>This command is useful for plotters without native support for both portrait and landscape orientations. Your plotter support only, say, landscape orientation and you want to plot a portrait-oriented file? This pipeline does the trick:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"><span style="color:#555">$ </span>vpype <span style="color:#0086b3">read</span> portrait_input.svg pagerotate wrote landscape_output.svg
+</code></pre></div>
+<blockquote class="extract">
+  <p><ul>
+<li>Added <code>--keep</code> option to the <code>ldelete</code> command (to delete all layers but those specified) (#383)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>There was formerly no way to delete all layers but one. The new <code>--keep</code> option fills this gap.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Pinned poetry-core to 1.0.8 to enable editable installs (#410)</li>
+</ul>
+</p>
+</blockquote>
+
+<p><a href="https://python-poetry.org">Poetry</a> finally <a href="https://github.com/python-poetry/poetry/issues/34">supports</a> <a href="https://pip.pypa.io/en/stable/cli/pip_install/#editable-installs">editable installs</a> thanks to <a href="https://www.python.org/dev/peps/pep-0660/">PEP 660</a> 🎉</p>
+<p>This change is relevant when developing jointly on <em>vpype</em> and another project that depends on it (e.g. <a href="https://github.com/abey79/vsketch"><em>vsketch</em></a>, or some plug-in). In such cases, <em>vpype</em> can now be installed in editable mode from a local checkout. Modifications made to it will immediately be available to the dependent project:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"><span style="color:#555">$ </span><span style="color:#0086b3">cd</span> my-plugin
+<span style="color:#555">$ </span><span style="color:#0086b3">source</span> venv/bin/activate
+<span style="color:#555">$ </span>git clone https://github.com/abey79/vpype ../vpype
+<span style="color:#555">$ </span>pip install -e ../vpype
+</code></pre></div>
+<blockquote class="extract">
+  <p><ul>
+<li>Fixed an issue with the <code>random</code> command when using non-square area (#395)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>That&rsquo;s a two-year-old bug I can&rsquo;t believe I hadn&rsquo;t seen before 🙄 (I use <code>random</code> <em>a lot</em> when testing out stuff during development.)</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Renamed the bundled config file to <code>vpype_config.toml</code> (#359)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>This is the config file bundled with <em>vpype</em>. It used to be called <code>hpgl_devices.toml</code>, but now it also contains the build-in configurations of the new <code>pens</code> command (<code>cmyk</code> and <code>rgb</code>). The old name didn&rsquo;t make sense anymore.</p>
+
+<blockquote class="extract">
+  <p><p>API changes:</p>
+<ul>
+<li>Moved all CLI-related APIs from <code>vpype</code> to <code>vpype_cli</code> (#388)</li>
+<li>Updated the block processor API (breaking change) (#395)</li>
+<li>&hellip;</li>
+</ul>
+</p>
+</blockquote>
+
+<p>This release comes with scores of changes at the API level (to many to list here). Two of these changes deserve a note though.</p>
+<p>First, a fair amount of infrastructure used by the <em>vpype</em> CLI (e.g. the <code>@generator</code> decorator and friends) used to reside in the <code>vpype</code> package instead of <code>vpype_cli</code>. This is not ideal for many reasons and I&rsquo;m moving away from it. <code>vpype</code> should be a &ldquo;pure&rdquo; library, whereas <code>vpype_cli</code> should contain everything needed for its CLI (and for plug-ins). These are not yet breaking changes but will generate deprecation warnings with most plug-ins. I will ensure that they are fixed ASAP.</p>
+<p>Secondly, as part of the block processor overhaul, the <code>@block_processor</code> decorator had breaking changes without backward-compatible deprecation. I am not aware of any third-party code actually using it, so this shouldn&rsquo;t cause any issue.</p>
+<h2 id="whats-next">What&rsquo;s next?</h2>
+<p>Congrats if you got this far! 😲🏆</p>
+<p>I hope you&rsquo;ll enjoy <em>vpype</em> 1.9 as much as I sweated preparing it. 😅</p>
+<p>Feedback is welcome, via <a href="https://github.com/abey79/vpype/discussions">discussions</a> for support/suggestions or <a href="https://github.com/abey79/vpype/issues">issues</a> for bugs. As always, I hang out on the <a href="https://drawingbots.net">drawingbots.net</a>&rsquo;s <a href="https://discord.com/invite/XHP3dBg">Discord server</a> and am available for a chat.</p>
+<p>Contributions are most welcome too, and the documentation is one area where help is always beneficial. I&rsquo;ve gathered a few ideas of what can be done <a href="https://github.com/abey79/vpype/issues/400">here</a>.</p>
+<p>To conclude, here are my probable areas of focus for the coming weeks/months:</p>
+<ul>
+<li>Given the scope of this release, I&rsquo;m expecting to deal with increased user support and a few kirks and bugs to address. I&rsquo;ll be available for this in the short term.</li>
+<li>Property-related stuff must be ported to <a href="https://github.com/abey79/vsketch"><em>vsketch</em></a>, including a nice API to set layer name, color, pen-width, etc.</li>
+<li>The next big topic for <em>vpype</em> is its UX. At least, I want to improve the look and usability of the integrated help (using the brand new <a href="https://github.com/ewels/rich-click">rich-click</a> project), and add some visual feedback during execution.</li>
+<li>With support for Python 3.7 dropped, compatibility with Python 3.10 is now on the menu.</li>
+<li>Whatever user feedback might steer my attention to 😉</li>
+</ul>
+]]></content:encoded>
     </item>
     
     <item>
@@ -90,6 +1352,16 @@ In this case, the reference images were generated long ago on my previous, Intel
       
       <guid>https://bylr.info/articles/2022/02/20/first-post/</guid>
       <description>&lt;p&gt;Hello again, world.&lt;/p&gt;</description>
+      <content:encoded><![CDATA[<p>Hello again, world.</p>
+<p>Lately, I&rsquo;ve been meaning to document some of my personal projects and endeavours, and realised that I lacked a suitable outlet. I figured this would be a great occasion to test <a href="https://gohugo.io">Hugo</a> and <a href="https://pages.github.com">GitHub Pages</a>, so here we are!</p>
+<p>This is what might ramble about in the future:</p>
+<ul>
+<li>Stuff about <a href="https://github.com/abey79/vpype">vpype</a>, <a href="https://github.com/abey79/vsketch">vsketch</a>, and my other plotter-related software projects.</li>
+<li>Logs for some of my past and future projects (plotter-related or otherwise).</li>
+<li>Posts related to <a href="https://www.home-assistant.io">Home Assistant</a> or other home-automation topics.</li>
+<li>Who knows what else.</li>
+</ul>
+<p>Follow me on <a href="https://twitter.com/abey79">Twitter</a> for updates.</p>]]></content:encoded>
     </item>
     
     <item>
@@ -100,6 +1372,19 @@ In this case, the reference images were generated long ago on my previous, Intel
       <guid>https://bylr.info/about/</guid>
       <description>My name is Antoine Beyeler. I am a multi-disciplinary engineer and entrepreneur with a PhD in flying robotics and interests in software, aviation, photography, generative art, plotters, and home automation. I live in Lausanne, Switzerland 🇨🇭.
 With a few friends, I co-founded senseFly in 2009, which soon became the leader of fixed-wing mapping drones for surveyors, farmers, humanitarians and many others. Until my departure in 2018, I lead as CTO a team of up to 45 engineers and developed multiple generations of end-to-end mapping drone systems.</description>
+      <content:encoded><![CDATA[<p>My name is <strong>Antoine Beyeler</strong>. I am a multi-disciplinary engineer and entrepreneur with a PhD in flying robotics and interests in software, aviation, photography, generative art, plotters, and home automation. I live in Lausanne, Switzerland 🇨🇭.</p>
+<p>With a few friends, I co-founded <a href="https://www.sensefly.com">senseFly</a> in 2009, which soon became the leader of fixed-wing mapping drones for surveyors, farmers, humanitarians and many others. Until my departure in 2018, I lead as CTO a team of up to 45 engineers and developed multiple generations of end-to-end mapping drone systems. I am now involved in advisory capacity with several start-ups in the Geneva region.</p>
+<p>Like my skills, my contributions to generative art lean on the technical rather than the artistic side 👨‍💻. Among other things, I created and maintain two open-source projects for plotter generative artists:</p>
+<ul>
+<li><a href="https://github.com/abey79/vpype"><em>vpype</em></a>: a Swiss-Army-knife CLI to generate, manage, process, and convert vector graphic files for plotters,</li>
+<li><a href="https://github.com/abey79/vsketch"><em>vsketch</em></a>: a Python plotter generative art framework and workflow automation tool.</li>
+</ul>
+<p>When I am not at the computer, you may find me piloting a helicopter 🚁 or behind the camera 📷 on my travels.</p>
+<p><img loading="lazy" src="/self.jpg" alt="self"  />
+</p>
+<h2 id="about-this-site">About this site</h2>
+<p>This site is built using <a href="https://gohugo.io">Hugo</a> and the <a href="https://github.com/adityatelange/hugo-PaperMod/">PaperMod</a> theme. It is hosted on <a href="https://pages.github.com">GitHub Pages</a> and deployed using a simple <a href="https://github.com/features/actions">GitHub Actions</a> <a href="https://github.com/abey79/abey79.github.io/blob/main/.github/workflows/gh-pages.yml">workflow</a>. Privacy-friendly and GDPR-compliant analytics services are provided by <a href="https://plausible.io/">Plausible</a> (a paid service, so neither you or I are the product).</p>
+]]></content:encoded>
     </item>
     
     

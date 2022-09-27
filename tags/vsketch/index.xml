@@ -21,6 +21,18 @@
       <description>Hatch fills or pixel art plotting requires a rather precise estimate of your particular pen/paper combo&amp;rsquo;s stroke width.
 For example, this test pixel art plot would benefit from a slightly thinner pitch to avoid the visible overlap between neighbouring lines:
 There is no way around experience to find the optimal pitch. I&amp;rsquo;ve created the fill_test sketch to create custom charts with test patterns precisely tuned to the pen of interest. There is indeed no point to testing a rotring isograph .</description>
+      <content:encoded><![CDATA[<p>Hatch fills or <a href="https://github.com/abey79/vpype-pixelart">pixel art</a> plotting requires a rather precise estimate of your particular pen/paper combo&rsquo;s stroke width.</p>
+<p>For example, this test pixel art plot would benefit from a slightly thinner pitch to avoid the visible overlap between neighbouring lines:</p>
+<img src="/sketch-fill-test/obama.jpg"alt="plotted obama pixelart with visibly overlap between neighbouring lines"width="450px"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>There is no way around experience to find the optimal pitch. I&rsquo;ve created the <a href="https://github.com/abey79/sketches/tree/master/fill_test"><code>fill_test</code></a> sketch to create custom charts with test patterns precisely tuned to the pen of interest. There is indeed no point to testing a rotring isograph .35mm pen with a generic 0.1mm to 1.0mm chart.</p>
+<p>Here is how the UI looks:</p>
+<img src="/sketch-fill-test/ui.png"alt="UI of a fill test pattern generator sketch made with vsketch"width="650px"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>Beyond the general layout options (page size, grid size, etc.), the <code>Smallest Width</code> and <code>Width Increment</code> parameters enable a fine-grained exploration of pitches around the nominal pen size.</p>
+<p>Here is an example with a rotring isograph .35mm in my notebook, which has a slight propensity for ink soaking. For this combo, fills with .4mm pitch yield the best results:</p>
+<img src="/sketch-fill-test/example.jpg"alt="example of plotted fill test patterns"width="450px"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>To use the sketch, download or clone my <a href="https://github.com/abey79/sketches">sketches</a> repository and execute the sketch using your existing <a href="https://github.com/abey79/vsketch"><em>vsketch</em></a> installation:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vsk run path/to/sketchs/fill_test
+</code></pre></div>]]></content:encoded>
     </item>
     
     <item>
@@ -31,6 +43,65 @@ There is no way around experience to find the optimal pitch. I&amp;rsquo;ve crea
       <guid>https://bylr.info/articles/2022/04/13/grid-layout/</guid>
       <description>The problem Several generative art algorithms, such as Truchet tiles, use a regular grid of square cells. For example, check this interactive demo from the Generative Design book or these few pieces of mine.
 Now, let&amp;rsquo;s say you want to generate an iteration of your algorithm for printing or plotting such that all margins around the grid are the same for the given paper size. You can of course adjust the number of cell rows and columns, but how should you size the cell such as to achieve uniform margins?</description>
+      <content:encoded><![CDATA[<h2 id="the-problem">The problem</h2>
+<p>Several generative art algorithms, such as <a href="https://en.wikipedia.org/wiki/Truchet_tiles">Truchet tiles</a>, use a regular grid of square cells. For example, check this <a href="http://www.generative-gestaltung.de/2/sketches/?01_P/P_2_3_6_01">interactive demo</a> from the <a href="http://www.generative-gestaltung.de/2/">Generative Design</a> book or <a href="https://github.com/abey79/vpype-explorations#covid-in-complex-module">these</a> <a href="https://twitter.com/abey79/status/1251148503176237057?s=20&amp;t=zJlPTdagH-8hVnEKHSLOYw">few</a> <a href="https://github.com/abey79/sketches/blob/master/README.md#liquid_neon">pieces</a> of mine.</p>
+<p>Now, let&rsquo;s say you want to generate an iteration of your algorithm for printing or plotting such that all margins around the grid are the same for the given paper size. You can of course adjust the number of cell rows and columns, but how should you size the cell such as to achieve uniform margins?</p>
+<p>The image above illustrates the problem. For a given page of size $W \times H$ and a regular grid of $N \times M$ cells, what should be the cell size $s$ to achieve uniform margins $m$ around the grid? What is then the value of $m$?</p>
+<h2 id="the-solution">The solution</h2>
+<p>This is easy to solve with a bit of math. Here is the system of two equations that must be solved:</p>
+<span>
+  \[\begin{cases}
+2 \cdot m &#43; N \cdot s = W \\
+2 \cdot m &#43; M \cdot s = H
+\end{cases}\]
+</span>
+<p>with all parameters ($N$, $M$, $W$, $H$) and the cell size $s$ being strictly positive.</p>
+<p>Solving this for $m$ and $s$ is no rocket science but <a href="https://www.wolframalpha.com">Wolfram Alpha</a> can <a href="https://www.wolframalpha.com/input?i=solve+%7B2*m+%2B+N*s+%3D+W%2C+2*m+%2B+M*s+%3D+H%2C+W%3E0%2C+H%3E0%2C+M%3E0%2C+N%3E0%2C+s%3E0%7D+for+m+and+s+over+the+reals">do the job for you</a> if your high school math is rusty!</p>
+<img src="/grid-layout/wolfram.png"alt="equation solved by Wolfram Alpha"width="70%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>We have the following solutions:</p>
+<span>
+  \[\begin{cases}
+\displaystyle s = \frac{H - 2 m}{N}, \quad m &lt; \frac{H}{2} &amp; \footnotesize M = N, \; W = H \\
+\\
+\displaystyle s = \frac{H-W}{M-N}, \quad m = \frac{M W - H N}{2(M - N)} &amp; \footnotesize N&lt;M, \; W&lt;H \quad \textrm{or} \quad  N&gt;M, \; W&gt;H
+\end{cases}\]
+</span>
+<p>The first solution corresponds to the special case of a square page size. In this case, the grid must be square ($N=M$) and the margins may have an arbitrary value, with the cell size varying accordingly. This is not very surprising.</p>
+<p>The second solution is where things become interesting. As intuition dictates, it is valid <em>only</em> if the grid orientation (portrait or landscape) matches the paper orientation. If so, uniform margins is achieved by choosing a cell size of $s = \frac{H-W}{M-N}$.</p>
+<p>Note that the resulting margin $m$ may, depending on the parameters, be negative. In this case, the grid <em>overflows</em> all around the page by a constant distance. This making plotting/printing your piece inconvenient, you will have to adjust $N$ and/or $M$ to reach a positive margin value.</p>
+<h2 id="the-demo">The demo</h2>
+<p>I made a <a href="https://github.com/abey79/sketches/tree/master/centred_grid">demonstration sketch</a> made with <a href="https://github.com/abey79/vsketch"><em>vsketch</em></a>. Here is how it looks:</p>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/4nlGM2hcV9o" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+<br/>
+<p>This is a simplified version of the code which can be used as a starting point for your next grid-based design:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">import</span> <span style="color:#555">itertools</span>
+<span style="color:#000;font-weight:bold">import</span> <span style="color:#555">vsketch</span>
+
+<span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">MySketch</span>(vsketch<span style="color:#000;font-weight:bold">.</span>SketchClass):
+    N <span style="color:#000;font-weight:bold">=</span> vsketch<span style="color:#000;font-weight:bold">.</span>Param(<span style="color:#099">5</span>, <span style="color:#099">1</span>)
+    M <span style="color:#000;font-weight:bold">=</span> vsketch<span style="color:#000;font-weight:bold">.</span>Param(<span style="color:#099">7</span>, <span style="color:#099">1</span>)
+
+    <span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">draw</span>(<span style="color:#999">self</span>, vsk: vsketch<span style="color:#000;font-weight:bold">.</span>Vsketch) <span style="color:#000;font-weight:bold">-&gt;</span> <span style="color:#000;font-weight:bold">None</span>:
+        vsk<span style="color:#000;font-weight:bold">.</span>size(<span style="color:#d14">&#34;a4&#34;</span>, landscape<span style="color:#000;font-weight:bold">=</span><span style="color:#000;font-weight:bold">False</span>, center<span style="color:#000;font-weight:bold">=</span><span style="color:#000;font-weight:bold">False</span>)   <span style="color:#998;font-style:italic"># disable auto-centering</span>
+
+        cell_size <span style="color:#000;font-weight:bold">=</span> (vsk<span style="color:#000;font-weight:bold">.</span>height <span style="color:#000;font-weight:bold">-</span> vsk<span style="color:#000;font-weight:bold">.</span>width) <span style="color:#000;font-weight:bold">/</span> (<span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>M <span style="color:#000;font-weight:bold">-</span> <span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>N)
+        margin <span style="color:#000;font-weight:bold">=</span> (<span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>M <span style="color:#000;font-weight:bold">*</span> vsk<span style="color:#000;font-weight:bold">.</span>width <span style="color:#000;font-weight:bold">-</span> <span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>N <span style="color:#000;font-weight:bold">*</span> vsk<span style="color:#000;font-weight:bold">.</span>height) <span style="color:#000;font-weight:bold">/</span> <span style="color:#099">2</span> <span style="color:#000;font-weight:bold">/</span> (<span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>M <span style="color:#000;font-weight:bold">-</span> <span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>N)
+        
+        <span style="color:#000;font-weight:bold">if</span> cell_size <span style="color:#000;font-weight:bold">&gt;</span> <span style="color:#099">0</span>:
+            <span style="color:#998;font-style:italic"># account for the computed margin</span>
+            vsk<span style="color:#000;font-weight:bold">.</span>translate(margin, margin)
+            
+            <span style="color:#998;font-style:italic"># draw the grid</span>
+            <span style="color:#000;font-weight:bold">for</span> i, j <span style="color:#000;font-weight:bold">in</span> itertools<span style="color:#000;font-weight:bold">.</span>product(<span style="color:#0086b3">range</span>(<span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>N <span style="color:#000;font-weight:bold">+</span> <span style="color:#099">1</span>), <span style="color:#0086b3">range</span>(<span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>M <span style="color:#000;font-weight:bold">+</span> <span style="color:#099">1</span>)):
+                vsk<span style="color:#000;font-weight:bold">.</span>point(i <span style="color:#000;font-weight:bold">*</span> cell_size, j <span style="color:#000;font-weight:bold">*</span> cell_size)
+        <span style="color:#000;font-weight:bold">else</span>:
+            <span style="color:#998;font-style:italic"># ERROR: N and M values must be adjusted!</span>
+            <span style="color:#000;font-weight:bold">pass</span>
+</code></pre></div>]]></content:encoded>
     </item>
     
   </channel>
