@@ -31,6 +31,7 @@ ShowShareButtons = false
 ShowPostNavLinks = false
 ShowBreadCrumbs = false
 ShowCodeCopyButtons = true
+ShowFullTextinRSS = true
 disableSpecial1stPost = false
 disableScrollToTop = true
 comments = true
@@ -79,6 +80,10 @@ url = "https://www.youtube.com/channel/UCAuzCV4jmbqNXT-rT6U1ogw"
 [[params.socialIcons]]
 name = "linkedin"
 url = "https://www.linkedin.com/in/abeyeler/"
+
+[[params.socialIcons]]
+name = "Rss"
+url = "index.xml"
 
 # [[params.socialIcons]]
 # name = "stackoverflow"
