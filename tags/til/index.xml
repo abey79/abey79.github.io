@@ -11,7 +11,63 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Tue, 05 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/til/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 30 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/til/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>TIL: using Sphinx substitutions to generate text snippets from code</title>
+      <link>https://bylr.info/articles/2022/09/30/til-sphinx-substitutions/</link>
+      <pubDate>Fri, 30 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/articles/2022/09/30/til-sphinx-substitutions/</guid>
+      <description>Often, technical documentations include lists or other snippets of text that are strongly related to some of the project&amp;rsquo;s code. vpype&amp;rsquo;s documentation is no exception to this.
+For instance, the Built-in symbols section lists the units available to expressions:
+These units are related to the following piece of code:
+# vpype/utils.py UNITS = { &amp;#34;px&amp;#34;: 1.0, &amp;#34;in&amp;#34;: 96.0, &amp;#34;inch&amp;#34;: 96.0, &amp;#34;ft&amp;#34;: 12.0 * 96.0, &amp;#34;yd&amp;#34;: 36.0 * 96.0, &amp;#34;mi&amp;#34;: 1760.0 * 36.</description>
+      <content:encoded><![CDATA[<p>Often, technical documentations include lists or other snippets of text that are strongly related to some of the project&rsquo;s code. <a href="https://github.com/abey79/vpype"><em>vpype</em></a>&rsquo;s <a href="https://vpype.readthedocs.io/">documentation</a> is no exception to this.</p>
+<p>For instance, the <a href="https://vpype.readthedocs.io/en/latest/fundamentals.html#built-in-symbols">Built-in symbols</a> section lists the units available to expressions:</p>
+<img src="/til-sphinx-substitutions/doc_units.png"alt="partial screenshot of vpype&#39;s documentation showing a list of units related to code"width="95%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>These units are related to the following piece of code:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#998;font-style:italic"># vpype/utils.py</span>
+
+UNITS <span style="color:#000;font-weight:bold">=</span> {
+    <span style="color:#d14">&#34;px&#34;</span>: <span style="color:#099">1.0</span>,
+    <span style="color:#d14">&#34;in&#34;</span>: <span style="color:#099">96.0</span>,
+    <span style="color:#d14">&#34;inch&#34;</span>: <span style="color:#099">96.0</span>,
+    <span style="color:#d14">&#34;ft&#34;</span>: <span style="color:#099">12.0</span> <span style="color:#000;font-weight:bold">*</span> <span style="color:#099">96.0</span>,
+    <span style="color:#d14">&#34;yd&#34;</span>: <span style="color:#099">36.0</span> <span style="color:#000;font-weight:bold">*</span> <span style="color:#099">96.0</span>,
+    <span style="color:#d14">&#34;mi&#34;</span>: <span style="color:#099">1760.0</span> <span style="color:#000;font-weight:bold">*</span> <span style="color:#099">36.0</span> <span style="color:#000;font-weight:bold">*</span> <span style="color:#099">96.0</span>,
+    <span style="color:#d14">&#34;mm&#34;</span>: <span style="color:#099">96.0</span> <span style="color:#000;font-weight:bold">/</span> <span style="color:#099">25.4</span>,
+    <span style="color:#d14">&#34;cm&#34;</span>: <span style="color:#099">96.0</span> <span style="color:#000;font-weight:bold">/</span> <span style="color:#099">2.54</span>,
+    <span style="color:#d14">&#34;m&#34;</span>: <span style="color:#099">100.0</span> <span style="color:#000;font-weight:bold">*</span> <span style="color:#099">96.0</span> <span style="color:#000;font-weight:bold">/</span> <span style="color:#099">2.54</span>,
+    <span style="color:#d14">&#34;km&#34;</span>: <span style="color:#099">100_000.0</span> <span style="color:#000;font-weight:bold">*</span> <span style="color:#099">96.0</span> <span style="color:#000;font-weight:bold">/</span> <span style="color:#099">2.54</span>,
+    <span style="color:#d14">&#34;pc&#34;</span>: <span style="color:#099">16.0</span>,
+    <span style="color:#d14">&#34;pt&#34;</span>: <span style="color:#099">96.0</span> <span style="color:#000;font-weight:bold">/</span> <span style="color:#099">72.0</span>,
+}
+</code></pre></div><p>I recently added <a href="https://github.com/abey79/vpype/pull/541">support for more units</a> and, of course, the documentation was at risk of running out of sync. Obviously, generating the list of units based on the code would be a better solution. After some Googling, here is how I did it.</p>
+<p>The basic idea is to use <a href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#substitutions">substitutions</a>. A substitution consists of assigning a text snippet to a keyword, and subsequently use said keyword (with the <code>|keyword|</code> syntax) in the documentation&rsquo;s body. The second insight is to use the <code>rst_prolog</code> variable (within the <code>conf.py</code> file) for the definition. This being regular Python, the definition can easily be auto-generated based on the original code.</p>
+<p>Here is how it looks for the case above:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#998;font-style:italic"># docs/conf.py</span>
+
+<span style="color:#000;font-weight:bold">import</span> <span style="color:#555">vpype</span> <span style="color:#000;font-weight:bold">as</span> <span style="color:#555">vp</span>
+
+<span style="color:#998;font-style:italic"># [...]</span>
+
+UNIT_STRINGS <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;, &#34;</span><span style="color:#000;font-weight:bold">.</span>join(<span style="color:#d14">f</span><span style="color:#d14">&#34;``</span><span style="color:#d14">{</span>s<span style="color:#d14">}</span><span style="color:#d14">``&#34;</span> <span style="color:#000;font-weight:bold">for</span> s <span style="color:#000;font-weight:bold">in</span> <span style="color:#0086b3">sorted</span>(vp<span style="color:#000;font-weight:bold">.</span>UNITS<span style="color:#000;font-weight:bold">.</span>keys()) <span style="color:#000;font-weight:bold">if</span> s <span style="color:#000;font-weight:bold">is</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#d14">&#34;in&#34;</span>)
+
+rst_prolog <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">f</span><span style="color:#d14">&#34;&#34;&#34;
+</span><span style="color:#d14">.. |units| replace:: </span><span style="color:#d14">{</span>UNIT_STRINGS<span style="color:#d14">}</span><span style="color:#d14">
+</span><span style="color:#d14">&#34;&#34;&#34;</span>
+</code></pre></div><p>(Note that <code>in</code> is explicitly excluded from the list because it is a reserved Python keyword and cannot be used in the context of <em>vpype</em> expressions.)</p>
+<p>And this is how the substitution is used in the actual documentation file:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rst" data-lang="rst"><span style="color:#999;font-weight:bold;font-style:italic">..
+</span><span style="color:#999;font-weight:bold;font-style:italic">  docs/fundamentals.rst
+</span><span style="color:#999;font-weight:bold;font-style:italic">
+</span><span style="color:#999;font-weight:bold;font-style:italic"></span><span style="color:#099">*</span> Units constants (|units|).<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span>  These variables may be used to convert values to CSS pixels unit, which <span style="color:#000;font-style:italic">*vpype*</span> uses internally. For example, the expression <span style="color:#d14">``%(3+4)*cm%``</span> evaluates to the pixel equivalent of 7 centimeters (e.g. ~264.6 pixels). (Note that expressions may overwrite these variables, e.g. to use the <span style="color:#d14">``m``</span> variable for another purpose.)<span style="color:#a61717;background-color:#e3d2d2">
+</span></code></pre></div><p><em>Et voilà!</em> Nice and easy. I certainly expect to use this technique often in the future.</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>TIL: aligning horizontal or vertical lines to the pixel grid with OpenGL</title>
       <link>https://bylr.info/articles/2022/04/05/til-aligning-horizontal-or-vertical-lines-to-the-pixel-grid-with-opengl/</link>
