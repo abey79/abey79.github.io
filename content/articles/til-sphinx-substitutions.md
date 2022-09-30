@@ -2,6 +2,7 @@
 title: "TIL: using Sphinx substitutions to generate text snippets from code"
 slug: til-sphinx-substitutions
 date: 2022-09-30
+lastmod: 2022-09-30
 tags:
   - python
   - sphinx
@@ -48,7 +49,7 @@ import vpype as vp
 
 # [...]
 
-UNIT_STRINGS = ", ".join(f"``{s}``" for s in sorted(vp.UNITS.keys()) if s is not "in")
+UNIT_STRINGS = ", ".join(f"``{s}``" for s in sorted(vp.UNITS.keys()) if s != "in")
 
 rst_prolog = f"""
 .. |units| replace:: {UNIT_STRINGS}
