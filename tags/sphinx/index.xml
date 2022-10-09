@@ -11,7 +11,55 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Fri, 30 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/sphinx/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 09 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/sphinx/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>TIL: use Plausible.io with a Sphinx documentation hosted on RTD</title>
+      <link>https://bylr.info/articles/2022/10/09/til-plausible-rtd/</link>
+      <pubDate>Sun, 09 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/articles/2022/10/09/til-plausible-rtd/</guid>
+      <description>Although Google Analytics is very easy to setup on a Read the Docs-based documentation website, it requires a cookie banner to be GDPR-compliant and is otherwise questionable from a privacy-preservation point-of-view. As a result, I much prefer to use and support the excellent EU-based Plausible.io for traffic metrics instead.
+This article explains how to setup a Read the Docs-based documentation with Plausible.io such that metrics are enabled only on &amp;ldquo;production&amp;rdquo; builds — e.</description>
+      <content:encoded><![CDATA[<p>Although Google Analytics is very easy to setup on a <a href="https://readthedocs.org"><em>Read the Docs</em></a>-based documentation website, it requires a cookie banner to be <a href="https://en.wikipedia.org/wiki/General_Data_Protection_Regulation">GDPR</a>-compliant and is otherwise questionable from a privacy-preservation point-of-view. As a result, I much prefer to use and support the excellent EU-based <a href="https://plausible.io/">Plausible.io</a> for traffic metrics instead.</p>
+<p>This article explains how to setup a <em>Read the Docs</em>-based documentation with Plausible.io such that metrics are enabled only on &ldquo;production&rdquo; builds — e.g. the &ldquo;latest&rdquo; builds from the main branch and the version-tagged builds. This minimises the contamination of traffic statistics by development-related activities.</p>
+<p>To achieve this, the basic idea is to customise your Sphinx template such that the <a href="https://plausible.io/docs/plausible-script">Plausible.io script</a> is only included when a <code>conf.py</code>-defined flag is set to <code>True</code>. This flag is then set based on <a href="https://docs.readthedocs.io/en/stable/environment-variables.html">environment variables provided by <em>Read the Docs</em></a>.</p>
+<p>Let&rsquo;s dive in the details a step at a time.</p>
+<h2 id="enabling-templates">Enabling templates</h2>
+<p>If you haven&rsquo;t done so already (for example to <a href="https://bylr.info/articles/2022/05/10/api-doc-with-sphinx-autoapi/">customise your API documentation</a>), create a <code>_templates</code> sub-directory and let Sphinx know that this is where custom templates are to be found:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#998;font-style:italic"># conf.py</span>
+
+templates_path <span style="color:#000;font-weight:bold">=</span> [<span style="color:#d14">&#34;_templates&#34;</span>]
+</code></pre></div><h2 id="customising-the-template">Customising the template</h2>
+<p>Then, a custom template can be created to include the Plausible.io script. Create a <code>_templates/base.html</code> file with the following content:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#998;font-style:italic">&lt;!-- _templates/base.html --&gt;</span>
+{% extends &#34;!base.html&#34; %}
+{% block extrahead %}
+    {% if enable_plausible %}
+        &lt;<span style="color:#000080">script</span> <span style="color:#008080">defer</span> <span style="color:#008080">data-domain</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;myproject.readthedocs.io&#34;</span>
+                <span style="color:#008080">src</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;https://plausible.io/js/script.js&#34;</span>&gt;&lt;/<span style="color:#000080">script</span>&gt;
+    {% endif %}
+    {{ super() }}
+{% endblock %}
+</code></pre></div><p>In <code>_templates/base.html</code>, replace <code>myproject.readthedocs.io</code> by the actual domain name of your documentation. This domain name must also be enabled in your Plausible.io account.</p>
+<p>Note that the <code>&lt;script&gt;</code> tag is added <em>only</em> if the template variable <code>enable_plausible</code> evaluates to <code>True</code>. This is how we can control whether or not metrics should be enabled for a given build.</p>
+<p><strong>Important</strong>: I&rsquo;m using the <a href="https://pradyunsg.me/furo/quickstart/">Furo</a> theme, which uses <code>base.html</code> as main HTML file. Other themes (including the default Sphinx theme) might be using <code>layout.html</code> instead, as indicated in <a href="https://www.sphinx-doc.org/en/master/templating.html">Sphinx&rsquo;s documentation</a> on templating. This initially threw me off, so make sure to check which of your template&rsquo;s file must be extended.</p>
+<h2 id="enabling-metrics-on-production-build">Enabling metrics on production build</h2>
+<p>The <code>enable_plausible</code> variable must be defined for our template above to function. This is done in <code>conf.py</code> file using the <code>html_context</code> variable as follows:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#998;font-style:italic"># conf.py</span>
+<span style="color:#000;font-weight:bold">import</span> <span style="color:#555">os</span>
+
+<span style="color:#998;font-style:italic"># [...]</span>
+
+READTHEDOCS_VERSION_TYPE <span style="color:#000;font-weight:bold">=</span> os<span style="color:#000;font-weight:bold">.</span>environ<span style="color:#000;font-weight:bold">.</span>get(<span style="color:#d14">&#34;READTHEDOCS_VERSION_TYPE&#34;</span>, <span style="color:#000;font-weight:bold">None</span>)
+
+html_context <span style="color:#000;font-weight:bold">=</span> {
+    <span style="color:#d14">&#34;enable_plausible&#34;</span>: READTHEDOCS_VERSION_TYPE <span style="color:#000;font-weight:bold">in</span> [<span style="color:#d14">&#34;branch&#34;</span>, <span style="color:#d14">&#34;tag&#34;</span>],
+}
+</code></pre></div><p>I use the <code>READTHEDOCS_VERSION_TYPE</code> environment variable, which is <a href="https://docs.readthedocs.io/en/stable/environment-variables.html#envvar-READTHEDOCS_VERSION_TYPE">set by <em>Read the Docs</em></a>. Its value is <code>&quot;branch&quot;</code> when the docs are built from the main branch, and <code>&quot;tag&quot;</code> when they are built from a tagged release. We want <code>enable_plausible</code> to be set to <code>True</code> in those instances. In any other case, including when <code>READTHEDOCS_VERSION_TYPE</code> is undefined (as is the case for local builds), <code>enable_plausible</code> is set to <code>False</code>.</p>
+<p>And that&rsquo;s about it – these few steps are all it takes more compliant and privacy-friendly metrics thanks to <code>Plausible.io</code>. For a real-world example, you can check my <a href="https://vpype.readthedocs.io/en/latest/"><em>vpype</em></a> project (<a href="https://github.com/abey79/vpype/pull/546/files">relevant PR</a>).</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>TIL: using Sphinx substitutions to generate text snippets from code</title>
       <link>https://bylr.info/articles/2022/09/30/til-sphinx-substitutions/</link>
