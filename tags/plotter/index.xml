@@ -11,7 +11,114 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Wed, 06 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/plotter/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 25 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/plotter/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Annotated Release Notes: vpype 1.12</title>
+      <link>https://bylr.info/articles/2022/10/25/annotated-release-notes-vpype-1.12/</link>
+      <pubDate>Tue, 25 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/articles/2022/10/25/annotated-release-notes-vpype-1.12/</guid>
+      <description>&lt;p&gt;&lt;em&gt;vpype&lt;/em&gt; 1.12 is out! 🎉&lt;/p&gt;
+&lt;p&gt;No ground-breaking features, but an improved &amp;ldquo;quality-of-life&amp;rdquo;, especially for Apple-silicon Mac owners, and few other goodies.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s dive in.&lt;/p&gt;</description>
+      <content:encoded><![CDATA[<p><em>vpype</em> 1.12 is out! 🎉</p>
+<p>No ground-breaking features, but an improved &ldquo;quality-of-life&rdquo;, especially for Apple-silicon Mac owners, and few other goodies.</p>
+<p>Let&rsquo;s dive in.</p>
+<h2 id="migration-to-pyside6">Migration to PySide6</h2>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Migrated to PySide6 (from PySide2), which simplifies installation on Apple silicon Macs (#552, #559, #567)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>PySide2 is the official Python wrapper for <a href="https://doc.qt.io/qt-5/">Qt 5</a>, the GUI toolkit I use for the viewer. As Qt 5 doesn&rsquo;t officially support Apple-silicon Macs, PySide2 – and thus <em>vpype</em> until now – were notoriously difficult to install on these computers. This is resolved with the transition to PySide6, which wraps <a href="https://www.qt.io/product/qt6">Qt 6</a> and officially supports Apple-silicon Macs.</p>
+<p>This took me waaaay too long. I actually feel bad for <a href="https://github.com/abey79/vpype/issues/320">the struggle</a> incurred to <em>vpype</em> users 😅 All things considered, the migration wasn&rsquo;t that complicated, but there were still <a href="https://github.com/abey79/vpype/pull/552">a few pitfalls</a> to figure out due to Qt 6 breaking changes around the OpenGL-based widget.</p>
+<p>Migrating to PySide6 is also a major step towards supporting Python 3.11, which brings a <a href="https://docs.python.org/3.11/whatsnew/3.11.html">host of novelties</a> as well as a significant performance bumps. I&rsquo;m hoping this will happen by the next release, which means <em>vpype</em> 1.12 might well be the last to support Python 3.8.</p>
+<h2 id="other-fixes-and-improvements">Other fixes and improvements</h2>
+
+<blockquote class="extract">
+  <p><ul>
+<li>The <code>layout</code> command now properly handles the <code>tight</code> special case by fitting the page size around the existing geometries, accommodating for a margin if provided (#556)</li>
+<li>Fixed a viewer issue where page width/height of 0 would lead to errors and a blank display (#555)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>Using <code>layout tight</code> would formerly set the page size to 0 by 0, which is useless in itself and caused a blank display. Not only the blanking issue has been resolved, but <code>layout tight</code> is now actually useful. It sets the page size to fit exactly the current geometries, accounting for a margin if <code>--fit-to-margin MARGIN</code> is provided.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Added <code>inch</code> unit as a synonym to <code>in</code>, useful for expressions (in which <code>in</code> is a reserved keyword) (#541)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>This addresses an oversight introduced with expressions in <a href="/articles/2022/03/03/annotated-release-notes-vpype-1.9/"><em>vpype</em> 1.9</a>. The units available for length CLI options are also available as scaling factor in expressions. For example, this creates a 10x15 cm rectangle:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vpype rect <span style="color:#099">0</span> <span style="color:#099">0</span> 10cm <span style="color:#d14">&#39;%15*cm%&#39;</span> show
+</code></pre></div><p>The expression works because the <code>cm</code> variable is made available by the interpreter, and set to the conversion factor between centimetres and pixels. This would however break for inches, because <code>in</code> is a <a href="https://docs.python.org/3/reference/lexical_analysis.html#keywords">reserved keyword</a> in Python. The variable <code>inch</code> is now available instead. Either form can be used in CLI options, but <code>inch</code> must be used in expressions:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vpype circle 5in 5inch <span style="color:#d14">&#39;%3*inch%&#39;</span> show
+</code></pre></div>
+<blockquote class="extract">
+  <p><ul>
+<li>Fixed a viewer issue where fitting the view to the document would not adjust when page size changes (<em>vsketch</em> only) (#564)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>This change doesn&rsquo;t directly benefits <em>vpype</em> as the page size cannot change while the viewer is active. In <em>vsketch</em>, however, the sketch code is free to set/change the page size based on GUI parameters, like in the included <code>quick_draw</code> example. In this case, when the view is fitted to the page size (i.e. as long as you don&rsquo;t zoom or scroll), the view will adjust when the page size changes.</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Updated <a href="https://github.com/meerk40t/svgelements">svgelements</a> to 1.8.4, which fixes issue with some SVG constructs used by Matplotlib exports (#549)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>Supporting all of the SVG standard subtleties is <em>hard</em>. Not only <a href="https://github.com/meerk40t/svgelements">svgelements</a> does a great job at it, but <a href="https://github.com/tatarize">@tatarize</a>&rsquo;s reactivity when edge cases appear is unmatched. In this instance, <a href="https://drawingbots.net">Drawingbots</a>' Discord user <em>apur</em> wanted to plot <a href="https://matplotlib.org">Matplotlib</a>-generated SVGs of <a href="https://www.latex-project.org">LaTeX</a> equations. They included unusual <code>&lt;use&gt;</code> elements, which didn&rsquo;t import properly. This is now fixed and I eagerly await the next niche corner case! 🤗</p>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Migrated to <a href="https://plausible.io">Plausible.io</a> (from Google Analytics) for <a href="https://vpype.readthedocs.io">vpype.readthedocs.io</a> (#546)</li>
+</ul>
+</p>
+</blockquote>
+
+<p><a href="https://plausible.io">Plausible</a> is a privacy-focused, <a href="https://gdpr-info.eu">GDPR</a>-compliant web statistics service. As I did for this site, I migrated from Google Analytics with my projects' documentation web sites. This is a paid service, so that neither your or I are the product.</p>
+<h2 id="mystery-changes">Mystery changes</h2>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Added new units (<code>yd</code>, <code>mi</code>, and <code>km</code>) (#541)</li>
+<li>Added <code>vpype.format_length()</code> to convert pixel length into human-readable string with units (#541)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>Yes, <em>vpype</em> supports kilometer-scale plots!<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></p>
+<p>Seriously though, these changes are part of the WIP improvements of <em>vpype</em>&rsquo;s terminal output. This will happen in future versions, but for some reason it was easier to integrate those change early.</p>
+<h2 id="developer-related-changes">Developer-related changes</h2>
+
+<blockquote class="extract">
+  <p><ul>
+<li><a href="https://python-poetry.org">Poetry</a> 1.2 or later is not required (developer only) (#541)</li>
+<li>A <code>justfile</code> is now provided for most common operations (install, build the documentation, etc.) (#541)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>Shoutout to these two great dev tools: <a href="https://python-poetry.org">Poetry</a> (Python dependency management) and <a href="https://just.systems">just</a> (<a href="https://www.gnu.org/software/make/">make</a> replacement for useful commands). I use them on a daily basis!</p>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p>plotter not included&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>]]></content:encoded>
+    </item>
+    
     <item>
       <title>Annotated Release Notes: vpype 1.11</title>
       <link>https://bylr.info/articles/2022/07/06/annotated-release-notes-vpype-1.11/</link>
