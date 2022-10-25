@@ -12,6 +12,14 @@ main {
     font-weight: normal;
 }
 
+/* footnotes */
+.post-content .footnote-ref {
+    font-size: smaller;
+}
+
+.post-content .footnotes {
+    font-size: smaller;
+}
 
 /* big home text not bold by default */
 .home-info .entry-header h1 {
