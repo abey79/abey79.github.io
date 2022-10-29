@@ -82,6 +82,10 @@ name = "linkedin"
 url = "https://www.linkedin.com/in/abeyeler/"
 
 [[params.socialIcons]]
+name = "mastodon"
+url = "https://mastodon.social/@abey79"
+
+[[params.socialIcons]]
 name = "Rss"
 url = "index.xml"
 
