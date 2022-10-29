@@ -11,7 +11,110 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Tue, 25 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 29 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>TIL: running Textual on a framebuffer terminal emulator for Linux</title>
+      <link>https://bylr.info/articles/2022/10/29/til-textual-fb-term/</link>
+      <pubDate>Sat, 29 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/articles/2022/10/29/til-textual-fb-term/</guid>
+      <description>My successful (yet probably vain) attempt at running Textual (a modern TUI framework) on a Raspberry Pi without X11 by using fbpad (a framebuffer terminal emulator for Linux).</description>
+      <content:encoded><![CDATA[<p>Excuse me&hellip; Running a what on what terminal what? 🤔</p>
+<p>So, here is the thing. A <a href="https://www.raspberrypi.org">Raspberry PI</a> paired with a touch-screen can serve as a touch-based, human-machine interface (HMI) for things like DIY projects, robots, and whatnot. For example, this is how I control my <a href="https://axidraw.com">Axidraw</a> plotter. The current implementation of my HMI software – named <a href="https://github.com/plottertools/taxi">taxi</a> – uses <a href="https://kivy.org">Kivy</a>. Here it is in action:</p>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/kELtKbjg-fo" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="Mobile plotting station"></iframe>
+</div>
+
+<br/>
+<p>This requires a full X11 and desktop environment (e.g. <a href="http://www.lxde.org">LXDE</a>, used by default by <a href="https://www.raspberrypi.com/software/">Raspberry Pi OS</a>), which is heavy (the full Raspberry Pi OS doesn&rsquo;t fit on a 4GB memory card) and harder to turn into kiosk mode.</p>
+<p>Ever since I first learned of the modern <a href="https://en.wikipedia.org/wiki/Text-based_user_interface">TUI</a> framework <a href="https://textual.textualize.io">Textual</a>, I&rsquo;ve been thinking of using it as a lightweight, kiosk-mode, touch-based HMI with minimal requirements for the underlying OS. All it needs is a terminal!</p>
+<p>My first idea was to simply use the <a href="https://en.wikipedia.org/wiki/Linux_console">Linux console</a>, which is the terminal-y thing you see at boot, and can use to login if you don&rsquo;t have a X11/desktop environment. Unfortunately, due to severe limitations in the number of glyphs it can handle (or of my comprehension of it), the results were&hellip; underwhelming:</p>
+<img src="/til-textual-fb-term/console-parallels.png"alt="`python -m textual` running with the Linux console on a Debian VM"width="80%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>This screenshot was made with a <a href="https://www.debian.org">Debian</a> VM running in <a href="https://www.parallels.com">Parallels Desktop</a>, but the it&rsquo;s the same for a Raspberry Pi and a physical screen.</p>
+<p>Then I learned about framebuffer terminal emulators. The <a href="https://en.wikipedia.org/wiki/Linux_framebuffer">Linux framebuffer</a> is a subsystem to display on-screen graphics over the system console without relying on a X11 server. Framebuffer terminal emulators basically emulate a terminal and &ldquo;draw&rdquo; it to the screen using the Linux framebuffer. As it turns out, they are extremely niche pieces of software, so it felt like a trip to the past to get them to run! 😅</p>
+<p>For a bunch of reasons discussed below, this is most likely a dead-end in my quest. Still, I learned a few things and I surely won&rsquo;t remember any of it unless it&rsquo;s writen down.</p>
+<h2 id="the-plan">The plan</h2>
+<p>I found a bunch of framebuffer terminal emulators, including <a href="https://docs.kernel.org/fb/fbcon.html">fbcon</a>, <a href="https://github.com/sfzhi/fbterm">fbterm</a>, <a href="https://github.com/bleenco/bterm">bterm</a>, <a href="https://github.com/uobikiemukot/yaft">yaft</a>, and <a href="https://github.com/aligrudi/fbpad">fbpad</a>.  I tried some of them (not all), and fbpad, by <a href="http://litcave.rudi.ir">Ali Gholami Rudi</a>, was the first to yield decent results, so it&rsquo;ll be the focus of this article.</p>
+<p>Here is an overview of the steps:</p>
+<ol>
+<li>Download a suitable TTF font.</li>
+<li>Download and build ft2tf, and use it to convert the font to fbpad&rsquo;s custom format.</li>
+<li>Download, configure, and build fbpad.</li>
+<li>Download Textual and run it in fbpad.</li>
+</ol>
+<p>I&rsquo;ll assume a Debian type of OS, like Raspberry Pi OS, Ubuntu, or a Debian distro.</p>
+<h2 id="preparing-the-font">Preparing the font</h2>
+<p>First, let&rsquo;s download a suitable monospace font. I chose to use <a href="https://fonts.google.com/specimen/Fira+Code">Fira Code</a>.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#0086b3">cd</span> ~
+wget -O fira.zip <span style="color:#d14">&#34;https://fonts.google.com/download?family=Fira%20Code&#34;</span>
+unzip fira.zip -d fira
+</code></pre></div><p>Then, download and build ft2tf, a font conversion tool by the same author as fbpad:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#0086b3">cd</span> ~
+apt-get install libfreetype-dev
+wget http://litcave.rudi.ir/ft2tf-0.9.tar.gz
+tar xzf ft2tf-0.9.tar.gz
+<span style="color:#0086b3">cd</span> ft2tf-0.9
+make
+</code></pre></div><p>Now we&rsquo;re ready to convert the font:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">./ft2tf -h18 -w10 ~/fira/static/FiraCode-Regular.ttf:6 &gt; ~/fira/fira.tf
+</code></pre></div><p>The <code>-h</code> and <code>-w</code> options specify the final glyph size in the terminal, which in turn determines the column and row count based on your screen resolution. The <code>:6</code> part after the font path specifies the size at which the TTF font is scaled before conversion. I found these values to work decently well for my Raspberry Pi&rsquo;s screen (a <a href="https://www.waveshare.com/wiki/7inch_HDMI_LCD_(C)">Waveshare 7&quot; HDMI LCD</a>), but YMMV.</p>
+<h2 id="configure-and-build-fbpad">Configure and build fbpad</h2>
+<p>First, download fbpad:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#0086b3">cd</span> ~
+git clone https://github.com/aligrudi/fbpad
+<span style="color:#0086b3">cd</span> fbpad
+</code></pre></div><p>Then, edit <code>conf.h</code> and change these two options:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#998;font-style:italic">// ...
+</span><span style="color:#998;font-style:italic"></span>
+<span style="color:#999;font-weight:bold;font-style:italic">#define TERM      &#34;xterm-256color&#34;
+</span><span style="color:#999;font-weight:bold;font-style:italic">#define FR        &#34;/home/USERNAME/fira/fira.tf&#34;
+</span><span style="color:#999;font-weight:bold;font-style:italic"></span>
+<span style="color:#998;font-style:italic">// ...
+</span></code></pre></div><p>Obviously, use your actual username. You can leave the rest unchanged.</p>
+<p>Finally, compile fbpad:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">make
+</code></pre></div><h2 id="running-textual-in-fbpad">Running Textual in fbpad</h2>
+<p>First, grab a copy of Textual (here from source, using <a href="https://python-poetry.org">Poetry</a> – installing in a venv should work as well):</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#0086b3">cd</span> ~
+git clone https://github.com/Textualize/textual.git
+<span style="color:#0086b3">cd</span> textual
+poetry install
+</code></pre></div><p>We&rsquo;re finally ready to roll! Here is Textual color reference:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#008080">TERMCOLOR</span><span style="color:#000;font-weight:bold">=</span>truecolor ~/fbpad/fbpad poetry run textual colors
+</code></pre></div><p>Note that <code>TERMCOLOR=truecolor</code> is required to have 256 colors, but it doesn&rsquo;t actually enable 24bit true color mode, which fbpad does not support.</p>
+<p>Here is how it looks like in the Debian VM:</p>
+<img src="/til-textual-fb-term/success-parallels.png"alt="`textual colors` running with fbpad on a Debian VM"width="80%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>The Textual demo can ben run with the following command:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#008080">TERMCOLOR</span><span style="color:#000;font-weight:bold">=</span>truecolor ~/fbpad/fbpad poetry run python -m textual
+</code></pre></div><img src="/til-textual-fb-term/success-parallels-demo.png"alt="`python -m demo` running with fbpad on a Debian VM"width="80%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>Finally, here is a video of how it runs on the actual Raspberry Pi:</p>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/9P-qb6ux4VI" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="Textual running on a X11-less Raspberry Pi with a framebuffer terminal emulator"></iframe>
+</div>
+
+<br/>
+<h2 id="final-words">Final words</h2>
+<p>As I mentioned before, this approach has many limitations:</p>
+<ul>
+<li>It&rsquo;s obviously cumbersome to setup – compiled configuration file anyone??</li>
+<li>Hardly any of the framebuffer terminal emulators are active and well maintained projects.</li>
+<li>None of them have mouse support – let alone handle a touch-screen<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>.</li>
+<li>The performance is bad, without an ounce of hardware acceleration.</li>
+</ul>
+<p>For my purposes, I&rsquo;ll likely move on to a bare-bone X11 setup without windows manager nor Desktop environment (basically <code>startx</code> + fullscreen <code>xterm</code>), since it addresses most of these limitations. Still, it was a fun niche to dig into! 🤓</p>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p>Extending Textual to support a touch-screen on Linux can be done with <a href="https://python-evdev.readthedocs.io"><code>python-evdev</code></a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>Annotated Release Notes: vpype 1.12</title>
       <link>https://bylr.info/articles/2022/10/25/annotated-release-notes-vpype-1.12/</link>

@@ -2,19 +2,31 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://bylr.info/articles/</loc>
+    <lastmod>2022-10-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/</loc>
+    <lastmod>2022-10-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/tags/raspberrypi/</loc>
+    <lastmod>2022-10-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/tags/</loc>
+    <lastmod>2022-10-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/tags/textual/</loc>
+    <lastmod>2022-10-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/tags/til/</loc>
+    <lastmod>2022-10-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/articles/2022/10/29/til-textual-fb-term/</loc>
+    <lastmod>2022-10-29T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://bylr.info/articles/2022/10/25/annotated-release-notes-vpype-1.12/</loc>
     <lastmod>2022-10-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://bylr.info/articles/</loc>
-    <lastmod>2022-10-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://bylr.info/</loc>
-    <lastmod>2022-10-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://bylr.info/tags/plotter/</loc>
-    <lastmod>2022-10-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://bylr.info/tags/</loc>
     <lastmod>2022-10-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/tags/vpype/</loc>
@@ -24,9 +36,6 @@
     <lastmod>2022-10-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/tags/sphinx/</loc>
-    <lastmod>2022-10-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://bylr.info/tags/til/</loc>
     <lastmod>2022-10-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/articles/2022/10/09/til-plausible-rtd/</loc>
