@@ -18,8 +18,8 @@
       <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
       
       <guid>https://bylr.info/articles/2022/11/10/batch-processing-doit-vpype/</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;https://pydoit.org&#34;&gt;DoIt&lt;/a&gt; (a.k.a. PyDoIt) is a fantastic Python-based tool to automate repetitive workflows. It works particularly well alongside &lt;a href=&#34;https://vpype.readthedocs.io&#34;&gt;&lt;em&gt;vpype&lt;/em&gt;&lt;/a&gt; to address mundane plotting-related tasks. This article explains in details how to automate an SVG optimisation and conversion workflow.&lt;/p&gt;</description>
-      <content:encoded><![CDATA[<p><a href="https://pydoit.org">DoIt</a> (a.k.a. PyDoIt) is a fantastic Python-based tool to automate repetitive workflows. It works particularly well alongside <a href="https://vpype.readthedocs.io"><em>vpype</em></a> to address mundane plotting-related tasks. This article explains in details how to automate an SVG optimisation and conversion workflow.</p>
+      <description>&lt;p&gt;&lt;a href=&#34;https://pydoit.org&#34;&gt;&lt;em&gt;doit&lt;/em&gt;&lt;/a&gt; (a.k.a. PyDoIt) is a fantastic Python-based tool to automate repetitive workflows. It works particularly well alongside &lt;a href=&#34;https://vpype.readthedocs.io&#34;&gt;&lt;em&gt;vpype&lt;/em&gt;&lt;/a&gt; to address mundane plotting-related tasks. This article explains in details how to automate an SVG optimisation and conversion workflow.&lt;/p&gt;</description>
+      <content:encoded><![CDATA[<p><a href="https://pydoit.org"><em>doit</em></a> (a.k.a. PyDoIt) is a fantastic Python-based tool to automate repetitive workflows. It works particularly well alongside <a href="https://vpype.readthedocs.io"><em>vpype</em></a> to address mundane plotting-related tasks. This article explains in details how to automate an SVG optimisation and conversion workflow.</p>
 <p>Most plotter workflows involve one or more repetitive steps which, when executed manually, take time, are boring, and possibly error-prone. Here are some examples that come to mind:</p>
 <ul>
 <li>Optimizing SVGs using <em>vpype</em>&rsquo;s <code>linemerge reloop linesort linesimplify</code> commands.</li>
@@ -31,9 +31,9 @@
 <li>Etc.</li>
 </ul>
 <p>Not only your workflow may include one or more of these steps, but you may need to apply it on a single SVG at a time, or on a bunch of them at once. Even better, you might want to apply your workflow only on SVGs which were updated or created since the last execution.</p>
-<p>You can do exactly that with DoIt&mdash;let&rsquo;s see how.</p>
-<h2 id="installing-doit">Installing DoIt</h2>
-<p>Although <a href="https://pydoit.org/install.html">its documentation</a> sadly doesn&rsquo;t mention it, <a href="https://pypa.github.io/pipx/">pipx</a> is the best way to install DoIt (as for <a href="https://vpype.readthedocs.io/en/latest/install.html"><em>vpype</em></a>):</p>
+<p>You can do exactly that with <em>doit</em>&mdash;let&rsquo;s see how.</p>
+<h2 id="installing-doit">Installing <em>doit</em></h2>
+<p>Although <a href="https://pydoit.org/install.html">its documentation</a> sadly doesn&rsquo;t mention it, <a href="https://pypa.github.io/pipx/">pipx</a> is the best way to install <em>doit</em> (as for <a href="https://vpype.readthedocs.io/en/latest/install.html"><em>vpype</em></a>):</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ pipx install doit
 </code></pre></div><p>You can check that the installation was successful by running this command:</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ doit --version
@@ -52,8 +52,8 @@ lib @ /Users/&lt;username&gt;/.local/pipx/venvs/doit/lib/python3.10/site-package
 │   ├── halftone.svg
 │   └── hline.svg
 └── processed/
-</code></pre><p>Our goal is to have DoIt automate the optimisation of the source SVGs in <code>originals</code>, and store the result in <code>processed</code>.</p>
-<p>DoIt operates by loading a description of the task(s) it must execute, typically in a file named <code>dodo.py</code><sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>. As the name suggests, the content of this file is Python code.</p>
+</code></pre><p>Our goal is to have <em>doit</em> automate the optimisation of the source SVGs in <code>originals</code>, and store the result in <code>processed</code>.</p>
+<p><em>doit</em> operates by loading a description of the task(s) it must execute, typically in a file named <code>dodo.py</code><sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>. As the name suggests, the content of this file is Python code.</p>
 <p>Create a <code>dodo.py</code> file with the following content:</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">import</span> <span style="color:#555">pathlib</span>                                                            <span style="color:#998;font-style:italic"># (1)</span>
 
@@ -77,18 +77,18 @@ VPY <span style="color:#000;font-weight:bold">=</span> DIR <span style="color:#0
 <li>Here we use it to find our project directory, which is the parent of the present file, whose path is stored in the <code>__file__</code> variable by the Python interpreter.</li>
 <li>We list all the SVGs contained in the <code>originals</code> subdirectory, and store them in the <code>SOURCES</code> variable. Note that <code>glob()</code> returns a generator, which must be converted to a <code>list</code> if <code>SOURCES</code> is to be iterated multiple times.</li>
 <li>We keep the path to the <code>optimize.vpy</code> file in the <code>VPY</code> variable.</li>
-<li>Python functions with name starting with <code>task_</code> are interpreted by DoIt as <a href="https://pydoit.org/tasks.html">tasks</a>. Here we have just one. Let&rsquo;s call it &ldquo;optimize&rdquo;, thus the <code>task_optimize()</code> function name.</li>
-<li>The function&rsquo;s <a href="https://peps.python.org/pep-0257/">docstring</a> is used by DoIt as help string for the task, so it is useful to include one.</li>
+<li>Python functions with name starting with <code>task_</code> are interpreted by <em>doit</em> as <a href="https://pydoit.org/tasks.html">tasks</a>. Here we have just one. Let&rsquo;s call it &ldquo;optimize&rdquo;, thus the <code>task_optimize()</code> function name.</li>
+<li>The function&rsquo;s <a href="https://peps.python.org/pep-0257/">docstring</a> is used by <em>doit</em> as help string for the task, so it is useful to include one.</li>
 <li>Task functions must return one or more Python dictionaries describing the task. In our case, we want to create one <a href="https://pydoit.org/tasks.html#sub-tasks">sub-tasks</a> per source SVG file.</li>
 <li>For each source SVG, we derive the path for the corresponding optimised SVG. The optimised SVG are located in the <code>processed</code> subdirectory and have a <code>_optimized.svg</code> suffix to their name.</li>
-<li>Using <a href="https://docs.python.org/3/reference/expressions.html#yieldexpr"><code>yield</code></a> keyword (instead of <code>return</code>) makes our function a <a href="https://docs.python.org/3/glossary.html#term-generator">generator</a> (gentle introduction available <a href="https://realpython.com/introduction-to-python-generators/">here</a>). This is a convenient way to return (er&hellip; yield) multiple objects, which is supported by DoIt. Here, we yield one dictionary per sub-task.</li>
-<li>Sub-tasks must be individually named so that they can be distinguished. Here we derive the sub-task name from the source SVG filename. For example, the sub-task corresponding to <code>my_file.svg</code> will be named <code>my_file</code>, and can be referred to with DoIt as <code>optimize:my_file</code>.</li>
-<li>Last but not least, the <code>&quot;actions&quot;</code> entry of the sub-task dictionary lists the actions to be performed by the task. DoIt interprets strings as shell commands, so we build a <em>vpype</em> pipeline to optimise the source SVG using our VPY and saving the result in the desired location. For example, for <code>my_file.svg</code>, the action will be <code>vpype read originals/my_file.svg -I optimize.vpy write processed/my_file_optimized.svg</code><sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>.</li>
+<li>Using <a href="https://docs.python.org/3/reference/expressions.html#yieldexpr"><code>yield</code></a> keyword (instead of <code>return</code>) makes our function a <a href="https://docs.python.org/3/glossary.html#term-generator">generator</a> (gentle introduction available <a href="https://realpython.com/introduction-to-python-generators/">here</a>). This is a convenient way to return (er&hellip; yield) multiple objects, which is supported by <em>doit</em>. Here, we yield one dictionary per sub-task.</li>
+<li>Sub-tasks must be individually named so that they can be distinguished. Here we derive the sub-task name from the source SVG filename. For example, the sub-task corresponding to <code>my_file.svg</code> will be named <code>my_file</code>, and can be referred to with <em>doit</em> as <code>optimize:my_file</code>.</li>
+<li>Last but not least, the <code>&quot;actions&quot;</code> entry of the sub-task dictionary lists the actions to be performed by the task. <em>doit</em> interprets strings as shell commands, so we build a <em>vpype</em> pipeline to optimise the source SVG using our VPY and saving the result in the desired location. For example, for <code>my_file.svg</code>, the action will be <code>vpype read originals/my_file.svg -I optimize.vpy write processed/my_file_optimized.svg</code><sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>.</li>
 </ol>
 <p>Let&rsquo;s take a step back to properly understand what&rsquo;s going on.</p>
-<p>The function <code>task_optimize()</code> produces a task <em>description</em>&mdash;it does not actually <em>run</em> the task. When we run DoIt (using the <code>doit</code> command), it loads the <code>dodo.py</code> file, notices that it contains a task function, and calls it to learn about that task. It&rsquo;s only <em>then</em> that it can decide which action(s) to actually execute, based on the task description. In this case, the actions are the <em>vpype</em> pipelines stored in the <code>&quot;actions&quot;</code> entries.</p>
-<p>Although this <code>dodo.py</code> file is not overly complicated, it can still feel like quite some work compared to, you know, just calling <em>vpype</em> manually. I certainly felt so when first using DoIt. So let&rsquo;s see what we gained by going through this effort.</p>
-<p>First and foremost, we now have a potent batch processing system. We can optimise all of our source SVGs by telling DoIt to execute the <code>optimize</code> task:</p>
+<p>The function <code>task_optimize()</code> produces a task <em>description</em>&mdash;it does not actually <em>run</em> the task. When we run <em>doit</em> (using the <code>doit</code> command), it loads the <code>dodo.py</code> file, notices that it contains a task function, and calls it to learn about that task. It&rsquo;s only <em>then</em> that it can decide which action(s) to actually execute, based on the task description. In this case, the actions are the <em>vpype</em> pipelines stored in the <code>&quot;actions&quot;</code> entries.</p>
+<p>Although this <code>dodo.py</code> file is not overly complicated, it can still feel like quite some work compared to, you know, just calling <em>vpype</em> manually. I certainly felt so when first using <em>doit</em>. So let&rsquo;s see what we gained by going through this effort.</p>
+<p>First and foremost, we now have a potent batch processing system. We can optimise all of our source SVGs by telling <em>doit</em> to execute the <code>optimize</code> task:</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ doit optimize
 .  optimize:dots
 .  optimize:halftone
@@ -105,7 +105,7 @@ VPY <span style="color:#000;font-weight:bold">=</span> DIR <span style="color:#0
     ├── dots_optimized.svg
     ├── halftone_optimized.svg
     └── hline_optimized.svg
-</code></pre><p>DoIt indeed created properly-named, optimised versions of the source SVGs in the <code>processed</code> directory! 🎉</p>
+</code></pre><p><em>doit</em> indeed created properly-named, optimised versions of the source SVGs in the <code>processed</code> directory! 🎉</p>
 <p>Since we only have just one task defined, we don&rsquo;t even need to specify its name:</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ doit
 .  optimize:dots
@@ -116,9 +116,9 @@ VPY <span style="color:#000;font-weight:bold">=</span> DIR <span style="color:#0
 .  optimize:halftone
 </code></pre></div><p>Pretty neat already&mdash;but there is a lot more to gain with a little more effort!</p>
 <h2 id="handling-targets-and-dependencies">Handling targets and dependencies</h2>
-<p>Playing with the commands above, you may notice that each call of the <code>optimize</code> task triggers the processing of the corresponding SVGs&mdash;even if said SVGs were already processed before. The reason for this is that DoIt doesn&rsquo;t yet know what the task inputs and outputs are, so it cannot check whether that output exists or is outdated. So, to be on the safe side, it <em>always</em> executes <em>all specified tasks</em> every time.</p>
-<p>By letting DoIt know about tasks' inputs and outputs, DoIt can be much smarter about what it actually needs to do.</p>
-<p>In DoIt parlance, the file(s) a task uses as input are called <em>dependencies</em> (<code>&quot;file_dep&quot;</code> entry). Likewise, the file(s) created as output are called <em>targets</em> (<code>&quot;targets&quot;</code> entry). By specifying what these are in the <code>dodo.py</code> file, DoIt can decide whether the target of a given task needs to be generated or not, saving a lot of time when repeating the workflow.</p>
+<p>Playing with the commands above, you may notice that each call of the <code>optimize</code> task triggers the processing of the corresponding SVGs&mdash;even if said SVGs were already processed before. The reason for this is that <em>doit</em> doesn&rsquo;t yet know what the task inputs and outputs are, so it cannot check whether that output exists or is outdated. So, to be on the safe side, it <em>always</em> executes <em>all specified tasks</em> every time.</p>
+<p>By letting <em>doit</em> know about tasks' inputs and outputs, <em>doit</em> can be much smarter about what it actually needs to do.</p>
+<p>In <em>doit</em> parlance, the file(s) a task uses as input are called <em>dependencies</em> (<code>&quot;file_dep&quot;</code> entry). Likewise, the file(s) created as output are called <em>targets</em> (<code>&quot;targets&quot;</code> entry). By specifying what these are in the <code>dodo.py</code> file, <em>doit</em> can decide whether the target of a given task needs to be generated or not, saving a lot of time when repeating the workflow.</p>
 <p>Update the <code>dodo.py</code> file as follows:</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">import</span> <span style="color:#555">pathlib</span>
 
@@ -142,34 +142,34 @@ VPY <span style="color:#000;font-weight:bold">=</span> DIR <span style="color:#0
 <li>The <code>&quot;targets&quot;</code> entry is a list of all the files generated by the sub-task. In our case, there is only one, whose path is stored in the <code>optimized</code> variable.</li>
 <li>The <code>&quot;file_dep&quot;</code> entry is a list of all the files the sub-task depends on. In our case, both the source SVG and the VPY file are involved to create an optimised SVG, so we list them both.</li>
 </ol>
-<p>It would be easy to forget the VPY file in the <code>&quot;file_dep&quot;</code> entry. That would be a mistake. All the optimised SVGs should be regenerated when the VPY file is modified. For DoIt to realise this, we must list the VPY file as a dependency.</p>
-<p>With the modification above, DoIt now knows when to run optimisation sub-tasks and when they can be skipped.</p>
+<p>It would be easy to forget the VPY file in the <code>&quot;file_dep&quot;</code> entry. That would be a mistake. All the optimised SVGs should be regenerated when the VPY file is modified. For <em>doit</em> to realise this, we must list the VPY file as a dependency.</p>
+<p>With the modification above, <em>doit</em> now knows when to run optimisation sub-tasks and when they can be skipped.</p>
 <p>Let&rsquo;s experiment with a clean slate by deleting all the processed files:</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ rm processed/*.svg
-</code></pre></div><p>DoIt must now execute all sub-tasks:</p>
+</code></pre></div><p><em>doit</em> must now execute all sub-tasks:</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ doit
 .  optimize:dots
 .  optimize:halftone
 .  optimize:hline
 </code></pre></div><p>Notice the dot (<code>.</code>) prefixing each line and how the execution is relatively slow.</p>
-<p>Now, this is what happens if we run DoIt again:</p>
+<p>Now, this is what happens if we run <em>doit</em> again:</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ doit
 -- optimize:dots
 -- optimize:halftone
 -- optimize:hline
-</code></pre></div><p>Execution time is now much faster and each line is now prefixed with <code>--</code>, indicating that DoIt skipped the corresponding sub-task.</p>
+</code></pre></div><p>Execution time is now much faster and each line is now prefixed with <code>--</code>, indicating that <em>doit</em> skipped the corresponding sub-task.</p>
 <p>Let&rsquo;s see what happens if one of the source file is modified.</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#0086b3">echo</span> <span style="color:#d14">&#34; &#34;</span> &gt;&gt; originals/halftone.svg
 $ doit
 -- optimize:dots
 .  optimize:halftone
 -- optimize:hline
-</code></pre></div><p>We first append a single space to the <code>halftone.svg</code> (which is harmless on a valid SVG) to simulate a change<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>. As expected, DoIt rebuilds the of <code>halftone.svg</code> without running the other tasks! 🎉</p>
-<p>We now have a setup able to automatically process large batches of files and be smart about if/when any sub-task must be repeated. You have a thousand SVGs to process? It&rsquo;s coffee time while the CPUs churn through them<sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup>. You add just one to the list? Instant results, thanks to DoIt!</p>
+</code></pre></div><p>We first append a single space to the <code>halftone.svg</code> (which is harmless on a valid SVG) to simulate a change<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>. As expected, <em>doit</em> rebuilds the of <code>halftone.svg</code> without running the other tasks! 🎉</p>
+<p>We now have a setup able to automatically process large batches of files and be smart about if/when any sub-task must be repeated. You have a thousand SVGs to process? It&rsquo;s coffee time while the CPUs churn through them<sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup>. You add just one to the list? Instant results, thanks to <em>doit</em>!</p>
 <h2 id="cleaning-up">Cleaning up</h2>
-<p>The files created by the <code>optimize</code> task can be considered &ldquo;temporary&rdquo;. When missing, they are automatically recreated by DoIt, and are overwritten by a new version when the input file (or the VPY file) change. In that sense, they matter much less than the source SVGs and the <code>dodo.py</code> file, which collectively form the &ldquo;recipe&rdquo; to build the optimised SVGs<sup id="fnref:5"><a href="#fn:5" class="footnote-ref" role="doc-noteref">5</a></sup>.</p>
+<p>The files created by the <code>optimize</code> task can be considered &ldquo;temporary&rdquo;. When missing, they are automatically recreated by <em>doit</em>, and are overwritten by a new version when the input file (or the VPY file) change. In that sense, they matter much less than the source SVGs and the <code>dodo.py</code> file, which collectively form the &ldquo;recipe&rdquo; to build the optimised SVGs<sup id="fnref:5"><a href="#fn:5" class="footnote-ref" role="doc-noteref">5</a></sup>.</p>
 <p>The ability to delete these files may occasionally be useful. For example, to force a complete rebuild of the optimised files, to make an archive with only the true source files, or simply to free some disk space.</p>
-<p>DoIt provides this feature with a single modification to the <code>dodo.py</code> file:</p>
+<p><em>doit</em> provides this feature with a single modification to the <code>dodo.py</code> file:</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">import</span> <span style="color:#555">pathlib</span>
 
 DIR <span style="color:#000;font-weight:bold">=</span> pathlib<span style="color:#000;font-weight:bold">.</span>Path(__file__)<span style="color:#000;font-weight:bold">.</span>parent
@@ -190,7 +190,7 @@ VPY <span style="color:#000;font-weight:bold">=</span> DIR <span style="color:#0
             <span style="color:#d14">&#34;clean&#34;</span>: <span style="color:#000;font-weight:bold">True</span>,                  <span style="color:#998;font-style:italic"># (1)</span>
         }
 </code></pre></div><ol>
-<li>Tell DoIt that target files should be deleted when running <code>doit clean</code>.</li>
+<li>Tell <em>doit</em> that target files should be deleted when running <code>doit clean</code>.</li>
 </ol>
 <p>Let&rsquo;s see this in action:</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ doit clean
@@ -199,7 +199,7 @@ optimize:halftone - removing file <span style="color:#d14">&#39;.../processed/ha
 optimize:dots - removing file <span style="color:#d14">&#39;.../processed/dots_optimized.svg&#39;</span>
 </code></pre></div><p>Works as expected! 🎉</p>
 <h2 id="multiple-tasks">Multiple tasks</h2>
-<p>Although DoIt already shines dealing with a single task, it reveals its true power when multiple tasks are involved&mdash;even more so when they depend on each other.</p>
+<p>Although <em>doit</em> already shines dealing with a single task, it reveals its true power when multiple tasks are involved&mdash;even more so when they depend on each other.</p>
 <p>For the illustration purposes, let&rsquo;s imagine that we need to convert the optimised SVGs to HPGL, so that we may plot them on a shiny &lsquo;83 <a href="http://www.hpmuseum.net/display_item.php?hw=74">HP 7475a</a>. We&rsquo;ll add a second task for this<sup id="fnref:6"><a href="#fn:6" class="footnote-ref" role="doc-noteref">6</a></sup>.</p>
 <p>First, let&rsquo;s start by creating a new <code>hpgl</code> subdirectory to store the HPGL files:</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ mkdir hpgl
@@ -259,14 +259,14 @@ VPY <span style="color:#000;font-weight:bold">=</span> DIR <span style="color:#0
 </code></pre></div><p>Let&rsquo;s examine the changes one-by-one.</p>
 <ol>
 <li>To clean things up and avoid code duplication, we factored in <code>optimized_path()</code> the code to derive the path of an optimised SVG from a source SVG.</li>
-<li>We do the same to derive the path of an HPGL output from a source SVG in the <code>hpgl_path()</code> function. Note that neither of these function names start with <code>task_</code>, so they aren&rsquo;t interpreted as tasks by DoIt.</li>
+<li>We do the same to derive the path of an HPGL output from a source SVG in the <code>hpgl_path()</code> function. Note that neither of these function names start with <code>task_</code>, so they aren&rsquo;t interpreted as tasks by <em>doit</em>.</li>
 <li>The only change to the <code>optimize</code> task is to use the <code>optimized_path()</code> helper function.</li>
 <li>This part is interesting. The purpose of the <code>hpgl</code> task is to convert optimised SVG into HPGL files, yet we iterate over the <em>source</em> SVGs instead. The reason is, for our purposes, <code>SOURCES</code> is our master &ldquo;TODO list&rdquo;. Everything the <code>hpgl</code> task must do is indirectly due to the presence of source SVGs.</li>
 <li>The source path is used <em>only</em> to derive the paths for the optimised SVG as well as the HPGL output. In particular, notice how <code>source</code> is not used anywhere in the return dictionaries.</li>
 <li>The optimised SVGs is now a dependency (as opposed to a target in the <code>optimize</code> task).</li>
 <li>Instead, the target is the HPGL file.</li>
 </ol>
-<p>These two tasks collectively form a &ldquo;pipeline&rdquo;. The output (or <em>target</em>) of the first task corresponds to the input (or <em>dependency</em>) of the second. DoIt understands that thanks to the <code>&quot;file_dep&quot;</code> and <code>&quot;targets&quot;</code> entries being properly populated&mdash;and can now be smart about it!</p>
+<p>These two tasks collectively form a &ldquo;pipeline&rdquo;. The output (or <em>target</em>) of the first task corresponds to the input (or <em>dependency</em>) of the second. <em>doit</em> understands that thanks to the <code>&quot;file_dep&quot;</code> and <code>&quot;targets&quot;</code> entries being properly populated&mdash;and can now be smart about it!</p>
 <p>Let&rsquo;s take it for a spin by executing the <code>hpgl</code> task:</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ doit hpgl
 .  optimize:dots
@@ -275,7 +275,7 @@ VPY <span style="color:#000;font-weight:bold">=</span> DIR <span style="color:#0
 .  hpgl:dots
 .  hpgl:halftone
 .  hpgl:hline
-</code></pre></div><p>DoIt knows that it needs optimised SVGs to create HPGL file, so it automatically executes the <code>optimize</code> task.</p>
+</code></pre></div><p><em>doit</em> knows that it needs optimised SVGs to create HPGL file, so it automatically executes the <code>optimize</code> task.</p>
 <p>Let&rsquo;s remove a single HPGL file to test what happens. This can be done using the <code>doit clean</code> command:</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ doit clean hpgl:hline
 hpgl:hline - removing file <span style="color:#d14">&#39;.../hpgl/hline.hpgl&#39;</span>
@@ -297,7 +297,7 @@ $ doit hpgl
 .  hpgl:dots
 -- hpgl:halftone
 -- hpgl:hline
-</code></pre></div><p>DoIt correctly runs both the <code>optimize</code> and <code>hpgl</code> sub-tasks for the corresponding file! 🎉</p>
+</code></pre></div><p><em>doit</em> correctly runs both the <code>optimize</code> and <code>hpgl</code> sub-tasks for the corresponding file! 🎉</p>
 <h2 id="helper-tasks">Helper tasks</h2>
 <p>Tasks don&rsquo;t <em>have</em> to be part of an intricate pipeline with carefully specified targets and dependencies. They can also be just a nice little helper that encapsulate a useful shell command.</p>
 <p>Consider for example this task, which can readily be added to our <code>dodo.py</code> file:</p>
@@ -312,39 +312,40 @@ $ doit hpgl
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ doit show:dots
 </code></pre></div><p>The corresponding SVG is displayed by the <em>vpype</em> viewer:</p>
 <img src="/batch-processing-doit-vpype/dots.png"alt="*vpype* viewer display a SVGs containing many dots arranged in a circle"width="80%"style="display:block;margin-left:auto;margin-right:auto"/>
-<p>This example is taken from <a href="https://github.com/abey79/vpype-perspective"><em>vpype-perspective</em></a>, where all the README&rsquo;s figures are made from VPYs files stored in the repository&rsquo;s <a href="https://github.com/abey79/vpype-perspective/tree/main/examples/figures"><code>examples/figures</code></a> subdirectory. The conversion of these VPYs into SVGs is handled by DoIt using this <a href="https://github.com/abey79/vpype-perspective/blob/main/examples/dodo.py"><code>dodo.py</code></a> file. It&rsquo;s a nice example of what can be done with DoIt.</p>
+<p>This example is taken from <a href="https://github.com/abey79/vpype-perspective"><em>vpype-perspective</em></a>, where all the README&rsquo;s figures are made from VPYs files stored in the repository&rsquo;s <a href="https://github.com/abey79/vpype-perspective/tree/main/examples/figures"><code>examples/figures</code></a> subdirectory. The conversion of these VPYs into SVGs is handled by <em>doit</em> using this <a href="https://github.com/abey79/vpype-perspective/blob/main/examples/dodo.py"><code>dodo.py</code></a> file. It&rsquo;s a nice example of what can be done with <em>doit</em>.</p>
 <h2 id="final-words">Final words</h2>
-<p>If you made it that far, I hope you are convinced of how useful DoIt is for workflow automation.</p>
-<p>In this article, I focused on <em>vpype</em>, but DoIt can be used for entirely different things. As a matter of fact, I used it to automate my <a href="https://twitter.com/abey79/status/1528735353741484033">#plotloop machine</a>, which I&rsquo;ll describe in an upcoming article.</p>
+<p>If you made it that far, I hope you are convinced of how useful <em>doit</em> is for workflow automation.</p>
+<p>In this article, I focused on <em>vpype</em>, but <em>doit</em> can be used for entirely different things. As a matter of fact, I used it to automate my <a href="https://twitter.com/abey79/status/1528735353741484033">#plotloop machine</a>, which I&rsquo;ll describe in an upcoming article.</p>
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
   <iframe src="https://www.youtube.com/embed/px_mVzLROOY" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="#plotloop automatic machine"></iframe>
 </div>
 
 <br/>
-<p>One of DoIt drawbacks is the fact that its <code>dodo.py</code> file is written in Python. Creating one requires at least <em>some</em> Python basics&mdash;or willingness to acquire them. This might put off people uninterested by code.</p>
-<p>But this is also its greatest strength. You wield the full power of Python when writing your <code>dodo.py</code> file, without any of the constraints of configuration languages such as <a href="https://yaml.org">YAML</a> or <a href="https://toml.io/en/">TOML</a>. This extends the possibilities <em>much</em> further than what was covered here, and makes learning DoIt a great investment! 🎯</p>
+<p>One of <em>doit</em> drawbacks is the fact that its <code>dodo.py</code> file is written in Python. Creating one requires at least <em>some</em> Python basics&mdash;or willingness to acquire them. This might put off people uninterested by code.</p>
+<p>But this is also its greatest strength. You wield the full power of Python when writing your <code>dodo.py</code> file, without any of the constraints of configuration languages such as <a href="https://yaml.org">YAML</a> or <a href="https://toml.io/en/">TOML</a>. This extends the possibilities <em>much</em> further than what was covered here, and makes learning <em>doit</em> a great investment! 🎯</p>
 <p>Ready to take the plunge? I&rsquo;m happy to help&mdash;just share details of your workflow in the comments 👇, on <a href="https://twitter.com/abey79">Twitter</a>/<a href="https://mastodon.social/@abey79">Mastodon</a>, or on the <a href="https://discord.com/invite/XHP3dBg">Drawingbots Discord</a>.</p>
+<p><em><strong>Edit</strong>: TIL what &ldquo;dolt&rdquo; (lowercase L) means 😅, and changed DoIt (uppercase i) into <em>doit</em>, consistently with their documentation.</em></p>
 <section class="footnotes" role="doc-endnotes">
 <hr>
 <ol>
 <li id="fn:1" role="doc-endnote">
-<p>The file may also have a different name, or be located elsewhere, but then its path should be provided to <code>doit</code>. Using <code>dodo.py</code> is simpler because this file is automatically detected and loaded by DoIt.&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+<p>The file may also have a different name, or be located elsewhere, but then its path should be provided to <code>doit</code>. Using <code>dodo.py</code> is simpler because this file is automatically detected and loaded by <em>doit</em>.&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 <li id="fn:2" role="doc-endnote">
 <p>The code actually generates full paths.&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 <li id="fn:3" role="doc-endnote">
-<p>If you are used to <code>make</code> and similar systems, you might be tempted to <code>touch originals/halftone.svg</code> to trigger a rebuild instead of modifying the file&rsquo;s content. This doesn&rsquo;t work with DoIt as it uses a local database and file hashes instead of modification date to track dependencies.&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+<p>If you are used to <code>make</code> and similar systems, you might be tempted to <code>touch originals/halftone.svg</code> to trigger a rebuild instead of modifying the file&rsquo;s content. This doesn&rsquo;t work with <em>doit</em> as it uses a local database and file hashes instead of modification date to track dependencies.&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 <li id="fn:4" role="doc-endnote">
 <p>By the way, you can parallelise the processing of large batches using <code>doit -n 8 optimize</code>, where <code>8</code> is the number of CPU cores to use.&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 <li id="fn:5" role="doc-endnote">
-<p>This bears strong similarities with software build systems, where compiled object files are created from source code by the compiler. As a matter of fact, DoIt can serve as a build system.&#160;<a href="#fnref:5" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+<p>This bears strong similarities with software build systems, where compiled object files are created from source code by the compiler. As a matter of fact, <em>doit</em> can serve as a build system.&#160;<a href="#fnref:5" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 <li id="fn:6" role="doc-endnote">
-<p>This example is slightly over-engineered. <em>vpype</em> can optimise and export to HPGL in one command, so technically a single DoIt task is needed. Even if multiple commands were required (<em>vpype</em> or otherwise), they can all be listed in a single DoIt task&mdash;the <code>&quot;actions&quot;</code> entry is a list which can contain multiple items. It is still a relevant illustration for the many instances were multiple DoIt tasks are indeed useful.&#160;<a href="#fnref:6" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+<p>This example is slightly over-engineered. <em>vpype</em> can optimise and export to HPGL in one command, so technically a single <em>doit</em> task is needed. Even if multiple commands were required (<em>vpype</em> or otherwise), they can all be listed in a single <em>doit</em> task&mdash;the <code>&quot;actions&quot;</code> entry is a list which can contain multiple items. It is still a relevant illustration for the many instances were multiple <em>doit</em> tasks are indeed useful.&#160;<a href="#fnref:6" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 </ol>
 </section>]]></content:encoded>
