@@ -3,28 +3,40 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://bylr.info/articles/</loc>
-    <lastmod>2022-11-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://bylr.info/articles/2022/11/10/batch-processing-doit-vpype/</loc>
-    <lastmod>2022-11-10T00:00:00+00:00</lastmod>
+    <lastmod>2022-12-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/</loc>
-    <lastmod>2022-11-10T00:00:00+00:00</lastmod>
+    <lastmod>2022-12-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/tags/doit/</loc>
-    <lastmod>2022-11-10T00:00:00+00:00</lastmod>
+    <lastmod>2022-12-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/tags/plotter/</loc>
+    <lastmod>2022-12-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/tags/project/</loc>
+    <lastmod>2022-12-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/articles/2022/12/22/automatic-plotloop-machine/</loc>
+    <lastmod>2022-12-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/tags/python/</loc>
-    <lastmod>2022-11-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://bylr.info/tags/</loc>
-    <lastmod>2022-11-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://bylr.info/tags/vpype/</loc>
-    <lastmod>2022-11-10T00:00:00+00:00</lastmod>
+    <lastmod>2022-12-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/tags/raspberrypi/</loc>
-    <lastmod>2022-10-29T00:00:00+00:00</lastmod>
+    <lastmod>2022-12-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/tags/</loc>
+    <lastmod>2022-12-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/tags/vsketch/</loc>
+    <lastmod>2022-12-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/articles/2022/11/10/batch-processing-doit-vpype/</loc>
+    <lastmod>2022-12-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/tags/vpype/</loc>
+    <lastmod>2022-12-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/tags/textual/</loc>
     <lastmod>2022-10-29T00:00:00+00:00</lastmod>
@@ -36,9 +48,6 @@
     <lastmod>2022-10-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/articles/2022/10/25/annotated-release-notes-vpype-1.12/</loc>
-    <lastmod>2022-10-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://bylr.info/tags/plotter/</loc>
     <lastmod>2022-10-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/tags/sphinx/</loc>
@@ -60,9 +69,6 @@
     <lastmod>2022-04-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/articles/2022/04/28/sketch-fill-test/</loc>
-    <lastmod>2022-04-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://bylr.info/tags/vsketch/</loc>
     <lastmod>2022-04-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/articles/2022/04/13/grid-layout/</loc>

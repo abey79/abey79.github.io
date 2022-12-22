@@ -315,10 +315,10 @@ $ doit hpgl
 <p>This example is taken from <a href="https://github.com/abey79/vpype-perspective"><em>vpype-perspective</em></a>, where all the README&rsquo;s figures are made from VPYs files stored in the repository&rsquo;s <a href="https://github.com/abey79/vpype-perspective/tree/main/examples/figures"><code>examples/figures</code></a> subdirectory. The conversion of these VPYs into SVGs is handled by <em>doit</em> using this <a href="https://github.com/abey79/vpype-perspective/blob/main/examples/dodo.py"><code>dodo.py</code></a> file. It&rsquo;s a nice example of what can be done with <em>doit</em>.</p>
 <h2 id="final-words">Final words</h2>
 <p>If you made it that far, I hope you are convinced of how useful <em>doit</em> is for workflow automation.</p>
-<p>In this article, I focused on <em>vpype</em>, but <em>doit</em> can be used for entirely different things. As a matter of fact, I used it to automate my <a href="https://twitter.com/abey79/status/1528735353741484033">#plotloop machine</a>, which I&rsquo;ll describe in an upcoming article.</p>
+<p>In this article, I focused on <em>vpype</em>, but <em>doit</em> can be used for entirely different things. As a matter of fact, I used it to automate my <a href="https://twitter.com/abey79/status/1528735353741484033">#plotloop machine</a>, which I&rsquo;ve described in my <a href="/articles/2022/12/22/automatic-plotloop-machine/">next article</a>.</p>
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-  <iframe src="https://www.youtube.com/embed/px_mVzLROOY" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="#plotloop automatic machine"></iframe>
+  <iframe src="https://www.youtube.com/embed/w_PPPImmEN8" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="The Automatic #plotloop Machine"></iframe>
 </div>
 
 <br/>
@@ -326,6 +326,7 @@ $ doit hpgl
 <p>But this is also its greatest strength. You wield the full power of Python when writing your <code>dodo.py</code> file, without any of the constraints of configuration languages such as <a href="https://yaml.org">YAML</a> or <a href="https://toml.io/en/">TOML</a>. This extends the possibilities <em>much</em> further than what was covered here, and makes learning <em>doit</em> a great investment! 🎯</p>
 <p>Ready to take the plunge? I&rsquo;m happy to help&mdash;just share details of your workflow in the comments 👇, on <a href="https://twitter.com/abey79">Twitter</a>/<a href="https://mastodon.social/@abey79">Mastodon</a>, or on the <a href="https://discord.com/invite/XHP3dBg">Drawingbots Discord</a>.</p>
 <p><em><strong>Edit</strong>: TIL what &ldquo;dolt&rdquo; (lowercase L) means 😅, and changed DoIt (uppercase i) into <em>doit</em>, consistently with their documentation.</em></p>
+<p><em><strong>Edit</strong>: Added a link to the Automatic #plotloop Machine article and updated the video.</em></p>
 <section class="footnotes" role="doc-endnotes">
 <hr>
 <ol>

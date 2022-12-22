@@ -11,7 +11,512 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Sat, 29 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/raspberrypi/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 22 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/raspberrypi/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Project: the Automatic #plotloop Machine</title>
+      <link>https://bylr.info/articles/2022/12/22/automatic-plotloop-machine/</link>
+      <pubDate>Thu, 22 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/articles/2022/12/22/automatic-plotloop-machine/</guid>
+      <description>Deep dive into the internals of my Automatic</description>
+      <content:encoded><![CDATA[<h2 id="whats-this">What&rsquo;s this?</h2>
+<p>I recently built an &ldquo;Automatic #plotloop Machine&rdquo;, named after the common <a href="https://mastodon.social/tags/plotloop">social</a> <a href="https://twitter.com/hashtag/plotloop">media</a> hashtag for these animations made of individually plotted frames. This article is a thorough description of the project, covering both hardware and software aspects.</p>
+<p>First, here is a video:</p>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/w_PPPImmEN8" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="The Automatic #plotloop Machine"></iframe>
+</div>
+
+<br/>
+<p>So, this is all very nice, but why does this article need to be more than <em>six thousand five hundred word long</em>?! Sure, the machine&rsquo;s neat, but it&rsquo;s not like <em>everyone</em> wants to make one, right?</p>
+<p>Well, in the making of this project, I found myself using a number of tools and techniques which, I think, might be of more general interest&mdash;that is, also for someone without aspirations for maximally complex animation production methods.</p>
+<p>Rather than the seasoned maker, who might more efficiently fill knowledge gaps with a few targeted Google queries, I wrote this article for the many people in the plotter space with an artistic rather than technical background. I&rsquo;m hoping this article might provide some technical baggage to fuel their tinkering urge, which, being involved with plotters, they obviously have.</p>
+<p>So, if any or all of the following topics sound like they might be useful, have a read!</p>
+<ul>
+<li>How to use a Raspberry Pi to automate things like taking pictures or controlling stepper motors?</li>
+<li>How to mate a stepper motor with LEGO Technic contraptions?</li>
+<li>How to efficiently control a RPi via ssh?</li>
+<li>How to efficiently control a RPi using a web framework?</li>
+<li>How to use <a href="https://github.com/abey79/vsketch"><em>vsketch</em></a> to produce plot loops (automated or otherwise)?</li>
+<li>How to use <em>doit</em> to automate complex workflows?</li>
+<li>Etc.</li>
+</ul>
+<p>This article is not a beginner tutorial either. A number of the topics covered here would, in tutorial form, warrant an even longer treatment by themselves. There should be enough information to understand how things work and understand the relevance of the tools I&rsquo;ve used. Actually applying them in a project may, however, require some more focused reading. Likewise, the code is what I&rsquo;d call &ldquo;project quality&rdquo;&mdash;it does the job, I&rsquo;m not too ashamed of it (mostly), but shouldn&rsquo;t be construed as top-notch, state-of-the-art, production-ready copy-paste material.</p>
+<h2 id="overview">Overview</h2>
+<p>Here is how the setup looks like in on my <a href="https://youtu.be/kELtKbjg-fo">mobile plotting station</a>:</p>
+<img src="/automatic-plotloop-machine/setup.jpg"alt="overview picture of my automated plotloop setup, including an AxiDraw, an 80-mm paper roll with a lego feeder powered by a stepper motor, a raspberry pi with its camera, and a portable video light"width="100%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>Here are the main components involved:</p>
+<ol>
+<li>An <a href="https://shop.evilmadscientist.com/908">AxiDraw SE/A3</a> from <a href="https://shop.evilmadscientist.com">Evil Mad Scientist Laboratories</a>, driven by a <a href="https://www.raspberrypi.com/products/raspberry-pi-4-model-b/">Raspberry Pi 4</a> not visible in the picture (it&rsquo;s neatly installed in the lower section of the plotting station).</li>
+<li>A <a href="https://www.raspberrypi.com/products/raspberry-pi-3-model-b/">Raspberry Pi 3</a> hooked to the <a href="https://www.raspberrypi.com/products/raspberry-pi-high-quality-camera/">High Quality Camera</a> module and a <a href="https://www.schmalzhaus.com/EasyDriver/">EasyDriver</a> stepper motor driver, held by a Manfrotto <a href="https://www.manfrotto.com/global/pump-cup-with-16mm-socket-241s/">241s Pump Cup</a> and <a href="https://www.manfrotto.com/global/photo-variable-friction-arm-with-interchangeable-1-4-attach-244mini/">244 Mini Friction Arm</a>.</li>
+<li>An 80-mm paper feeder contraption made of <a href="https://www.lego.com/themes/technic">LEGO Technic</a> and a stepper motor.</li>
+<li>A Manfrotto <a href="https://www.bhphotovideo.com/c/product/761822-REG/Manfrotto_ML840H_Maxima_84_LED_Panel.htm">ML840H On-Camera LED light</a>, held by a couple of umbrella swivel adapters and a <a href="https://www.bhphotovideo.com/c/product/1175618-REG/phottix_ph86315_multi_clamp.html">Phottix Multi Clamp</a>.</li>
+</ol>
+<p>Clearly, having a bunch of photography-related gear around is convenient for this kind of project! 😄</p>
+<p>Here is a schematics view of the same setup:</p>
+<img src="/automatic-plotloop-machine/schematic.png"alt="schematic view of my automated plotloop setup"width="100%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>The most salient aspect is the use of two Raspberry Pis. This is entirely unnecessary&mdash;a single RPi would be entirely sufficient. This arrangement happened to be more convenient for me because my plotting station already includes a RPi (with hostname <code>axidraw.local</code>) for my day-to-day use of the AxiDraw.</p>
+<p>Missing from both pictures is my computer, which I use to generate the frames and controls the plotting process by sending orders to both RPis via Wi-Fi.</p>
+<p>In the next sections, I will dig into the details of many hardware and software aspects of this setup, culminating with the <a href="https://pydoit.org"><em>doit</em></a> script which orchestrates everything ranging from generating the frame data, creating a simulated animation, controlling both RPis for plotting and picture acquisition, and assembling the final GIF:</p>
+<img src="/automatic-plotloop-machine/world_final.gif"alt="animated GIF of a rotating earth, automatically plotted with my machine"width="532px"style="display:block;margin-left:auto;margin-right:auto"/>
+<h2 id="hardware">Hardware</h2>
+<h3 id="camera">Camera</h3>
+<img src="/automatic-plotloop-machine/campi.png"alt="detail view of the raspberry pi with its camera and stepper motor controller"width="100%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>The camera assembly includes a Raspberry Pi (with hostname <code>campi.local</code>), the camera module and its optics, as well as the stepper motor driver. The three boards are assembled together using custom-cut plexiglass plates and nylon spacers. The camera module is connected to the RPi&rsquo;s camera interface using the provided 200mm ribbon cable.</p>
+<p>I chose the <a href="https://www.raspberrypi.com/products/raspberry-pi-high-quality-camera/">High Quality Camera</a> for the following reasons:</p>
+<ul>
+<li>It is made by the Raspberry Pi Foundation itself, so it has best-in-class software support out-of-the-box.</li>
+<li>With 12 megapixels and a large pixel size, it is one of the highest quality camera available for the Raspberry Pi.</li>
+<li>It uses interchangeable, C-mount lenses, which means that I can use a lens that&rsquo;s best suited for this setup.</li>
+</ul>
+<p>For the lens, I selected the <a href="https://www.sparkfun.com/products/16761">16mm telephoto</a>. With its relatively narrow field of view, it minimises the distortions and can be placed high enough to leave space for the plotter to operate. With this lens, the positioning is mainly driven by the minimum focus distance, which is approximately 24cm, measured from the front-most part of the lens.</p>
+<p>Here is a sample frame and the corresponding raw image as taken by the camera (<a href="/automatic-plotloop-machine/sample_hires.jpg">high-res version</a>):</p>
+<img src="/automatic-plotloop-machine/sample.png"alt="sample animation frame line-work with the corresponding raw image as taken by the camera"width="100%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>Note that the image is rotated by 90° compared to the actual frame. It just happened to be easier to set up the camera this way. It will be automatically corrected before the final animation is assembled.</p>
+<h3 id="stepper-motor-driver">Stepper motor driver</h3>
+<p>The <code>campi.local</code> RPi is also in charge of driving the paper feeder&rsquo;s stepper motor via an <a href="https://www.schmalzhaus.com/EasyDriver/">EasyDriver</a> board. As their name imply, <a href="https://en.wikipedia.org/wiki/Stepper_motor">stepper motors</a> divide their full rotation into a number of discreet, equal steps. This makes them very convenient for use cases where accuracy and reproducibility is important, like 3D printers, plotters, and&hellip; makeshift paper feeders. Stepper drivers generate the high power electrical signals needed to run the motor based on a simple <a href="https://en.wikipedia.org/wiki/General-purpose_input/output">GPIO</a> inputs.</p>
+<p>Here is a close-up of the wiring schematic:</p>
+<img src="/automatic-plotloop-machine/stepper-driver.png"alt="wiring schematic of the raspberry pi, the EasyDriver stepper driver board, and the paper feeder stepper motor"height="400px"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>The main inputs are STEP and DIR. The motor turns by one step for each STEP pulse (transition from 0 to 1), while the rotation direction is controlled by DIR.</p>
+<p>The ENABLE input controls whether the motor outputs are powered or not. When they are, the driver actively keeps the motor in its position, which tends to heat both the driver and motor itself. As the feeder spends most its time waiting for the plotter to draw the frame, it is good idea to drive ENABLE only when actually running the feeder.</p>
+<p>The MS1 and MS2 inputs control the so-called &ldquo;micro-stepping&rdquo; capability of the driver. This feature increases the accuracy of the motor by further dividing the motor&rsquo;s physical steps into up to 16 micro-steps. For a low-precision paper feeder like mine, this is not useful and the wiring can be skipped<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>.</p>
+<p>One nice feature of the EasyDriver board is the ability to choose either 3.3V or 5V GPIO voltage. The default is 5V, but since the RPi uses 3.3V, I set the board to this voltage using a small solder bridge over the pads at the very bottom left of the board:</p>
+<img src="/automatic-plotloop-machine/easydriver.png"alt="photograph of the EasyDriver stepper motor driver board"width="605"style="display:block;margin-left:auto;margin-right:auto"/>
+<h3 id="lego-structure">LEGO structure</h3>
+<img src="/automatic-plotloop-machine/lego_feeder.jpg"alt="photograph of the LEGO feeder assembly"width="100%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>My LEGO building skills aren&rsquo;t anything to boast about&mdash;a skilled builder would likely do a much better job. Yet, my contraption turned out to work rather reliably thanks to a few key design decisions.</p>
+<p>Most importantly, I wanted to leave the feeder &ldquo;open&rdquo; on the &ldquo;top&rdquo; side to minimise the chance of collision with the plotter or the pen during operations. The lower parallel structure is thus designed to maintain some rigidity between the paper roll part and the feed part. This actually worked much better that I anticipated!</p>
+<p>These structures are really easy to build once your remember that 3<sup>2</sup> + 4<sup>2</sup> = 5<sup>2</sup>:</p>
+<img src="/automatic-plotloop-machine/lego_triangle.jpg"alt="photograph of a 3-4-5 right triangle made with LEGO Technic parts"width="60%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>All my diagonals use this arrangement and provide rigidity to the structure (purely rectangular structures are prone to parallelogram deformation).</p>
+<p>Using the stepper motor weight to put pressure on the feeding wheel was another successful design. This ensured practically no paper slippage.</p>
+<p>Finally, remembering that the LEGO stud pitch is 8mm, a 10-stud distance is a good fit for 80mm paper rolls. These are easy to source in office supply shops.</p>
+<h3 id="stepper-lego-integration">Stepper-LEGO integration</h3>
+<img src="/automatic-plotloop-machine/lego_motor.jpg"alt="close-up photograph of the motor-feeder lego assembly"width="60%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>One might wonder why I used a custom stepper motor instead of native LEGO motors to drive the feeder. The decision boils down to two issues with LEGO motors:</p>
+<ol>
+<li>There are no stepper-type LEGO motors, so their accuracy is not great, nor is their power.</li>
+<li>Interfacing LEGO motors to a RPi is more complicated than using a stepper motor (especially if you already have stepper drivers lying around).</li>
+</ol>
+<p>I actually tried to use a LEGO Mindstorm motor initially. I used a <a href="https://www.dexterindustries.com/brickpi/">BrickPi</a> board to interface the motor to the RPi. It worked, but as noted above these motors are not ideal for the task and ended up not being precise and reliable enough.</p>
+<p>An alternative to the BrickPi board would be to use the actual Mindstorm controller. This is not ideal though, as the controller is battery powered and must be tinkered with to accept external power. Also, the RPi must connect to it via Bluetooth, and a specific Python package must be used.</p>
+<p>All in all, in my experience, using a stepper motor is just easier.</p>
+<p>This begs the question of how to physically interface the stepper motor with LEGO Technic parts.</p>
+<p>I used a 3D-printed adapter of <a href="https://www.thingiverse.com/thing:5649176">my own design</a> to interface the 5mm axle of my motor to Technic axles. There are many such designs available online for various shapes and sizes of motor axles.</p>
+<img src="/automatic-plotloop-machine/5mm_adapter.png"alt="closeup photograph and render of the 3d printed 5mm axle to LEGO Technic adapter"width="100%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>It turns out that physically assembling the motor with LEGO Technic is easy enough when using the <a href="https://reprap.org/wiki/NEMA_17_Stepper_motor">NEMA 17</a> form factor (one of the most commonly used by makers). The offset between their M3 attachments is 31mm. This is close enough to the 32mm offset between two 3-stud-apart Technic holes. Using conic screws easily takes up the remaining 1mm difference:</p>
+<img src="/automatic-plotloop-machine/nema17_lego.jpg"alt="closeup photograph of how NEMA17 motor can be adapted to LEGO Technic"width="60%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>Crucially, this method keeps the motor axle properly aligned with the Technic grid.</p>
+<h2 id="software">Software</h2>
+<h3 id="ssh-rpi">Setting up the Raspberry Pi for friction-less SSH</h3>
+<p>There is ample <a href="https://www.raspberrypi.com/documentation/">documentation</a> available online on how to setup Raspberry Pis, which I won&rsquo;t reproduce here. I&rsquo;d like to focus instead on how to configure the RPi such as to minimise any friction when interacting with your RPi via SSH&mdash;either manually or automatically.</p>
+<p>Here is what&rsquo;s needed to achieve this:</p>
+<ol>
+<li>Unless you are using wired Ethernet, your home Wi-Fi must be configured on the RPi (of course, duh).</li>
+<li>SSH must be configured for key-based authentication. This removes the need to input a password when SSHing into your RPi, which is annoying with manual operations and precludes automation.</li>
+<li>ZeroConf/Bonjour/Avahi is installed and active. This means that you can connect to the RPi using a URL in the form of <code>hostname.local</code> instead of using an explicit IP address, which is hard to remember and subject to change.</li>
+<li>You computer must &ldquo;know&rdquo; which username to use when connecting to a given RPi.</li>
+</ol>
+<p>For key-based authentication, you must first generate a public/private key pair on your computer (if you haven&rsquo;t done so already). This is done using the following command:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">ssh-keygen
+</code></pre></div><p>You&rsquo;ll need to answer a few questions, which can all be left as default. This will create two files in your home directory:</p>
+<ul>
+<li>The private key: <code>~/.ssh/id_rsa</code></li>
+<li>The public key: <code>~/.ssh/id_rsa.pub</code></li>
+</ul>
+<p>(Actual naming may differ depending on the type of key generated.)</p>
+<p>The idea is to provide your <em>public</em> key (this is important&mdash;not the private key!) to the RPi so that it can accept connections without requesting a password when the originator possesses the corresponding private key.</p>
+<p>Most of the configuration, fortunately, is addressed by the official <a href="https://www.raspberrypi.com/software/">Raspberry Pi Imager</a>, which I <em>strongly</em> suggest using. Everything can be set in the &ldquo;Advanced Options&rdquo; dialog, including the hostname, the SSH public key, and the Wi-Fi credentials:</p>
+<img src="/automatic-plotloop-machine/rpi-imager.png"width="60%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>Again, note that the content of your <em>public</em> key (<code>~/.ssh/id_rsa.pub</code>) should be pasted in the relevant field.</p>
+<p>Finally, you need to tell your computer&rsquo;s SSH that user <code>pi</code> (or whichever you chose) should be used by default when connecting to the given RPi. Create the <code>~/.ssh/config</code> file if needed, and add the following content:</p>
+<pre tabindex="0"><code class="language-ssh-config" data-lang="ssh-config">Host axidraw.local
+    User pi
+</code></pre><p>This tells your computer&rsquo;s SSH to default to the username <code>pi</code> whenever it connects to <code>axidraw.local</code>.</p>
+<p>If you already have a working RPi image, and you don&rsquo;t want to recreate one from scratch, you can do the same configurations manually as follows:</p>
+<ul>
+<li>Check <a href="https://linuxhint.com/setup-wifi-raspberry-pi/">this article</a> for Wi-Fi configuration.</li>
+<li>For key-based SSH authentication, create or edit the <code>~/.ssh/authorized_keys2</code> file on the RPi and add the content of your public key on a new line.</li>
+<li>Install ZeroConf/Bonjour/Avahi support with <code>sudo apt-get install avahi-daemon</code>.</li>
+<li>Change the hostname by running <code>sudo raspi-config</code>. The configuration is in the Network Options menu.</li>
+</ul>
+<p>Here are the cool things that you can now do remotely without entering a password:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">scp file.svg axidraw.local:          <span style="color:#998;font-style:italic"># copy a local file to your remote user directory</span>
+scp file.svg axidraw.local:files/    <span style="color:#998;font-style:italic"># copy a local file the remote ~/files/ directory</span>
+scp axidraw.local:files/file.svg ./  <span style="color:#998;font-style:italic"># copy a remote file locally</span>
+
+ssh axidraw.local     <span style="color:#998;font-style:italic"># log to your remote RPi</span>
+ssh axidraw.local ls  <span style="color:#998;font-style:italic"># list the files in your home directory</span>
+
+cat my_file.svg | ssh axidraw.local axicli -L <span style="color:#099">2</span> -d <span style="color:#099">37</span> -u <span style="color:#099">60</span> -N -m plot   <span style="color:#998;font-style:italic"># plot a file!</span>
+</code></pre></div><p>This last one is particularly nice. SSH allows you to pipe the output of a local command (here <code>cat</code> just outputs the contents of <code>my_file.svg</code>) into a remote command&rsquo;s input. This is a very powerful combination that I use for this project.</p>
+<h3 id="controlling-the-camera-and-the-feeder">Controlling the camera and the feeder</h3>
+<p>The <code>campi.local</code> Raspberry Pi has two missions: taking a picture of the frame after it is drawn, and run the motor to feed blank paper for the next frame. One of the easiest ways to make these functionalities remote controllable is to run a small HTTP server with two end-points, one for each task.</p>
+<p>This is <em>really</em> easy to do with <a href="https://fastapi.tiangolo.com">FastAPI</a> (<a href="https://flask.palletsprojects.com/">Flask</a> would also work just as well). The corresponding code is available <a href="https://github.com/abey79/sketches/tree/master/world/campi">here</a>, along with a <code>requirements.txt</code> file listing the required packages.</p>
+<h4 id="taking-pictures">Taking pictures</h4>
+<p>For illustration, here is a shortened version with only the image acquisition part:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">from</span> <span style="color:#555">fastapi</span> <span style="color:#000;font-weight:bold">import</span> FastAPI
+<span style="color:#000;font-weight:bold">from</span> <span style="color:#555">fastapi.responses</span> <span style="color:#000;font-weight:bold">import</span> FileResponse
+<span style="color:#000;font-weight:bold">from</span> <span style="color:#555">picamera2</span> <span style="color:#000;font-weight:bold">import</span> Picamera2
+
+<span style="color:#998;font-style:italic"># create a FastAPI server</span>
+app <span style="color:#000;font-weight:bold">=</span> FastAPI()
+
+<span style="color:#998;font-style:italic"># setup and start the Pi camera for still frame acquisition</span>
+picam2 <span style="color:#000;font-weight:bold">=</span> Picamera2()
+still_config <span style="color:#000;font-weight:bold">=</span> picam2<span style="color:#000;font-weight:bold">.</span>create_still_configuration(controls<span style="color:#000;font-weight:bold">=</span>{<span style="color:#d14">&#34;ExposureValue&#34;</span>: <span style="color:#099">0</span>})
+picam2<span style="color:#000;font-weight:bold">.</span>configure(still_config)
+picam2<span style="color:#000;font-weight:bold">.</span>start()
+
+<span style="color:#998;font-style:italic"># create a GET endpoint accepting a &#34;ev&#34; parameter and returning a JPG file</span>
+<span style="color:#3c5d5d;font-weight:bold">@app</span><span style="color:#000;font-weight:bold">.</span>get(<span style="color:#d14">&#34;/img/&#34;</span>)
+<span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">get_picture</span>(ev: <span style="color:#0086b3">int</span> <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>):
+    picam2<span style="color:#000;font-weight:bold">.</span>set_controls({<span style="color:#d14">&#34;ExposureValue&#34;</span>: ev})
+    array <span style="color:#000;font-weight:bold">=</span> picam2<span style="color:#000;font-weight:bold">.</span>capture_file(<span style="color:#d14">&#34;/tmp/temp.jpg&#34;</span>)
+    <span style="color:#000;font-weight:bold">return</span> FileResponse(<span style="color:#d14">&#34;/tmp/temp.jpg&#34;</span>, media_type<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;image/jpeg&#34;</span>)
+</code></pre></div><p>All it takes to run the server is to the following command:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">uvicorn campi:app --host campi.local --port <span style="color:#099">8000</span>
+</code></pre></div><p><a href="https://www.uvicorn.org">Uvicorn</a> is a web server implementation fo Python uses FastAPI (in our case) to handle web requests. Here, <code>campi:app</code> tells Uvicorn to use the <code>app</code> object in the <code>campi</code> module (assuming our file is named <code>campi.py</code>).</p>
+<p>Note in passing how having ZeroConf setup with the RPi means that, once again, we don&rsquo;t need to mess with explicit IP addresses. (Here, specifying a <code>--host</code> other than the default <code>localhost</code> is required to allow another computer to access the server.)</p>
+<p>With the server running, any other computer on the local network can acquire a photo using the following command:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">curl -s -o /tmp/test.png campi.local:8000/img/?ev<span style="color:#000;font-weight:bold">=</span><span style="color:#099">1</span>
+</code></pre></div><p>A couple of learnings from the field:</p>
+<ul>
+<li>Like in the example above, I&rsquo;m using an exposure value of +1 with the #plotloop machine. This is because the white paper tend to lead to underexposure. With the code above, this parameter doesn&rsquo;t seem to have effect until after the second picture is taken. So, after starting the server, I always use the command above to have one picture taken with <code>ev=1</code> so the camera is primed when the machine actually uses it.</li>
+<li>The server can run for a long time, taking multiple hundreds of pictures (the rotating earth loop is 280-frame long). So it&rsquo;s pretty important that the <code>/img/</code> end-point doesn&rsquo;t leak any memory. Especially uncompressed-frame-sized buffers. I actually ran into this issue with the first implementation, which used a memory buffer instead of a temporary file. After messing with <a href="https://docs.python.org/3/library/tracemalloc.html"><code>tracemalloc</code></a> for a while to figure this out, it ended up being just easier to switch implementation. For my first loop with the machine, the leak would fill my RPi&rsquo;s memory and crash every 20 images or so&mdash;it was painful process to go through the whole loop!</li>
+</ul>
+<h4 id="paper-feed">Moving the motor</h4>
+<p>I use another end-point to control the feeder motor. This time, it includes a mandatory parameter in the URL: the approximate number of centimetre of paper to feed. Here is how it looks in the code:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#3c5d5d;font-weight:bold">@app</span><span style="color:#000;font-weight:bold">.</span>get(<span style="color:#d14">&#34;/motor/</span><span style="color:#d14">{cm}</span><span style="color:#d14">&#34;</span>)
+<span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">run_motor</span>(cm: <span style="color:#0086b3">int</span>):
+	<span style="color:#000;font-weight:bold">...</span>
+</code></pre></div><p>Using this end-point is as easy as:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">curl -s campi.local:8000/motor/5
+</code></pre></div><p>The implementation is really boring. The gist of controlling a stepper motor is to toggle a GPIO up and down as many times as needed&mdash;one per step. This could easily be done manually, but I&rsquo;m using <a href="https://github.com/gavinlyonsrepo/RpiMotorLib">RpiMotorLib</a> to reduce the code to a single line. The conversion from centimetre to step count depends on your motor (mine has 400 steps per full rotation, which is fairly standard) and the feeder wheel size. I have a <a href="https://en.wikipedia.org/wiki/Magic_number_(programming)">magic number</a> in the code that I tuned by trial-and-error.</p>
+<p>It&rsquo;s worth noting that the accuracy of the feeder mechanisms is not critical for this machine because the paper isn&rsquo;t moved at all between the frame being drawn and the picture taken. The feeder has thus no impact on frame-to-frame alignment&mdash;only the plotter&rsquo;s repeatability matters here (which is a non-issue with the AxiDraw ❤️).</p>
+<p>Another couple of things I learned on the way:</p>
+<ul>
+<li>As mentioned earlier, the motor and the driver can generate quite a bit of heat and power consumption when active, even when not moving. That&rsquo;s why I manually toggle the ENABLE pin in the <code>motor</code> end-point. That way the motor is kept unpowered most of the time, and only activated when it must be moved.</li>
+<li>With the Raspberry Pi, it&rsquo;s important to properly shut down the GPIO sub-system when exiting your program. It avoids some errors and minimise the risk for the hardware<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>. The proper way to do this with FastAPI is to implement a shutdown event handler:
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#3c5d5d;font-weight:bold">@app</span><span style="color:#000;font-weight:bold">.</span>on_event(<span style="color:#d14">&#34;shutdown&#34;</span>)
+<span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">shutdown_event</span>():
+    GPIO<span style="color:#000;font-weight:bold">.</span>cleanup()
+</code></pre></div></li>
+</ul>
+<h3 id="using-vsketch-for-plot-loops">Using <em>vsketch</em> for plot loops</h3>
+<p>Unsurprisingly, I&rsquo;ve used <a href="https://github.com/abey79/vsketch"><em>vsketch</em></a> to generate the animation frames. Before diving into the actual sketch I made for this article, I want to shortly digress on how to structure a sketch to produce SVGs suitable for plot loops.</p>
+<p>Here is a simple example of a plot loop sketch:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">import</span> <span style="color:#555">math</span>
+<span style="color:#000;font-weight:bold">import</span> <span style="color:#555">vsketch</span>
+
+<span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">PlotloopSketch</span>(vsketch<span style="color:#000;font-weight:bold">.</span>SketchClass):
+    frame_count <span style="color:#000;font-weight:bold">=</span> vsketch<span style="color:#000;font-weight:bold">.</span>Param(<span style="color:#099">50</span>)
+    frame <span style="color:#000;font-weight:bold">=</span> vsketch<span style="color:#000;font-weight:bold">.</span>Param(<span style="color:#099">0</span>)
+
+    <span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">draw</span>(<span style="color:#999">self</span>, vsk: vsketch<span style="color:#000;font-weight:bold">.</span>Vsketch) <span style="color:#000;font-weight:bold">-&gt;</span> <span style="color:#000;font-weight:bold">None</span>:
+        vsk<span style="color:#000;font-weight:bold">.</span>size(<span style="color:#d14">&#34;5x5cm&#34;</span>, center<span style="color:#000;font-weight:bold">=</span><span style="color:#000;font-weight:bold">False</span>)
+        vsk<span style="color:#000;font-weight:bold">.</span>scale(<span style="color:#d14">&#34;cm&#34;</span>)
+
+        radius <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">2</span>
+        vsk<span style="color:#000;font-weight:bold">.</span>circle(<span style="color:#099">2.5</span>, <span style="color:#099">2.5</span>, radius<span style="color:#000;font-weight:bold">=</span>radius)
+        angle <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">360</span> <span style="color:#000;font-weight:bold">/</span> <span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>frame_count <span style="color:#000;font-weight:bold">*</span> <span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>frame
+        vsk<span style="color:#000;font-weight:bold">.</span>circle(
+            <span style="color:#099">2.5</span> <span style="color:#000;font-weight:bold">+</span> radius <span style="color:#000;font-weight:bold">*</span> math<span style="color:#000;font-weight:bold">.</span>cos(math<span style="color:#000;font-weight:bold">.</span>radians(angle)),
+            <span style="color:#099">2.5</span> <span style="color:#000;font-weight:bold">+</span> radius <span style="color:#000;font-weight:bold">*</span> math<span style="color:#000;font-weight:bold">.</span>sin(math<span style="color:#000;font-weight:bold">.</span>radians(angle)),
+            radius<span style="color:#000;font-weight:bold">=</span><span style="color:#099">0.1</span>,
+        )
+
+    <span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">finalize</span>(<span style="color:#999">self</span>, vsk: vsketch<span style="color:#000;font-weight:bold">.</span>Vsketch) <span style="color:#000;font-weight:bold">-&gt;</span> <span style="color:#000;font-weight:bold">None</span>:
+        vsk<span style="color:#000;font-weight:bold">.</span>vpype(<span style="color:#d14">&#34;linemerge linesimplify reloop linesort&#34;</span>)
+</code></pre></div><p>This sketch (<a href="https://github.com/abey79/vsketch/tree/master/examples/basic_plotloop">available</a> in the <em>vsketch</em> <a href="https://github.com/abey79/vsketch">repository</a>) animates a small circle rotating around a larger circle<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>:</p>
+<img src="/automatic-plotloop-machine/demo_plotloop.gif"width="200px"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>The first noteworthy aspect is its use of the two parameters: <code>frame_count</code> and <code>frame</code>. This makes it super easy to control the animation length and generate all the frames. For example, the frames for this GIF were generated with the following command:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">vsk save plotloop -m -p frame_count <span style="color:#099">13</span> -p frame 0..12
+</code></pre></div><p>(Note the use of <code>-m</code> to use all available CPU cores.)</p>
+<p>Another key element is to use <code>center=False</code> in the initial <code>vsk.size()</code> call. Without this, <em>vsketch</em> would auto-centre every frame based on the geometry and this would result in the animation wobbling around. I actually made a similar mistake with one of my first plot loop<sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup>:</p>
+<img src="/automatic-plotloop-machine/columns_marie.gif"alt="plot loop of a pixelated 3d structure exhibiting wobbling due to inconsistent centring"width="200px"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>Last but not least, notice how the algorithm generates the exact same frame for <code>frame = 0</code> and <code>frame = frame_count</code><sup id="fnref:5"><a href="#fn:5" class="footnote-ref" role="doc-noteref">5</a></sup>. This is obviously necessary to obtain a properly looping behaviour&mdash;but is easier said than done for all but trivial examples.</p>
+<p>One way is to use periodic trigonometric functions such as sine and cosine like I did in the example above. This is also the approach I used for the rotating Earth loop.</p>
+<p>Many generative artwork rely on <a href="https://en.wikipedia.org/wiki/Perlin_noise">Perlin noise</a>. Some implementations <em>may</em> offer some kind of periodicity that could be used to generate a looping set of frames. Alternatively, periodicity can be achieved by sampling the noise field along cylindrical coordinates instead of on a cartesian grid.</p>
+<img src="/automatic-plotloop-machine/rect_vs_cylindrical.png"alt="schema illustrating cartesian versus cylindrical sampling of a Perlin noise field"width="100%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>An entire article could be written on this topic, and this one is long enough. Instead, I&rsquo;ve added <a href="https://github.com/abey79/vsketch/tree/master/examples/noise_bezier">another example</a> to the <em>vsketch</em> repository to illustrate this principle:</p>
+<img src="/automatic-plotloop-machine/noise_plotloop.gif"alt="plot loop of a wobbly line scrolling from left to right"width="200px"style="display:block;margin-left:auto;margin-right:auto"/>
+<h3 id="the-rotating-earth-sketch">The rotating Earth sketch</h3>
+<p>The full sketch code is too long to be reproduced in this article&mdash;it&rsquo;s available <a href="https://github.com/abey79/sketches/blob/master/world/sketch_world.py">here</a> in my <a href="https://github.com/abey79/sketches/">sketches</a> repository on GitHub. Instead, I will provide here an overview of how it&rsquo;s implemented. You might want to open the code in another window to follow along.</p>
+<h4 id="data-preprocessing">Data preprocessing</h4>
+<p>First, the data. I used the <a href="https://hub.arcgis.com/datasets/esri::world-countries-generalized/about">World Country</a> boundaries from <a href="https://www.esri.com">ESRI</a>. It contains polygons for all countries in the world. By merging them with <a href="https://shapely.readthedocs.io">Shapely</a>&rsquo;s <a href="https://shapely.readthedocs.io/en/stable/manual.html#shapely.ops.unary_union"><code>unary_union()</code></a>, one can obtain the land/water boundaries. This happens in the <code>build_world()</code> function.</p>
+<p>Here is how the merged countries look after the union step:</p>
+<img src="/automatic-plotloop-machine/world_latlon.png"width="100%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>There is one oddity I had to deal with, which explains the magic numbers and other ugliness in that function: Antarctica. This is the only body of land sitting <em>over</em> one of the poles, which are singularities in the latitude/longitude coordinate system.</p>
+<img src="/automatic-plotloop-machine/antarctica.png"width="100%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>The left is how the data looked like originally. On the right is the boundary once the artificial limit at ~80°S is removed. In lat/long coordinates, it becomes a self-intersecting polygon. This can be dealt with a simple Shapely trick: create a <code>LinearRing</code> with the (self-intersecting) boundary and apply <code>unary_union()</code> on it. This creates a <code>MultiLineString</code> containing a corresponding list of non-intersecting linear rings.</p>
+<p>This is the glitch that this procedure solved:</p>
+<img src="/automatic-plotloop-machine/antarctica_glitch.png"width="40%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>Another important step is to filter land masses by area, to avoid the myriads of tiny isles that would clutter the result and massively increase plotting time. You can&rsquo;t just use the <code>.area</code> attribute from Shapely with lat/lon coordinates as this isn&rsquo;t an <a href="https://en.wikipedia.org/wiki/Equal-area_map">equal-area projection</a>, so I shamelessly copy/pasted <code>polygon_area()</code> from <a href="https://stackoverflow.com/a/61177081/229511">StackOverflow</a>.</p>
+<p>The final preprocessing step consist of converting the lat/lon land boundaries (stored in a Shapely <code>Polygon</code> instance) into 3D points on the unit sphere (stored as a Nx3 NumPy array). This is done by the <code>project_polygon()</code> function. The projected boundaries are stored in the <code>LINES</code> global variable.</p>
+<h4 id="rendering-the-earth">Rendering the Earth</h4>
+<p>The Earth rendering can be broken into the following steps:</p>
+<ol>
+<li>Rotate the Earth data as needed.</li>
+<li>Crop away the &ldquo;far side&rdquo; part of the data.</li>
+<li>Project orthogonally the rest of the data, a.k.a. drop the coordinate along which the backside was cropped and use the other two for drawing.</li>
+<li>Draw a circle :)</li>
+</ol>
+<p>For rotation, I first compute 3 angles around the X, Y, and Z axes. These angles can be manually set for testing, or generated by trigonometric functions with different frequencies. Naturally, I make sure that these function are periodic with the frame count for a properly looping behaviour.</p>
+<p>I then generate 3 rotation matrices:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">rot_x <span style="color:#000;font-weight:bold">=</span> np<span style="color:#000;font-weight:bold">.</span>array(
+    [
+        (<span style="color:#099">1</span>, <span style="color:#099">0</span>, <span style="color:#099">0</span>),
+        (<span style="color:#099">0</span>, math<span style="color:#000;font-weight:bold">.</span>cos(math<span style="color:#000;font-weight:bold">.</span>radians(rot_x_angle)), <span style="color:#000;font-weight:bold">-</span>math<span style="color:#000;font-weight:bold">.</span>sin(math<span style="color:#000;font-weight:bold">.</span>radians(rot_x_angle))),
+        (<span style="color:#099">0</span>, math<span style="color:#000;font-weight:bold">.</span>sin(math<span style="color:#000;font-weight:bold">.</span>radians(rot_x_angle)), math<span style="color:#000;font-weight:bold">.</span>cos(math<span style="color:#000;font-weight:bold">.</span>radians(rot_x_angle))),
+    ]
+)
+rot_y <span style="color:#000;font-weight:bold">=</span> np<span style="color:#000;font-weight:bold">.</span>array(
+    [
+        (math<span style="color:#000;font-weight:bold">.</span>cos(math<span style="color:#000;font-weight:bold">.</span>radians(rot_y_angle)), <span style="color:#099">0</span>, math<span style="color:#000;font-weight:bold">.</span>sin(math<span style="color:#000;font-weight:bold">.</span>radians(rot_y_angle))),
+        (<span style="color:#099">0</span>, <span style="color:#099">1</span>, <span style="color:#099">0</span>),
+        (<span style="color:#000;font-weight:bold">-</span>math<span style="color:#000;font-weight:bold">.</span>sin(math<span style="color:#000;font-weight:bold">.</span>radians(rot_y_angle)), <span style="color:#099">0</span>, math<span style="color:#000;font-weight:bold">.</span>cos(math<span style="color:#000;font-weight:bold">.</span>radians(rot_y_angle))),
+    ]
+)
+rot_z <span style="color:#000;font-weight:bold">=</span> np<span style="color:#000;font-weight:bold">.</span>array(
+    [
+        (math<span style="color:#000;font-weight:bold">.</span>cos(math<span style="color:#000;font-weight:bold">.</span>radians(rot_z_angle)), <span style="color:#000;font-weight:bold">-</span>math<span style="color:#000;font-weight:bold">.</span>sin(math<span style="color:#000;font-weight:bold">.</span>radians(rot_z_angle)), <span style="color:#099">0</span>),
+        (math<span style="color:#000;font-weight:bold">.</span>sin(math<span style="color:#000;font-weight:bold">.</span>radians(rot_z_angle)), math<span style="color:#000;font-weight:bold">.</span>cos(math<span style="color:#000;font-weight:bold">.</span>radians(rot_z_angle)), <span style="color:#099">0</span>),
+        (<span style="color:#099">0</span>, <span style="color:#099">0</span>, <span style="color:#099">1</span>),
+    ]
+)
+</code></pre></div><p>Finally, I combine them a single transformation matrix (did I mention I love NumPy?):</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">rot <span style="color:#000;font-weight:bold">=</span> rot_x <span style="color:#000;font-weight:bold">@</span> rot_y <span style="color:#000;font-weight:bold">@</span> rot_z
+</code></pre></div><p>With that, rotating every single points of one of the land boundary line is just a matter of:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">rotated_line <span style="color:#000;font-weight:bold">=</span> (rot <span style="color:#000;font-weight:bold">@</span> line<span style="color:#000;font-weight:bold">.</span>T)<span style="color:#000;font-weight:bold">.</span>T
+</code></pre></div><p>Here, <code>.T</code> is used for transpose, and is needed for NumPy <a href="https://numpy.org/doc/stable/user/basics.broadcasting.html">broadcasting</a> rules to work. Remember that the actual calculation (3x3 matrix multiplication on every single points in <code>line</code>) happens in highly optimised C code, so this operation is <em>fast</em>.</p>
+<p>Cropping is actually a bit trickier because you have to account for lines that may go from the front side to the far side and back, possibly multiple times. The cropping operation on a single line may thus result in multiple &ldquo;sub-lines&rdquo;.</p>
+<p>Luckily, I had already sorted out most this for <em>vpype</em>&rsquo;s <code>crop</code> command. <em>vpype</em>&rsquo;s API includes the <code>crop_half_plane()</code> function, which crops a line at a give location along one of the X or Y axis<sup id="fnref:6"><a href="#fn:6" class="footnote-ref" role="doc-noteref">6</a></sup>. Adapting it to the 3rd dimension was trivial. While copy/pasting the function, I took along <code>_interpolate_crop()</code>, which deals specifically with computing the intersection of a line segment with the cropping plane.</p>
+<p>Once the land boundary lines are cropped along one dimension, it&rsquo;s a matter of drawing them using the other two dimensions using <code>vsk.polygons</code>. Which dimension is used for what is not very important since we&rsquo;re dealing with a sphere. I made it so that when rotation angles are set to 0, the (0°, 0°) lat/lon point (somewhere in the Atlantic ocean, off Ghana) is dead in the center of the rendered Earth.</p>
+<p>In the sketch code, you&rsquo;ll also find controls to enable pixelation using <a href="https://github.com/abey79/vpype-pixelart"><em>vpype-pixelart</em></a>. I ran some trials with it but decided against it&mdash;to messy for this kind of line work.</p>
+<img src="/automatic-plotloop-machine/pixelize_sim.gif"alt="simulated loop showing the rotating earth with a pixelation effect"width="200px"style="display:block;margin-left:auto;margin-right:auto"/>
+<h3 id="putting-it-all-together-with-doit">Putting it all together with <em>doit</em></h3>
+<p>At this point, all the #plotloop machine&rsquo;s body parts are in place and just need a beating heart to set them in motion. <a href="https://pydoit.org"><em>doit</em></a> is the perfect tool for this.</p>
+<p>Although <em>doit</em> is rather easy to use, it still has a tiny bit of a learning curve. If this is your first ever encounter with it, you might want to check the <a href="/articles/2022/11/10/batch-processing-doit-vpype/">introductory article</a> I recently wrote. This project takes this to a whole new level.</p>
+<p>Instead of looking at the <a href="https://github.com/abey79/sketches/blob/master/world/dodo.py"><code>dodo.py</code></a> file line by line, I&rsquo;ll first provide an overview of the workflows it implements (again, you might want to open the file in another window to follow along). Then, I&rsquo;ll go deeper into a few, hand-picked topics to highlight interesting techniques.</p>
+<h4 id="the-workflows">The workflows</h4>
+<p>The bulk of the <code>dodo.py</code> file implements two workflows using a bunch of tasks: one is to create a simulated animation based on the frames' SVG, and another to plot, photograph, post-process, and assemble the frames into the final animation.</p>
+<p>Here is a schematic of the workflows.</p>
+<img src="/automatic-plotloop-machine/workflows.svg"alt="box schematic illustrating the workflows implemented to run the plotloop machine"width="100%"style="display:block;margin-left:auto;margin-right:auto"/>
+<p>Let&rsquo;s review the tasks involved in creating the simulated animation:</p>
+<ul>
+<li>The <code>generate</code> task generates all the frame SVGs with a single call to <em>vsketch</em>. It is basically running some version of this command:
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">vsk save . -m -p frame_count <span style="color:#099">280</span> -p frame 1..280
+</code></pre></div>The outcome of this task is one SVG file per frame, numbered from 1 to 280.</li>
+<li>Each of the <code>simframe:XXXX</code> sub-task takes one frame SVG and convert it to a JPG with a <code>_simulated</code> prefix using <a href="https://gitlab.gnome.org/GNOME/librsvg">librsvg</a>&rsquo;s <code>rsvg-convert</code><sup id="fnref:7"><a href="#fn:7" class="footnote-ref" role="doc-noteref">7</a></sup>. The sub-tasks are named after their corresponding frame number, e.g. <code>simframe:0010</code> correspond to the frame number 10.</li>
+<li>Finally, the <code>simulate</code> task combines all the simulated frames into a single animated GIF, using <a href="https://imagemagick.org">ImageMagick</a>&rsquo;s <code>convert</code> command.</li>
+</ul>
+<p>I&rsquo;m calling this a workflow because each of these tasks have their <code>file_dep</code> and <code>targets</code> carefully defined. As a result, <em>doit</em> understands the dependency relationship between them. From a clean slate, calling <code>doit simulate</code> will first execute <code>generate</code>, then each of the <code>simframe:XXXX</code> sub-tasks, before finally running <code>simulate</code> to produce the animation.</p>
+<p>The workflow for the actually plotted animation is similarly structured, but includes an additional post-processing step:</p>
+<ul>
+<li>
+<p>The workflow starts with the same <code>generate</code> task as before.</p>
+</li>
+<li>
+<p>Each of the frame is then plotted and photographed by the corresponding <code>plot:XXXX</code> sub-task, which performs the following steps:</p>
+<ul>
+<li>Plot the frame by sending the SVG via SSH to <code>axicli</code> running on the <code>axidraw.local</code> RPi (as  described <a href="#ssh-rpi">earlier</a>).</li>
+<li>Move the pen away by 3 inches to get it out of camera view (again, using SSH and <code>axicli</code>).</li>
+<li>Take a picture of the frame and download the corresponding image using <code>curl</code> (as described <a href="#taking-pictures">earlier</a>).</li>
+<li>Move the pen back to its original position.</li>
+<li>Feed fresh paper using <code>curl</code> (as described <a href="#paper-feed">earlier</a>).</li>
+</ul>
+<p>This is a good example of how a single <em>doit</em> task may execute multiple CLI commands.</p>
+</li>
+<li>
+<p>Each frame is then post-processed by the corresponding <code>postprocess:XXXX</code> sub-task using <code>convert</code>. It rotates the image in the correct orientation, crops it tightly around the earth, converts it to grayscale, and bumps its brightness and contrast a bit. This is the command used:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">convert frame_XXXX_plotted.jpg -rotate <span style="color:#099">270</span> -crop 1900x1900+605+785 <span style="color:#d14">\
+</span><span style="color:#d14"></span>  -colorspace Gray -brightness-contrast 5x15 frame_XXXX_postprocessed.jpg
+</code></pre></div></li>
+<li>
+<p>Finally, the <code>animation</code> task combines all post-processed frames into the final animated GIF using <code>convert</code>.</p>
+</li>
+</ul>
+<p>One may wonder, why is the <code>postprocess:XXXX</code> task separate from the <code>plot:XXXX</code> task? The <code>convert</code> command could just as well be added to the list of commands <code>plot:XXXX</code> executes. The answer is to be able to tweak the post-processing step without invalidating the plotting process. If both tasks were merged, any modification to the post-processing (e.g. adjusting the cropping parameters) would require re-plotting the entire frame&mdash;a lengthy process! This issue disappears with a stand-alone <code>postprocess:XXXX</code> task, which is very powerful when fine-tuning the workflow.</p>
+<h4 id="basic-doit-syntax">Basic <em>doit</em> syntax</h4>
+<p>Armed with this <code>dodo.py</code> file, we are now in complete control of our workflow.</p>
+<p>Here are a few example commands (I won&rsquo;t list all the output here, check my <a href="/articles/2022/11/10/batch-processing-doit-vpype/">other article</a> for a gentler introduction on how it behaves).</p>
+<p>First, <em>doit</em> always provides a list of available tasks with <code>doit list</code>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">animation     Make the animation.
+disable_xy    Disable X/Y motors
+generate      Generates golden master SVGs from the list of input files.
+plot          Plot the plotter-ready SVGs.
+postprocess   Post-process the plotted images.
+shutdown      Shutdown everything
+simframe      Simulate a frame.
+simulate      Make the simulated animation.
+toggle        Toggle pen up/down
+</code></pre></div><p>Generating the frame SVGs is a matter of:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">doit generate
+</code></pre></div><p>This is not needed though, as this task is automatically run when executing other tasks depending on it. For example, this executes <code>generate</code> (if needed) and all the <code>simframe:XXXX</code> sub-tasks to produce the simulated GIF:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">doit simulate
+</code></pre></div><p>A single simulated frame can be generated by specifying the frame number:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">doit simframe:0118
+</code></pre></div><p>This works because I chose to name sub-tasks after the corresponding (zero-padded) frame number.</p>
+<p>All the frames can be generated at once by omitting the sub-task name:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">doit simframe
+</code></pre></div><p>Likewise, producing the final, plotted animation is just a matter of running the following command and waiting 9 hours 🕰:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">doit animation
+</code></pre></div><h4 id="executing-a-range-of-sub-tasks">Executing a range of sub-tasks</h4>
+<p>It is often useful to execute a range of sub-tasks. For example, early testing requires plotting, say, the first 10 frames to verify that everything works correctly. (Spoiler alert: it doesn&rsquo;t! The process must be repeated several times until all the glitches are worked out.)</p>
+<p>Thankfully, this is made very easy thanks to bash&rsquo;s <a href="https://www.gnu.org/software/bash/manual/html_node/Brace-Expansion.html">brace expansion</a> syntax (it works the same with zsh and, probably, other shells<sup id="fnref:8"><a href="#fn:8" class="footnote-ref" role="doc-noteref">8</a></sup>).</p>
+<p>Here is an illustration to demonstrate the idea:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#0086b3">echo</span> <span style="color:#000;font-weight:bold">{</span>1..5<span style="color:#000;font-weight:bold">}</span>
+</code></pre></div><p>The braces with the <code>..</code> syntax are interpreted by bash as a range that needs expansion. Accordingly, the output of the above is:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#099">1</span> <span style="color:#099">2</span> <span style="color:#099">3</span> <span style="color:#099">4</span> <span style="color:#099">5</span>
+</code></pre></div><p>The good news is that it understands zero-padding:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#0086b3">echo</span> <span style="color:#000;font-weight:bold">{</span>0001..0015<span style="color:#000;font-weight:bold">}</span>
+</code></pre></div><p>This produces:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#099">0001</span> <span style="color:#099">0002</span> <span style="color:#099">0003</span> <span style="color:#099">0004</span> <span style="color:#099">0005</span> <span style="color:#099">0006</span> <span style="color:#099">0007</span> <span style="color:#099">0008</span> <span style="color:#099">0009</span> <span style="color:#099">0010</span> <span style="color:#099">0011</span> <span style="color:#099">0012</span> <span style="color:#099">0013</span> <span style="color:#099">0014</span> <span style="color:#099">0015</span>
+</code></pre></div><p>Knowing this, we can instruct <em>doit</em> to plot a specific frame range with the following command:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">doit plot:<span style="color:#000;font-weight:bold">{</span>0005..0015<span style="color:#000;font-weight:bold">}</span>
+</code></pre></div><p>This expends to <code>doit plot:0005 plot:0006 plot:0007 ...</code>, which <em>doit</em> interprets as a list of tasks to be executed.</p>
+<p>This syntax is beautifully consistent with both the single task form (<code>doit plot:0012</code>) and <em>vsketch</em>&rsquo;s <code>-p,--param</code> option (<code>vsk save -p frame 1..280</code>). It&rsquo;s also yet another shining example of how powerful terminals can be for automation.</p>
+<p>Note that, again, this is enabled by my choice of consistently naming sub-tasks after their zero-padded frame number.</p>
+<h4 id="path-management">Path management</h4>
+<p>This <code>dodo.py</code> file wrangles with a lot of different files. Each frame has up to 4 corresponding files (the original SVG, the simulated JPG, the plotted JPG, and the post-processed JPG), each with a specific suffix.</p>
+<p>A small helper class is useful to manage this complexity. Here is how it looks:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">import</span> <span style="color:#555">pathlib</span>
+
+PROJECT_DIR <span style="color:#000;font-weight:bold">=</span> pathlib<span style="color:#000;font-weight:bold">.</span>Path(__file__)<span style="color:#000;font-weight:bold">.</span>parent
+FRAME_COUNT <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">280</span>
+PIXELIZE <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">False</span>
+PROJECT_NAME <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;world&#34;</span>
+BASENAME <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">f</span><span style="color:#d14">&#34;</span><span style="color:#d14">{</span>PROJECT_NAME<span style="color:#d14">}</span><span style="color:#d14">_frame_count_</span><span style="color:#d14">{</span>FRAME_COUNT<span style="color:#d14">}</span><span style="color:#d14">_pixelize_</span><span style="color:#d14">{</span>PIXELIZE<span style="color:#d14">}</span><span style="color:#d14">&#34;</span>
+
+<span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">FileSpec</span>:
+    <span style="color:#000;font-weight:bold">def</span> __init__(<span style="color:#999">self</span>, frame: <span style="color:#0086b3">int</span>):
+        <span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>frame <span style="color:#000;font-weight:bold">=</span> frame
+        directory <span style="color:#000;font-weight:bold">=</span> PROJECT_DIR <span style="color:#000;font-weight:bold">/</span> <span style="color:#d14">&#34;output&#34;</span>
+
+        <span style="color:#998;font-style:italic"># vsketch doesn&#39;t add zero padding to frame number</span>
+        <span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>source <span style="color:#000;font-weight:bold">=</span> directory <span style="color:#000;font-weight:bold">/</span> (BASENAME <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">f</span><span style="color:#d14">&#34;_frame_</span><span style="color:#d14">{</span><span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>frame<span style="color:#d14">}</span><span style="color:#d14">.svg&#34;</span>)
+
+        <span style="color:#998;font-style:italic"># for the other file we add the zero padding to keep the order with CLI tools</span>
+        base_frame <span style="color:#000;font-weight:bold">=</span> BASENAME <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">f</span><span style="color:#d14">&#34;_frame_</span><span style="color:#d14">{</span><span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>frame<span style="color:#d14">:</span><span style="color:#d14">04d</span><span style="color:#d14">}</span><span style="color:#d14">&#34;</span>
+        <span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>simulated <span style="color:#000;font-weight:bold">=</span> directory <span style="color:#000;font-weight:bold">/</span> (base_frame <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;_simulated.jpg&#34;</span>)
+        <span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>plotted <span style="color:#000;font-weight:bold">=</span> directory <span style="color:#000;font-weight:bold">/</span> (base_frame <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;_plotted.jpg&#34;</span>)
+        <span style="color:#999">self</span><span style="color:#000;font-weight:bold">.</span>postprocessed <span style="color:#000;font-weight:bold">=</span> directory <span style="color:#000;font-weight:bold">/</span> (base_frame <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;_postprocessed.jpg&#34;</span>)
+
+
+FILE_SPECS <span style="color:#000;font-weight:bold">=</span> {i: FileSpec(i) <span style="color:#000;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> <span style="color:#0086b3">range</span>(<span style="color:#099">1</span>, FRAME_COUNT <span style="color:#000;font-weight:bold">+</span> <span style="color:#099">1</span>)}
+</code></pre></div><p><code>FileSpec</code> instances are created based on a frame number, and contain all the paths related to the corresponding frame. This is easy to implement using the <a href="https://docs.python.org/3/library/pathlib.html"><code>pathlib</code></a> module from the standard library.</p>
+<p>Note that <em>vsketch</em> doesn&rsquo;t zero-pad the frame number in the SVGs it produces. This is a bit unfortunate as it messes up alphabetical ordering for most CLI tools (for example, this creates frame ordering issues when creating a GIF from a bunch of JPGs). All the other paths are constructed with zero-padding.</p>
+<p>Also notice the <code>PIXELIZE</code> global variable. Its value is forwarded as a parameter to <em>vsketch</em>, which controls whether <em>vpype-pixelize</em> should be used. As noted above, I&rsquo;ve decided against it for this project. In any case, I made sure to reflect this value in all the files' base name to avoid confusion by <em>doit</em> when changing the parameter&rsquo;s value.</p>
+<p>The <code>FILE_SPECS</code> global variable contains a dictionary which maps the <code>FileSpec</code> instance to the corresponding frame number. This simplifies a lot the task implementation.</p>
+<h4 id="task-dependencies">Task dependencies</h4>
+<p>As I explained in my <a href="/articles/2022/11/10/batch-processing-doit-vpype/">previous article</a>, proper handling of task targets and dependencies is key for <em>doit</em> to understand the structure of the workflows and be smart about which task must be executed when.</p>
+<p>Let&rsquo;s consider the <code>simframe:XXXX</code> sub-tasks as an example:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">task_simframe</span>():
+    <span style="color:#d14">&#34;&#34;&#34;Simulate a frame.&#34;&#34;&#34;</span>
+    <span style="color:#000;font-weight:bold">for</span> frame, spec <span style="color:#000;font-weight:bold">in</span> FILE_SPECS<span style="color:#000;font-weight:bold">.</span>items():
+        <span style="color:#000;font-weight:bold">yield</span> {
+            <span style="color:#d14">&#34;name&#34;</span>: <span style="color:#d14">f</span><span style="color:#d14">&#34;</span><span style="color:#d14">{</span>frame<span style="color:#d14">:</span><span style="color:#d14">04d</span><span style="color:#d14">}</span><span style="color:#d14">&#34;</span>,
+            <span style="color:#d14">&#34;actions&#34;</span>: [
+                <span style="color:#d14">f</span><span style="color:#d14">&#34;rsvg-convert -b white -h 200 </span><span style="color:#d14">{</span>spec<span style="color:#000;font-weight:bold">.</span>source<span style="color:#d14">}</span><span style="color:#d14"> &gt; </span><span style="color:#d14">{</span>spec<span style="color:#000;font-weight:bold">.</span>simulated<span style="color:#d14">}</span><span style="color:#d14">&#34;</span>,
+            ],
+            <span style="color:#d14">&#34;file_dep&#34;</span>: [spec<span style="color:#000;font-weight:bold">.</span>source],
+            <span style="color:#d14">&#34;targets&#34;</span>: [spec<span style="color:#000;font-weight:bold">.</span>simulated],
+            <span style="color:#d14">&#34;clean&#34;</span>: <span style="color:#000;font-weight:bold">True</span>,
+        }
+</code></pre></div><p>Each sub-task has the source SVG file set as <code>file_dep</code>, and the simulated JPG file as <code>targets</code>. Since this stage of the workflow is structured as sub-tasks&mdash;one sub-task per frame&mdash;each sub-task focuses on a single input and output file.</p>
+<p>In contrast, the <code>simulate</code> task needs <em>all</em> the simulated frames to create a single animated GIF:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">task_simulate</span>():
+    <span style="color:#d14">&#34;&#34;&#34;Make the simulated animation.&#34;&#34;&#34;</span>
+    file_list <span style="color:#000;font-weight:bold">=</span> [spec<span style="color:#000;font-weight:bold">.</span>simulated <span style="color:#000;font-weight:bold">for</span> spec <span style="color:#000;font-weight:bold">in</span> FILE_SPECS<span style="color:#000;font-weight:bold">.</span>values()]
+    paths <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34; &#34;</span><span style="color:#000;font-weight:bold">.</span>join(<span style="color:#0086b3">str</span>(file) <span style="color:#000;font-weight:bold">for</span> file <span style="color:#000;font-weight:bold">in</span> file_list)
+    target <span style="color:#000;font-weight:bold">=</span> PROJECT_DIR <span style="color:#000;font-weight:bold">/</span> <span style="color:#d14">&#34;output&#34;</span> <span style="color:#000;font-weight:bold">/</span> <span style="color:#d14">f</span><span style="color:#d14">&#34;</span><span style="color:#d14">{</span>BASENAME<span style="color:#d14">}</span><span style="color:#d14">.gif&#34;</span>
+    <span style="color:#000;font-weight:bold">return</span> {
+        <span style="color:#d14">&#34;actions&#34;</span>: [<span style="color:#d14">f</span><span style="color:#d14">&#34;convert -delay 5 -loop 0 </span><span style="color:#d14">{</span>paths<span style="color:#d14">}</span><span style="color:#d14"> </span><span style="color:#d14">{</span>target<span style="color:#d14">}</span><span style="color:#d14">&#34;</span>],
+        <span style="color:#d14">&#34;file_dep&#34;</span>: file_list,
+        <span style="color:#d14">&#34;targets&#34;</span>: [target],
+        <span style="color:#d14">&#34;clean&#34;</span>: <span style="color:#000;font-weight:bold">True</span>,
+    }
+</code></pre></div><p>In this case, <code>file_dep</code> contains all the simulated frames, while <code>targets</code> has the animated GIF.</p>
+<p>These snippets also illustrate how the <code>FileSpec</code> class and the <code>FILE_SPECS</code> global variable simplify the task implementation.</p>
+<h4 id="depending-on-dodopy">Depending on <code>dodo.py</code></h4>
+<p>Adding the <code>dodo.py</code> file to the dependency list might sound like a smart idea. Indeed, a modification of the <code>dodo.py</code> may potentially invalidate all generated files.</p>
+<p>In our case, this can be done in the <code>generate</code> task, on which all other tasks depend:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">task_generate</span>():
+    <span style="color:#d14">&#34;&#34;&#34;Generates golden master SVGs from the list of input files.&#34;&#34;&#34;</span>
+    <span style="color:#000;font-weight:bold">return</span> {
+        <span style="color:#d14">&#34;actions&#34;</span>: [
+            (
+                <span style="color:#d14">f</span><span style="color:#d14">&#34;vsk save -n </span><span style="color:#d14">{</span>PROJECT_NAME<span style="color:#d14">}</span><span style="color:#d14"> -p frame_count </span><span style="color:#d14">{</span>FRAME_COUNT<span style="color:#d14">}</span><span style="color:#d14"> &#34;</span>
+                <span style="color:#d14">f</span><span style="color:#d14">&#34;-p pixelize </span><span style="color:#d14">{</span>PIXELIZE<span style="color:#d14">}</span><span style="color:#d14"> -p frame 1..</span><span style="color:#d14">{</span>FRAME_COUNT<span style="color:#d14">}</span><span style="color:#d14"> -m .&#34;</span>
+            )
+        ],
+        <span style="color:#d14">&#34;file_dep&#34;</span>: [PROJECT_DIR <span style="color:#000;font-weight:bold">/</span> <span style="color:#d14">f</span><span style="color:#d14">&#34;sketch_</span><span style="color:#d14">{</span>PROJECT_NAME<span style="color:#d14">}</span><span style="color:#d14">.py&#34;</span>, __file__],  <span style="color:#998;font-style:italic"># &lt;-- LOOK HERE</span>
+        <span style="color:#d14">&#34;targets&#34;</span>: <span style="color:#0086b3">list</span>(spec<span style="color:#000;font-weight:bold">.</span>source <span style="color:#000;font-weight:bold">for</span> spec <span style="color:#000;font-weight:bold">in</span> FILE_SPECS<span style="color:#000;font-weight:bold">.</span>values()),
+        <span style="color:#d14">&#34;clean&#34;</span>: <span style="color:#000;font-weight:bold">True</span>,
+    }
+</code></pre></div><p>The path of the <code>dodo.py</code> file is conveniently stored in the <code>__file__</code> global variable by the Python interpreter, so it is a matter of adding it to the <code>file_dep</code>.</p>
+<p>(Notice, in passing, that the sketch file is also listed as <code>file_dep</code>. This triggers a complete rebuild whenever the sketch file is modified.)</p>
+<p>This technique is useful in the beginning to ensure that intermediate files potentially contaminated by bugs of an early, in-construction <code>dodo.py</code> file are properly rebuilt when the bug is fixed. It can, however, become an annoyance later on. Executing all of the <code>plot:XXXX</code> sub-tasks takes about 9 hours in total. You really don&rsquo;t want to repeat the whole thing just because of a code formatting fix or added comment in <code>dodo.py</code>! As such, the <code>dodo.py</code> is <em>not</em> listed as dependency in the file on GitHub.</p>
+<h4 id="helper-tasks">Helper tasks</h4>
+<p>In addition to the main workflows described so far, the <code>dodo.py</code> file includes a few helper tasks to toggle the pen up/down, disable the motor power (which is always better when the keeping the AxiDraw powered but unused for long periods of time), and shutdown everything (the RPis and the AxiDraw).</p>
+<p>The code is really straightforward, but very handy to have around. It&rsquo;s basically a thin wrapper over <code>axicli</code> functionalities:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">task_toggle</span>():
+    <span style="color:#d14">&#34;&#34;&#34;Toggle pen up/down&#34;&#34;&#34;</span>
+    <span style="color:#000;font-weight:bold">return</span> {<span style="color:#d14">&#34;actions&#34;</span>: [<span style="color:#d14">f</span><span style="color:#d14">&#34;</span><span style="color:#d14">{</span>AXICLI<span style="color:#d14">}</span><span style="color:#d14"> -m toggle&#34;</span>]}
+
+
+<span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">task_disable_xy</span>():
+    <span style="color:#d14">&#34;&#34;&#34;Disable X/Y motors&#34;&#34;&#34;</span>
+    <span style="color:#000;font-weight:bold">return</span> {<span style="color:#d14">&#34;actions&#34;</span>: [<span style="color:#d14">f</span><span style="color:#d14">&#34;</span><span style="color:#d14">{</span>AXICLI<span style="color:#d14">}</span><span style="color:#d14"> -m manual -M disable_xy&#34;</span>]}
+
+
+<span style="color:#000;font-weight:bold">def</span> <span style="color:#900;font-weight:bold">task_shutdown</span>():
+    <span style="color:#d14">&#34;&#34;&#34;Shutdown everything&#34;&#34;&#34;</span>
+    <span style="color:#000;font-weight:bold">return</span> {
+        <span style="color:#d14">&#34;actions&#34;</span>: [
+            <span style="color:#d14">&#34;ssh campi.local sudo poweroff&#34;</span>,
+            <span style="color:#d14">&#34;ssh axidraw.local sudo poweroff&#34;</span>,
+        ],
+        <span style="color:#d14">&#34;task_dep&#34;</span>: [<span style="color:#d14">&#34;disable_xy&#34;</span>],
+    }
+</code></pre></div><p>Notice the use of <code>task_dep</code> in the <code>shutdown</code> task. It basically says that <code>disable_xy</code> should be executed whenever <code>shutdown</code> is called.</p>
+<h2 id="final-words">Final words</h2>
+<p>And that wraps up what I wanted to cover about this project. This was <em>waaay</em> longer than I anticipated! I hope you enjoyed it and, possibly, learned something.</p>
+<p>I must once again credit <a href="https://simonwillison.net">Simon Willison</a> for the inspiration and his <a href="https://simonwillison.net/2022/Nov/6/what-to-blog-about/">exhortation</a> to blog about projects. Here, I took the advice, and pushed it to the extreme! 😅 I don&rsquo;t expect to be as thorough every time, but will certainly continue to produce <em>some</em> coverage my future endeavours.</p>
+<p>Please hit me up in the comments or on <a href="https://mastodon.social/@abey79">social</a> <a href="https://twitter.com/abey79">medias</a> with any feedback you may have&mdash;or just to let me know you made it this far 🏆, it&rsquo;ll make my day! ❤️</p>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p>I did wire MS1 and MS2 in my setup to run a few tests, since <a href="https://github.com/gavinlyonsrepo/RpiMotorLib">RpiMotorLib</a> supports this feature.&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2" role="doc-endnote">
+<p>An I/O in output mode is at risk of having its driver damaged when short-circuited. For this reason, all I/Os are in input mode by default.&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3" role="doc-endnote">
+<p>The fact that it resemble an orbiting planet is actually fortuitous!&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:4" role="doc-endnote">
+<p>In this case, this was caused by using <em>vpype</em>&rsquo;s <code>layout</code> command on each frame. The effect is the same as <code>center=True</code> though.&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:5" role="doc-endnote">
+<p>Or, more generally, for <code>frame = k</code> and <code>frame = k + n * frame_count</code>.&#160;<a href="#fnref:5" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:6" role="doc-endnote">
+<p>The <code>crop</code> command implementation basically consists of calling <code>crop_half_plane()</code> four times to cut away geometries outside the target rectangular area.&#160;<a href="#fnref:6" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:7" role="doc-endnote">
+<p>I found that <code>rsvg-convert</code> is more robust with SVG than ImageMagick.&#160;<a href="#fnref:7" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:8" role="doc-endnote">
+<p>As a reminder, a &ldquo;shell&rdquo; (like bash, zsh, tcsh, etc.) is the program that prints the terminal prompt and interprets the commands you type, launching processes as required. If a terminal window is like a small computer&rsquo;s screen, then the shell is that computer&rsquo;s operating system.&#160;<a href="#fnref:8" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>TIL: running Textual on a framebuffer terminal emulator for Linux</title>
       <link>https://bylr.info/articles/2022/10/29/til-textual-fb-term/</link>

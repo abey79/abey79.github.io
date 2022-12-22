@@ -11,11 +11,11 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Thu, 10 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 22 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>doit</title>
       <link>https://bylr.info/tags/doit/</link>
-      <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 22 Dec 2022 00:00:00 +0000</pubDate>
       
       <guid>https://bylr.info/tags/doit/</guid>
       <description></description>
@@ -23,11 +23,51 @@
     </item>
     
     <item>
+      <title>plotter</title>
+      <link>https://bylr.info/tags/plotter/</link>
+      <pubDate>Thu, 22 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/tags/plotter/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>project</title>
+      <link>https://bylr.info/tags/project/</link>
+      <pubDate>Thu, 22 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/tags/project/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
       <title>python</title>
       <link>https://bylr.info/tags/python/</link>
-      <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 22 Dec 2022 00:00:00 +0000</pubDate>
       
       <guid>https://bylr.info/tags/python/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>raspberrypi</title>
+      <link>https://bylr.info/tags/raspberrypi/</link>
+      <pubDate>Thu, 22 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/tags/raspberrypi/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>vsketch</title>
+      <link>https://bylr.info/tags/vsketch/</link>
+      <pubDate>Thu, 22 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/tags/vsketch/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
@@ -38,16 +78,6 @@
       <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
       
       <guid>https://bylr.info/tags/vpype/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>raspberrypi</title>
-      <link>https://bylr.info/tags/raspberrypi/</link>
-      <pubDate>Sat, 29 Oct 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://bylr.info/tags/raspberrypi/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
@@ -73,16 +103,6 @@
     </item>
     
     <item>
-      <title>plotter</title>
-      <link>https://bylr.info/tags/plotter/</link>
-      <pubDate>Tue, 25 Oct 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://bylr.info/tags/plotter/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
       <title>sphinx</title>
       <link>https://bylr.info/tags/sphinx/</link>
       <pubDate>Sun, 09 Oct 2022 00:00:00 +0000</pubDate>
@@ -98,16 +118,6 @@
       <pubDate>Thu, 28 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>https://bylr.info/tags/sketch/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>vsketch</title>
-      <link>https://bylr.info/tags/vsketch/</link>
-      <pubDate>Thu, 28 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://bylr.info/tags/vsketch/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
