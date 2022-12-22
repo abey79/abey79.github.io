@@ -2,6 +2,7 @@
 title: "Batch processing SVGs with DoIt and vpype"
 slug: batch-processing-doit-vpype
 date: 2022-11-10
+lastmod: 2022-12-22
 cover:
     image: /batch-processing-doit-vpype/banner.png
 tags:
@@ -468,9 +469,9 @@ This example is taken from [*vpype-perspective*](https://github.com/abey79/vpype
 
 If you made it that far, I hope you are convinced of how useful *doit* is for workflow automation.
 
-In this article, I focused on *vpype*, but *doit* can be used for entirely different things. As a matter of fact, I used it to automate my [#plotloop machine](https://twitter.com/abey79/status/1528735353741484033), which I'll describe in an upcoming article.
+In this article, I focused on *vpype*, but *doit* can be used for entirely different things. As a matter of fact, I used it to automate my [#plotloop machine](https://twitter.com/abey79/status/1528735353741484033), which I've described in my [next article]({{< relref "automatic-plotloop-machine.md" >}}).
 
-{{< youtube id="px_mVzLROOY" title="#plotloop automatic machine" >}}
+{{< youtube id="w_PPPImmEN8" title="The Automatic #plotloop Machine" >}}
 
 <br/>
 
@@ -481,3 +482,5 @@ But this is also its greatest strength. You wield the full power of Python when 
 Ready to take the plunge? I'm happy to help---just share details of your workflow in the comments :point_down:, on [Twitter](https://twitter.com/abey79)/[Mastodon](https://mastodon.social/@abey79), or on the [Drawingbots Discord](https://discord.com/invite/XHP3dBg).
 
 ***Edit**: TIL what "dolt" (lowercase L) means :sweat_smile:, and changed DoIt (uppercase i) into *doit*, consistently with their documentation.* 
+
+***Edit**: Added a link to the Automatic #plotloop Machine article and updated the video.* 

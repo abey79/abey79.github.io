@@ -60,6 +60,11 @@ main {
     color: var(--content);
 }
 
+/* better spacing after code blocks */
+.post-content .highlight {
+    margin-bottom: 20px !important;
+}
+
 .post-content table tbody tr td {
     vertical-align: top;
 }
