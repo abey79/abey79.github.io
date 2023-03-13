@@ -85,3 +85,8 @@ blockquote.extract {
     margin-left: 60px;
     margin-right: 60px;
 }
+
+/* better spacing after vidoe */
+.post-content .html-video {
+    margin-bottom: 20px !important;
+}

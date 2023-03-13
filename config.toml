@@ -2,8 +2,8 @@ baseURL = 'https://bylr.info/'
 defaultContentLanguage = "en"
 languageCode = 'en'
 title = 'bylr.info'
-theme = "PaperMod"
-copyright = "&copy; 2022 Antoine Beyeler –"
+theme = ["hugo-video", "PaperMod"]
+copyright = "&copy; 2022-2023 Antoine Beyeler –"
 
 enableRobotsTXT = true
 buildDrafts = false
