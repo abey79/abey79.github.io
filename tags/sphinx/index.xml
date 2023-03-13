@@ -10,7 +10,7 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
+    <copyright>&amp;copy; 2022-2023 Antoine Beyeler –</copyright>
     <lastBuildDate>Sun, 09 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/sphinx/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>TIL: use Plausible.io with a Sphinx documentation hosted on RTD</title>

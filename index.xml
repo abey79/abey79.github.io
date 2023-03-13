@@ -10,8 +10,79 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <copyright>&amp;copy; 2022 Antoine Beyeler –</copyright>
-    <lastBuildDate>Thu, 22 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/index.xml" rel="self" type="application/rss+xml" />
+    <copyright>&amp;copy; 2022-2023 Antoine Beyeler –</copyright>
+    <lastBuildDate>Mon, 13 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Annotated Release Notes: vpype 1.13</title>
+      <link>https://bylr.info/articles/2023/03/13/annotated-release-notes-vpype-1.13/</link>
+      <pubDate>Mon, 13 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/articles/2023/03/13/annotated-release-notes-vpype-1.13/</guid>
+      <description>&lt;p&gt;&lt;em&gt;vpype&lt;/em&gt; 1.13 is out! 🎉&lt;/p&gt;
+&lt;p&gt;The main improvement is Python 3.11 support, but it does come with a few other bells and whistles, so let&amp;rsquo;s dive in.&lt;/p&gt;</description>
+      <content:encoded><![CDATA[<p><em>vpype</em> 1.13 is out! 🎉</p>
+<p>The main improvement is Python 3.11 support, but it does come with a few other bells and whistles, so let&rsquo;s dive in.</p>
+<h3 id="python-311-support">Python 3.11 support</h3>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Added support for Python 3.11 and dropped support for Python 3.8 (#581)</li>
+</ul>
+<p>Known issue:</p>
+<ul>
+<li>As of PySide 6.4.2, a refresh issue arises on macOS when the viewer window is resized by a window manager (#603)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>Python 3.11 was first released on October 22nd, 2022, and the current version is 3.11.2 as of this writing. So it was way overdue for <em>vpype</em> to support it.</p>
+<p>As usual, adding support for a newer Python means dropping an older one&mdash;bye bye Python 3.8! 👋 That said, if you <em>must</em> use Python 3.8, <em>vpype</em> 1.12.1 remains available and has been a rather stable release.</p>
+<p>In the process of adapting <em>vpype</em> for 3.11, I had to update PySide6 to the last release (6.4.2 as of this writing). Unfortunately, it introduces a <a href="https://bugreports.qt.io/browse/QTBUG-107666">refresh glitch</a> on macOS when using a window manager:</p>
+<video preload="auto" width="100%"  autoplay loop playsinline class="html-video">
+    <source src="/articles/2023/03/13/annotated-release-notes-vpype-1.13/pyside6_glitch.mp4" type="video/mp4">
+  <span>Your browser doesn't support embedded videos, but don't worry, you can <a href="/articles/2023/03/13/annotated-release-notes-vpype-1.13/pyside6_glitch.mp4">download it</a> and watch it with your favorite video player!</span>
+</video>
+<br/>
+<p>I waited for a fix, but this is taking too long, so I opted to make a release with this known issue.</p>
+<h3 id="lid-built-in-expression-variable"><code>lid</code> built-in expression variable</h3>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Added the <code>lid</code> built-in expression variable for generator and layer processor commands (#605)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>Many <em>vpype</em> commands operate on a layer-by-layer basis. They are known as <a href="https://vpype.readthedocs.io/en/latest/fundamentals.html#layer-processors">layer processors</a>. One example is the <a href="https://vpype.readthedocs.io/en/latest/reference.html#translate"><code>translate</code></a> command. By default, it appears to run on all layers at once, but what actually happens is that it is run once for each layer. You can control on which layer(s) it should actually run with the <code>--layer</code> option.</p>
+<p>Any <a href="https://vpype.readthedocs.io/en/latest/fundamentals.html#expression-substitution">expression</a> passed to such a command is <em>also</em> evaluated once per layer. This enables per-layer customisation of the command behaviour. This feature introduces the <code>lid</code> built-in variable, which is set to the ID of the layer that&rsquo;s being currently processed.</p>
+<p>Here is an example for illustration:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ vpype  <span style="color:#0086b3">read</span> file_with_many_layers.svg  name <span style="color:#d14">&#34;Layer %lid%&#34;</span>  write output.svg
+</code></pre></div><p>Here, the <a href="https://vpype.readthedocs.io/en/latest/reference.html#name"><code>name</code></a> command renames all layers (<code>--layer</code> is not used). But since <code>lid</code> is set by <em>vpype</em> to the current layer ID, the output SVG has its layers labelled &ldquo;Layer 1&rdquo;, &ldquo;Layer 2&rdquo;, etc. (the exact numbers depend on the input SVG&rsquo;s actual layer structure).</p>
+<h3 id="layer-id-determination">Layer ID determination</h3>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Fixed a design issue with the <code>read</code> command where disjoint groups of digits in layer names could be used to determine layer IDs. Only the first contiguous group of digits is used now, so a layer named &ldquo;01-layer1&rdquo; has layer ID of 1 instead of 11 (#606)</li>
+</ul>
+</p>
+</blockquote>
+
+<p>Speaking of layer IDs, this fix slightly changes how <em>vpype</em> attributes layer IDs when reading SVGs using the <a href="https://vpype.readthedocs.io/en/latest/reference.html#read"><code>read</code></a> command. Previously, <em>vpype</em> would strip all non-digit characters from the layer name (or, lacking one, from the corresponding group ID), and use the resulting number as ID, if any. A layer named &ldquo;01-blue3&rdquo; would thus end up with ID 13, which is a rather unexpected result! The new behaviour consists of taking the <em>first</em> contiguous group of digit, if any, and use this as layer ID instead. Now, layer &ldquo;01-blue3&rdquo; has an ID of 1.</p>
+<p>BTW, I&rsquo;m working on a new article on layer names, and how they can be used to control the plotting process with the AxiDraw. So stay tuned for more on this!</p>
+<h3 id="wayland-related-crash">Wayland-related crash</h3>
+
+<blockquote class="extract">
+  <p><ul>
+<li>Fixed an issue on Wayland-based Linux distributions where using the viewer (e.g. with the <code>show</code> command) would crash (#607)</li>
+</ul>
+</p>
+</blockquote>
+
+<p><a href="https://www.qt.io">Qt</a>, the GUI library behind PySide6, has an <a href="https://doc.qt.io/qt-6/qpa.html">abstraction layer</a> dedicated to the platform its running on. This is basically what enables Qt projects to seamlessly run on macOS, Linux, or Windows. There appears to be some technicalities involved with this when using OpenGL (as <em>vpype</em> does), which led the viewer to crash on Wayland-based Linux install. The workaround consisted of &ldquo;forcing&rdquo; Qt to use the <code>xcb</code> instead of <code>wayland</code> platform by setting an environment variable:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#0086b3">export</span> <span style="color:#008080">QT_QPA_PLATFORM</span><span style="color:#000;font-weight:bold">=</span>xcb
+</code></pre></div><p>With <em>vpype</em> 1.13, this is no longer needed as it automatically sets this environment variable when a Wayland-based Linux is detected.</p>]]></content:encoded>
+    </item>
+    
     <item>
       <title>Project: the Automatic #plotloop Machine</title>
       <link>https://bylr.info/articles/2022/12/22/automatic-plotloop-machine/</link>
