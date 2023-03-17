@@ -18,7 +18,7 @@
       <pubDate>Thu, 22 Dec 2022 00:00:00 +0000</pubDate>
       
       <guid>https://bylr.info/articles/2022/12/22/automatic-plotloop-machine/</guid>
-      <description>Deep dive into the internals of my Automatic</description>
+      <description>Deep dive into the internals of my Automatic #plotloop Machine.</description>
       <content:encoded><![CDATA[<h2 id="whats-this">What&rsquo;s this?</h2>
 <p>I recently built an &ldquo;Automatic #plotloop Machine&rdquo;, named after the common <a href="https://mastodon.social/tags/plotloop">social</a> <a href="https://twitter.com/hashtag/plotloop">media</a> hashtag for these animations made of individually plotted frames. This article is a thorough description of the project, covering both hardware and software aspects.</p>
 <p>First, here is a video:</p>

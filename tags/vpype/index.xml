@@ -11,7 +11,138 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022-2023 Antoine Beyeler –</copyright>
-    <lastBuildDate>Mon, 13 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/vpype/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 17 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/tags/vpype/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>On vpype layers, their names, and the AxiDraw</title>
+      <link>https://bylr.info/articles/2023/03/17/layer-names/</link>
+      <pubDate>Fri, 17 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/articles/2023/03/17/layer-names/</guid>
+      <description>This article explores the topic of layers, their name, and how they can be used to control the AxiDraw plotting process.</description>
+      <content:encoded><![CDATA[<p>The <a href="https://axidraw.com">AxiDraw</a> software, including the Inkscape plug-in, the AxiDraw CLI, and the Python module, offers a pretty neat way to control the plotting process with special escape codes in layer names. <em>vpype</em> doesn&rsquo;t have an explicit support for this feature <a href="https://github.com/abey79/vpype/issues/604">yet</a>, but it can give arbitrary names to layers using the <a href="https://vpype.readthedocs.io/en/latest/reference.html#name"><code>name</code></a> command&mdash;including ones that the AxiDraw understands.</p>
+<p>This article explores the topic of layers, their name, and how they can be used to control the AxiDraw plotting process.</p>
+<h2 id="svg-has-layers">SVG has layers?</h2>
+<p>Actually, no.</p>
+<p>Instead, SVG has groups, which can be nested or omitted altogether, which is not exactly the same thing. For this reason, the Inkscape project has introduced an <a href="https://inkscape.org/namespaces/inkscape/">XML namespace</a> named <a href="https://inkscape.org/namespaces/inkscape/"><code>inkscape</code></a> to support its layer feature. Amongst other thing, it defines the <code>inkscape:groupmode=&quot;layer&quot;</code> group attribute, to mark a top-level group as layer, and the <code>inskscape:label</code> attribute, to assign a label&mdash;or name&mdash;to the layer:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-svg" data-lang="svg"><span style="color:#999;font-weight:bold;font-style:italic">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34; ?&gt;</span>
+<span style="color:#000080">&lt;svg</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;http://www.w3.org/2000/svg&#34;</span>
+     <span style="color:#008080">xmlns:inkscape=</span><span style="color:#d14">&#34;http://www.inkscape.org/namespaces/inkscape&#34;</span>
+     <span style="color:#008080">height=</span><span style="color:#d14">&#34;10.0cm&#34;</span> <span style="color:#008080">width=</span><span style="color:#d14">&#34;10.0cm&#34;</span><span style="color:#000080">&gt;</span>
+  <span style="color:#000080">&lt;g</span> <span style="color:#008080">inkscape:groupmode=</span><span style="color:#d14">&#34;layer&#34;</span> <span style="color:#008080">inkscape:label=</span><span style="color:#d14">&#34;my layer label&#34;</span> <span style="color:#000080">&gt;</span>
+      <span style="color:#998;font-style:italic">&lt;!-- first layer&#39;s content --&gt;</span>
+  <span style="color:#000080">&lt;/g&gt;</span>
+  <span style="color:#000080">&lt;g</span> <span style="color:#008080">inkscape:groupmode=</span><span style="color:#d14">&#34;layer&#34;</span> <span style="color:#008080">inkscape:label=</span><span style="color:#d14">&#34;my other layer&#34;</span> <span style="color:#000080">&gt;</span>
+      <span style="color:#998;font-style:italic">&lt;!-- second layer&#39;s content --&gt;</span>
+  <span style="color:#000080">&lt;/g&gt;</span>
+<span style="color:#000080">&lt;/svg&gt;</span>
+</code></pre></div><p>The Inkscape extension has become the <em>de facto</em> standard for SVG layer definition and naming, and is used by both <em>vpype</em> and the AxiDraw software.</p>
+<h2 id="vpype-has-layers"><em>vpype</em> has layers?</h2>
+<p><a href="https://vpype.readthedocs.io/en/latest/fundamentals.html#lines-and-layers">Yes</a>.</p>
+<p>Layers are first-class citizens in <em>vpype</em>, and, like any good citizen, they are primarily identified by a non-zero, positive integer identification number, in this case called &ldquo;layer ID&rdquo;. When loading an SVG, <em>vpype</em> try to construct its layer based on their Inkscape label, if any, their SVG group <code>id</code> (<code>&lt;g id=&quot;...&quot;&gt;</code>) if any, or sequentially otherwise. For example, when <code>read</code>ing an Inkscape file with two layers named &ldquo;layer 4&rdquo; and &ldquo;some layer 6&rdquo;, <em>vpype</em> will assign layer IDs 4 and 6 to these layers<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>. If the label and group ID lack numerical digits, then <em>vpype</em> will revert to using sequential IDs.</p>
+<p>One of the easiest ways to visualise layers and their IDs is to use the <a href="https://vpype.readthedocs.io/en/latest/reference.html#show"><code>show</code></a> and the viewer&rsquo;s layer menu:</p>
+<p><img loading="lazy" src="layer_menu.jpg" alt="vpype displaying a SVG and its layers"  />
+</p>
+<p>Both the layer ID and the label, if any, is shown.</p>
+<p>Many <em>vpype</em> commands operate on a layer-by-layer basis. They are known as <a href="https://vpype.readthedocs.io/en/latest/fundamentals.html#layer-processors">layer processors</a>. By default, they operate on <em>all</em> layers&mdash;for example <code>translate 0 2cm</code> translates the whole document by 2 cm vertically. For more control, the exact layer(s) on which the command should operate can be specified using the <code>--layer LID</code> option (or <code>-l LID</code> for short). For example, <code>translate -l 3 0 2cm</code> will translate <em>only</em> layer 3. Likewise, <code>translate -l 3,4 0 2cm</code> will translate both layer 3 and 4.</p>
+<h2 id="axidraw-escape-codes">AxiDraw escape codes</h2>
+<p>The <a href="https://www.evilmadscientist.com">EMSL</a> <a href="https://wiki.evilmadscientist.com/Main_Page">wiki</a> contains a <a href="https://wiki.evilmadscientist.com/AxiDraw_Layer_Control#Syntax">thorough description</a> of the supported escape codes and their effect. Here is a summary of what can be achieved:</p>
+<ul>
+<li>By prefixing the layer name with a number in the range of 0 to 1000, layers can be grouped together and enabled/disabled by the AxiDraw software (this resembles, but is not to be confused with <em>vpype</em>&rsquo;s layer IDs). For example, <code>10 my layer</code> assigns the number 10 to the corresponding layer. With the &ldquo;Layer&rdquo; tab of the InkScape extension, it is possible to plot all layers prefixed with a given number.</li>
+<li>The pen down position can be adjusted by adding <code>+H</code> immediately followed by a number right after the layer number, e.g. <code>10+H55 my layer</code> sets the pen down position to 55. This works without layer number as well, e.g. <code>+H55 my layer</code>.</li>
+<li>Likewise, the pen down speed can be adjusted with <code>+S</code>, e.g. <code>12+S30 my layer</code>.</li>
+<li>Another possibility is to set a delay at the beginning of a layer using <code>+D</code>. This enables behaviours such as letting time for the ink to dry, or for a timelapse picture to be taken.</li>
+<li>A layer may be marked as &ldquo;do not plot&rdquo; by adding <code>%</code> at the beginning of the layer name. This could be used to add debug elements or decorations to an SVG that should not be physically plotted.</li>
+<li>Likewise, starting the layer name with <code>!</code> will force the AxiDraw to pause, for example to allow for paper swapping.</li>
+</ul>
+<h2 id="naming-layers">Naming layers</h2>
+<p>Equipped with this understanding of how layers work, let&rsquo;s use the <a href="https://vpype.readthedocs.io/en/latest/reference.html#name"><code>name</code></a> command to control the AxiDraw. For example, the drawing speed for layer 3 can be specified this way:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vpype  <span style="color:#0086b3">read</span> multilayer.svg  name -l <span style="color:#099">3</span> <span style="color:#d14">&#34;+S30 my layer label&#34;</span>  write output.svg 
+</code></pre></div><p><em>vpype</em> 1.13 <a href="/articles/2023/03/13/annotated-release-notes-vpype-1.13/">introduced</a> a new <code>lid</code> built-in expression variable which comes in handy in this context. It can be used to match the AxiDraw layer number with <em>vpype</em>&rsquo;s layer ID:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vpype  <span style="color:#0086b3">read</span> multilayer.svg  name -l <span style="color:#099">3</span> <span style="color:#d14">&#34;%lid%+S30 my layer label&#34;</span>  write output.svg 
+</code></pre></div><p>In this case, layer 3 is renamed &ldquo;3+S30 my layer label&rdquo;. The nice thing is that this also works when renaming multiple layers at once. For example:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vpype  <span style="color:#0086b3">read</span> multilayer.svg  name -l 3,4 <span style="color:#d14">&#34;%lid%+S30&#34;</span>  write output.svg 
+</code></pre></div><p>Here, layer 3 and 4 are renamed &ldquo;3+S30&rdquo; and &ldquo;4+S30&rdquo;, respectively.</p>
+<h2 id="empty-layers">Empty layers</h2>
+<p>To achieve certain behaviours with the AxiDraw, one may need to insert any empty layer with a specific name. For example, a final empty layer named &ldquo;+D1000&rdquo; makes the AxiDraw pause for one second in pen-up position at the final drawing location, before moving the head back to the home position.</p>
+<p>Interestingly, there is currently no explicit support in  <em>vpype</em> to create empty layers. The layer manipulation commands (like <a href="https://vpype.readthedocs.io/en/latest/reference.html#lmove"><code>lmove</code></a>, <a href="https://vpype.readthedocs.io/en/latest/reference.html#lcopy"><code>lcopy</code></a>, etc.) specifically remove layers they leave empty.</p>
+<p>While preparing this article, I realised that one command could be used to create an empty layer: <a href="https://vpype.readthedocs.io/en/latest/reference.html#random"><code>random</code></a>. Its purpose is to generate some random lines for debugging purposes, but the number of lines it generate can luckily be controlled. So here is how to create an empty layer with ID 5:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vpype  <span style="color:#000;font-weight:bold">[</span>...<span style="color:#000;font-weight:bold">]</span>  random -l <span style="color:#099">5</span> -n <span style="color:#099">0</span>  <span style="color:#000;font-weight:bold">[</span>...<span style="color:#000;font-weight:bold">]</span>
+</code></pre></div><p>The <code>-n 0</code> option tells <code>random</code> to generate 0 random lines, but it still creates the layer. This can be verified using the <a href="https://vpype.readthedocs.io/en/latest/reference.html#stat"><code>stat</code></a> command:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vpype  random -l <span style="color:#099">5</span> -n <span style="color:#099">0</span>  stat
+</code></pre></div><p>This prints the following output:</p>
+<pre tabindex="0"><code>========= Stats =========
+Current page size: None
+Layer 5
+  Length: 0
+  Pen-up length: 0.0
+  Total length: 0.0
+  Mean pen-up length: 0.0
+  Median pen-up length: 0.0
+  Path count: 0
+  Segment count: 0
+  Mean segment length: n/a
+  Bounds: None
+  Properties:
+Totals
+  Layer count: 1
+  Length: 0.0
+  Pen-up length: 0.0
+  Total length: 0.0
+  Path count: 0
+  Segment count: 0
+  Mean segment length: n/a
+  Bounds: None
+  Global properties:
+=========================
+</code></pre><p>Layer 5 exists, but is empty.</p>
+<br/>
+<p>That about wraps up what can be said on <em>vpype</em> layers, their names, and how they can interact with the AxiDraw. I&rsquo;d love to hear about your creative use of these features, in the comments or on the socials.</p>
+<!--
+
+## Putting it all together
+
+Let wrap up by considering a complete example. We'll use [this SVG](example.svg) as starting point:
+
+![two-color concentric patterns](example.svg)
+
+This is a two-layer file laid out on 10x10cm page.
+
+For the purpose of this example, let's say we want to control the pen-down height and speed for the two layers, and then create an ink-bleed stain in the middle.
+
+```bash
+vpype \
+  read  example.svg \
+  name "%lid%+H35+S50" \
+  circle -l 3 5cm 5cm 0.1px \
+  name -l 3 %lid% \
+  random -l 4 -n 0 \
+  name -l 4 "%lid%+D10000" \
+  show
+```
+
+Here is what happens:
+- After reading the input file, we first rename the two layers to set the pen-down height to 35 and the speed to 50.
+- We then draw a tiny circle in the middle of a new layer with an ID of 3, which we renamed with its number[^name].
+- Then, we create an empty layer with ID 4, which we rename "4+D10000" to tell the AxiDraw to make a 10-second pause before starting layer 4. This happens right at the end of plotting layer 3, *before* the pen is raised to move to layer 4. This effectively lets the pen bleeding just after drawing the small circle.
+
+[^name]: This is technically not necessary as the [`write`](https://vpype.readthedocs.io/en/latest/reference.html#write) automatically uses the ID as name for unnamed layers.
+
+And here is the final result, ready to be plotted with the AxiDraw:
+
+![adfas](example.jpg)
+
+-->
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p>Note that <a href="/articles/2023/03/13/annotated-release-notes-vpype-1.13/"><em>vpype</em> 1.13</a> introduced a minor change on how exactly this is done.&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>Annotated Release Notes: vpype 1.13</title>
       <link>https://bylr.info/articles/2023/03/13/annotated-release-notes-vpype-1.13/</link>
@@ -68,7 +199,7 @@
 </blockquote>
 
 <p>Speaking of layer IDs, this fix slightly changes how <em>vpype</em> attributes layer IDs when reading SVGs using the <a href="https://vpype.readthedocs.io/en/latest/reference.html#read"><code>read</code></a> command. Previously, <em>vpype</em> would strip all non-digit characters from the layer name (or, lacking one, from the corresponding group ID), and use the resulting number as ID, if any. A layer named &ldquo;01-blue3&rdquo; would thus end up with ID 13, which is a rather unexpected result! The new behaviour consists of taking the <em>first</em> contiguous group of digit, if any, and use this as layer ID instead. Now, layer &ldquo;01-blue3&rdquo; has an ID of 1.</p>
-<p>BTW, I&rsquo;m working on a new article on layer names, and how they can be used to control the plotting process with the AxiDraw. So stay tuned for more on this!</p>
+<p>BTW, I&rsquo;m working on a new article on layer names, and how they can be used to control the plotting process with the AxiDraw. <del>So stay tuned for more on this!</del> <a href="/articles/2023/03/17/layer-names/">Done!</a></p>
 <h3 id="wayland-related-crash">Wayland-related crash</h3>
 
 <blockquote class="extract">
