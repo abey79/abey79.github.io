@@ -1,6 +1,7 @@
 ---
 title: "Annotated Release Notes: vpype 1.13"
 date: 2023-03-13
+lastmod: 2023-03-17
 tags:
   - vpype
   - plotter
@@ -61,7 +62,7 @@ Here, the [`name`](https://vpype.readthedocs.io/en/latest/reference.html#name) c
 
 Speaking of layer IDs, this fix slightly changes how *vpype* attributes layer IDs when reading SVGs using the [`read`](https://vpype.readthedocs.io/en/latest/reference.html#read) command. Previously, *vpype* would strip all non-digit characters from the layer name (or, lacking one, from the corresponding group ID), and use the resulting number as ID, if any. A layer named "01-blue3" would thus end up with ID 13, which is a rather unexpected result! The new behaviour consists of taking the *first* contiguous group of digit, if any, and use this as layer ID instead. Now, layer "01-blue3" has an ID of 1.
 
-BTW, I'm working on a new article on layer names, and how they can be used to control the plotting process with the AxiDraw. So stay tuned for more on this!
+BTW, I'm working on a new article on layer names, and how they can be used to control the plotting process with the AxiDraw. ~~So stay tuned for more on this!~~ [Done!]({{< relref "layer-names/index" >}})
 
 
 ### Wayland-related crash

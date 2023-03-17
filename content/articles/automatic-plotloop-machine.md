@@ -4,7 +4,7 @@ slug: automatic-plotloop-machine
 date: 2022-12-22
 showtoc: true
 tocopen: true
-summary: Deep dive into the internals of my Automatic #plotloop Machine.
+summary: "Deep dive into the internals of my Automatic #plotloop Machine."
 cover:
     image: /automatic-plotloop-machine/banner.jpg
 tags:
