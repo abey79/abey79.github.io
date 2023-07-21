@@ -2731,11 +2731,14 @@ show
       <pubDate>Thu, 10 Feb 2022 20:21:40 +0100</pubDate>
       
       <guid>https://bylr.info/about/</guid>
-      <description>My name is Antoine Beyeler. I am a multi-disciplinary engineer and entrepreneur with a PhD in flying robotics and interests in software, aviation, photography, generative art, plotters, and home automation. I live in Lausanne, Switzerland 🇨🇭.
-With a few friends, I co-founded senseFly in 2009, which soon became the leader of fixed-wing mapping drones for surveyors, farmers, humanitarians and many others. Until my departure in 2018, I lead as CTO a team of up to 45 engineers and developed multiple generations of end-to-end mapping drone systems.</description>
-      <content:encoded><![CDATA[<p>My name is <strong>Antoine Beyeler</strong>. I am a multi-disciplinary engineer and entrepreneur with a PhD in flying robotics and interests in software, aviation, photography, generative art, plotters, and home automation. I live in Lausanne, Switzerland 🇨🇭.</p>
-<p>With a few friends, I co-founded <a href="https://www.sensefly.com">senseFly</a> in 2009, which soon became the leader of fixed-wing mapping drones for surveyors, farmers, humanitarians and many others. Until my departure in 2018, I lead as CTO a team of up to 45 engineers and developed multiple generations of end-to-end mapping drone systems. I am now involved in advisory capacity with several start-ups in the Geneva region.</p>
-<p>Like my skills, my contributions to generative art lean on the technical rather than the artistic side 👨‍💻. Among other things, I created and maintain two open-source projects for plotter generative artists:</p>
+      <description>My name is Antoine Beyeler. I am a multidisciplinary engineer and entrepreneur with a PhD in flying robotics and interests in software, aviation, photography, generative art, plotters, and home automation. I live in Lausanne, Switzerland 🇨🇭.
+I recently joined Rerun.io as software engineer to learn Rust 🦀 while developing visualisation frameworks and products for computer vision and robotics practitioners.
+Earlier, with a few friends, I co-founded senseFly (now named AgEagle), which soon became the leader of fixed-wing mapping drones for surveyors, farmers, humanitarians and many others.</description>
+      <content:encoded><![CDATA[<p>My name is <strong>Antoine Beyeler</strong>. I am a multidisciplinary engineer and entrepreneur with a PhD in flying robotics and interests in software, aviation, photography, generative art, plotters, and home automation. I live in Lausanne, Switzerland 🇨🇭.</p>
+<p>I recently joined <a href="https://www.rerun.io">Rerun.io</a> as software engineer to learn Rust 🦀 while developing visualisation frameworks and products for computer vision and robotics practitioners.</p>
+<p>Earlier, with a few friends, I co-founded <a href="https://www.sensefly.com">senseFly</a> (now named <a href="https://ageagle.com">AgEagle</a>), which soon became the leader of fixed-wing mapping drones for surveyors, farmers, humanitarians and many others. Until my departure in 2018, I lead as CTO a team of up to 45 engineers and developed multiple generations of end-to-end mapping drone systems.</p>
+<p>I am also involved in advisory capacity with several Swiss start-ups.</p>
+<p>On my spare time, I dabble in generative art and pen plotters, and maintain two open-source projects I created in that space:</p>
 <ul>
 <li><a href="https://github.com/abey79/vpype"><em>vpype</em></a>: a Swiss-Army-knife CLI to generate, manage, process, and convert vector graphic files for plotters,</li>
 <li><a href="https://github.com/abey79/vsketch"><em>vsketch</em></a>: a Python plotter generative art framework and workflow automation tool.</li>
