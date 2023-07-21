@@ -7,11 +7,15 @@ hidemeta: true
 comments: false
 ---
 
-My name is **Antoine Beyeler**. I am a multi-disciplinary engineer and entrepreneur with a PhD in flying robotics and interests in software, aviation, photography, generative art, plotters, and home automation. I live in Lausanne, Switzerland :flag_ch:.
+My name is **Antoine Beyeler**. I am a multidisciplinary engineer and entrepreneur with a PhD in flying robotics and interests in software, aviation, photography, generative art, plotters, and home automation. I live in Lausanne, Switzerland :flag_ch:.
 
-With a few friends, I co-founded [senseFly](https://www.sensefly.com) in 2009, which soon became the leader of fixed-wing mapping drones for surveyors, farmers, humanitarians and many others. Until my departure in 2018, I lead as CTO a team of up to 45 engineers and developed multiple generations of end-to-end mapping drone systems. I am now involved in advisory capacity with several start-ups in the Geneva region.
+I recently joined [Rerun.io](https://www.rerun.io) as software engineer to learn Rust :crab: while developing visualisation frameworks and products for computer vision and robotics practitioners.
 
-Like my skills, my contributions to generative art lean on the technical rather than the artistic side :man_technologist:. Among other things, I created and maintain two open-source projects for plotter generative artists:
+Earlier, with a few friends, I co-founded [senseFly](https://www.sensefly.com) (now named [AgEagle](https://ageagle.com)), which soon became the leader of fixed-wing mapping drones for surveyors, farmers, humanitarians and many others. Until my departure in 2018, I lead as CTO a team of up to 45 engineers and developed multiple generations of end-to-end mapping drone systems.
+
+I am also involved in advisory capacity with several Swiss start-ups.
+
+On my spare time, I dabble in generative art and pen plotters, and maintain two open-source projects I created in that space:
 * [_vpype_](https://github.com/abey79/vpype): a Swiss-Army-knife CLI to generate, manage, process, and convert vector graphic files for plotters,
 * [_vsketch_](https://github.com/abey79/vsketch): a Python plotter generative art framework and workflow automation tool.
 
