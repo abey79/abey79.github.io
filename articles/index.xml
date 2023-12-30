@@ -11,7 +11,39 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; 2022-2023 Antoine Beyeler –</copyright>
-    <lastBuildDate>Fri, 17 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/articles/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 30 Dec 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://bylr.info/articles/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>TIL: displaying contributor avatars in GitHub changelogs</title>
+      <link>https://bylr.info/articles/2023/12/30/til-displaying-contributor-avatars-in-github-changelogs/</link>
+      <pubDate>Sat, 30 Dec 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://bylr.info/articles/2023/12/30/til-displaying-contributor-avatars-in-github-changelogs/</guid>
+      <description>While working on a changelog-generation script for my vsvg project, I wanted to display the list of contributors as circular avatars, just like GitHub does in multiple places.
+After a few Google searches and some failed attempts, I identified a couple of key tricks.
+The first is about obtaining the avatar image for a given GitHub account. Although the URL is hard to predict, adding .png to the account page acts as redirection.</description>
+      <content:encoded><![CDATA[<p>While working on a  <a href="https://github.com/abey79/vsvg/blob/master/CHANGELOG.md">changelog</a>-generation <a href="https://github.com/abey79/vsvg/blob/master/scripts/changelog.py">script</a> for my <a href="https://github.com/abey79/vsvg">vsvg</a> project, I wanted to display the list of contributors as circular avatars, just like GitHub does in multiple places.</p>
+<p>After a few Google searches and some failed attempts, I identified a couple of key tricks.</p>
+<p>The first is about obtaining the avatar image for a given GitHub account. Although the URL  is hard to predict, adding <code>.png</code> to the account page acts as redirection. For example, this url:</p>
+<p><a href="https://github.com/abey79.png">https://github.com/abey79.png</a></p>
+<p>redirects to:</p>
+<p><a href="https://avatars.githubusercontent.com/u/49431240?v=4">https://avatars.githubusercontent.com/u/49431240?v=4</a></p>
+<p>Which corresponds to this image:</p>
+<p><img loading="lazy" src="https://avatars.githubusercontent.com/u/49431240?v=4" alt="my avatar"  />
+</p>
+<p>The second trick is about resizing, masking, and caching that image to generate the circular avatar. It turns out that the free and open-source service <a href="https://wsrv.nl">wsrv.nl</a> does <em>exactly</em> this. You can check the <a href="https://wsrv.nl/docs/">documentation</a> for details, but this URL does the trick:</p>
+<p><a href="https://wsrv.nl/?url=github.com/abey79.png?w=64&amp;h=64&amp;mask=circle&amp;fit=cover&amp;maxage=1w">https://wsrv.nl/?url=github.com/abey79.png?w=64&amp;h=64&amp;mask=circle&amp;fit=cover&amp;maxage=1w</a></p>
+<p>Here is the corresponding image:</p>
+<p><img loading="lazy" src="https://wsrv.nl/?url=github.com/abey79.png?w=64&amp;h=64&amp;mask=circle&amp;fit=cover&amp;maxage=1w" alt="my avatar, small and circular"  />
+</p>
+<p>The parameters specify a scaling to 64x64 pixels with a tight fit, a circular mask, and a cache expiration of one week.</p>
+<p>For the final markdown code, I further set the image size to 32x32 pixels for a nice HiDPI look:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-md" data-lang="md">[<span style="color:#000080">&lt;img src=&#34;https://wsrv.nl/?url=github.com/abey79.png?w=64&amp;h=64&amp;mask=circle&amp;fit=cover&amp;maxage=1w&#34; width=&#34;32&#34; height=&#34;32&#34; alt=&#34;abey79&#34; /&gt;</span>](<span style="color:#008080">https://github.com/abey79</span>)
+</code></pre></div><p>Here is how it looks (my blog is markdown-based too, so I literally copy/pasted the line above):</p>
+<p><a href="https://github.com/abey79"><img src="https://wsrv.nl/?url=github.com/abey79.png?w=64&h=64&mask=circle&fit=cover&maxage=1w" width="32" height="32" alt="abey79" /></a></p>
+<p>That&rsquo;s it! You can see it in action in a <a href="https://github.com/abey79/vsvg/blob/master/CHANGELOG.md#contributors">changelog file</a> or a <a href="https://github.com/abey79/vsvg/releases/tag/v0.3.0">GitHub release</a>.</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>On vpype layers, their names, and the AxiDraw</title>
       <link>https://bylr.info/articles/2023/03/17/layer-names/</link>

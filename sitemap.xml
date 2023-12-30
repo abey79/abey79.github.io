@@ -3,18 +3,24 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://bylr.info/articles/</loc>
-    <lastmod>2023-03-17T00:00:00+00:00</lastmod>
+    <lastmod>2023-12-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/</loc>
-    <lastmod>2023-03-17T00:00:00+00:00</lastmod>
+    <lastmod>2023-12-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/tags/</loc>
+    <lastmod>2023-12-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/tags/til/</loc>
+    <lastmod>2023-12-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://bylr.info/articles/2023/12/30/til-displaying-contributor-avatars-in-github-changelogs/</loc>
+    <lastmod>2023-12-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/articles/2023/03/17/layer-names/</loc>
     <lastmod>2023-03-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/tags/plotter/</loc>
-    <lastmod>2023-03-17T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://bylr.info/tags/</loc>
     <lastmod>2023-03-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/tags/vpype/</loc>
@@ -45,9 +51,6 @@
     <lastmod>2022-12-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/tags/textual/</loc>
-    <lastmod>2022-10-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://bylr.info/tags/til/</loc>
     <lastmod>2022-10-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://bylr.info/articles/2022/10/29/til-textual-fb-term/</loc>
